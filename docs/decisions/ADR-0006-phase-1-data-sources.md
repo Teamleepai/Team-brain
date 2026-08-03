@@ -4,7 +4,9 @@
 
 ## Status
 
-Accepted, with one open question requiring founder input (see below).
+Accepted, **superseded in part by `ADR-0008`**. The transcript provider open question is answered (Zoom), and increment 1c (Slack) has been removed from Phase 1 because the founder is not yet on the platform. What stands: source families delivered as sequential increments rather than simultaneously, with source-tagged episodic records so quality regressions stay attributable.
+
+The original text follows unedited, per the immutability rule in this directory's README.
 
 ## Context
 

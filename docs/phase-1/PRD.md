@@ -198,9 +198,12 @@ Note that 14 consecutive *weekdays* is close to three calendar weeks, which deli
 
 | # | Question | Owner | Blocks |
 |---|---|---|---|
-| 1 | Should increment 1b (voice) precede 1a (Google Workspace)? | Founder | Increment ordering, not architecture (`ADR-0006`) |
-| 2 | Which voice transcript provider? | Founder | 1b adapter beyond a sketch |
-| 3 | Briefing delivery time and timezone | Founder | 1a scheduling |
-| 4 | Transactional email provider for delivery | Me, unless founder has a preference | 1a delivery |
-| 5 | Which Slack channels are in scope | Founder | 1c |
-| 6 | Is there an existing CRM to consider for Phase 3 sequencing | Founder | Nothing in Phase 1 |
+| 1 | **Does Leep AI run AI voice agents that take customer calls?** §13's transfer quality, booking quality, and prompt failures describe QA of an AI agent on customer calls, not summaries of internal meetings. If yes, that is a second unscoped source and plausibly higher-value than meeting intelligence. | Founder | Whether Phase 1's sources are the right ones |
+| 2 | Should increment 1b precede 1a? Depends on 1. | Founder | Increment ordering, not architecture |
+| 3 | What is the current messaging platform? Slack is deferred (`ADR-0008`); Teams would be equivalent work with a live workspace to validate against. | Founder | Whether Phase 1 has a messaging source |
+| 4 | Briefing delivery time and timezone | Founder | 1a scheduling |
+| 5 | Transactional email provider for delivery | Me, unless founder has a preference | 1a delivery |
+| 6 | Zoom cloud recording and audio transcript enabled? Cloud recording needs a paid tier. | Founder | 1b |
+| 7 | Is there an existing CRM to consider for Phase 3 sequencing | Founder | Nothing in Phase 1 |
+
+Resolved since first draft: the transcript provider is Zoom via the `recording.transcript_completed` webhook, and Slack has moved to Phase 2 (`ADR-0008`).

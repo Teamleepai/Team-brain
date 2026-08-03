@@ -54,8 +54,8 @@ Per `ADR-0006`, sequential rather than simultaneous, so a briefing-quality regre
 | Increment | Source | Blocked on |
 |---|---|---|
 | **1a** | Gmail + Google Calendar | Nothing (subject to increment ordering, below) |
-| **1b** | Voice call transcripts | Transcript provider decision |
-| **1c** | Slack | Channel scope decision |
+| **1b** | Zoom cloud recording transcripts, via webhook (`ADR-0008`) | Confirming cloud recording + audio transcript are enabled; the consent position on recorded third parties |
+| ~~1c~~ | ~~Slack~~ | **Moved to Phase 2** (`ADR-0008`) — the founder is not on Slack yet, so the adapter could not clear its live-credential gate |
 
 ## Open questions for the founder
 
@@ -63,12 +63,15 @@ Answers to 1 and 2 change what gets built first. The rest can be answered as the
 
 | # | Question | Blocks |
 |---|---|---|
-| 1 | **Should voice transcripts (1b) come before Google Workspace (1a)?** The constitution devotes a full section to voice intelligence and no comparable detail to email, which reads as a signal that call intelligence is closer to the commercial core. If so, the differentiated capability should be validated first. Architecture is indifferent; only the order changes. | Increment ordering |
-| 2 | Which voice transcript provider? ASR quality, speaker attribution, and available metadata vary enormously between them, and those differences propagate into every downstream summary. | 1b beyond a sketch |
-| 3 | Briefing delivery time and timezone. It must land before the first meeting; a briefing that arrives at 11am is worthless. | 1a scheduling |
-| 4 | Transactional email provider. I will choose unless you have a preference. | 1a delivery |
-| 5 | Which Slack channels are in scope? Default is none, opted in explicitly. | 1c |
-| 6 | Is there an existing CRM worth knowing about for Phase 3 sequencing? | Nothing in Phase 1 |
+| 1 | **Does Leep AI run AI voice agents that take customer calls?** `MASTER_CONSTITUTION.md` §13 asks for transfer quality, booking quality, and prompt failures per call — that is the vocabulary of QA'ing an AI agent on customer calls, not of summarizing your own Zoom meetings. If yes, §13 describes a **second, unscoped data source** that is plausibly higher-value than meeting intelligence, because it improves a product you sell rather than a personal routine. If no, §13's wording is aspirational and Zoom meetings are what it meant. | Whether Phase 1 has the right sources at all |
+| 2 | **Should transcripts (1b) come before Google Workspace (1a)?** Depends entirely on the answer to 1. Architecture is indifferent; only the order changes. | Increment ordering |
+| 3 | What are you using for messaging **today**? If Teams, that adapter is nearly the same work as Slack and could take the removed 1c's place with a live workspace to validate against. | Whether Phase 1 has a messaging source |
+| 4 | Briefing delivery time and timezone. It must land before the first meeting; a briefing that arrives at 11am is worthless. | 1a scheduling |
+| 5 | Transactional email provider. I will choose unless you have a preference. | 1a delivery |
+| 6 | Is Zoom cloud recording + audio transcript enabled on your plan? Cloud recording requires a paid tier. | 1b |
+| 7 | Is there an existing CRM worth knowing about for Phase 3 sequencing? | Nothing in Phase 1 |
+
+~~Which voice transcript provider?~~ Answered: Zoom, via the `recording.transcript_completed` webhook. See `ADR-0008` for why Zoom over Otter — chiefly that Otter's API is Enterprise-gated, and that Otter's summaries duplicate the layer we are building.
 
 ## What Phase 1 is deliberately not
 

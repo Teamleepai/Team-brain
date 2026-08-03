@@ -229,7 +229,7 @@ These are integration tests against real Postgres, because the invariants are co
 - Insert record, link, and a *second* record with no link in the same transaction → fails, and the first record is not persisted either. Partial success would leave an orphan.
 - `SemanticRepository.create` called with an empty `derivedFrom` → rejected at the type level and, for the runtime path, at the repository boundary. `API_CONTRACTS.md` §4 makes an orphan inexpressible in the interface; the test covers callers that route around the type via `any` or dynamic input.
 
-**Supersession.** The `supersession_complete` check constraint forbids the half-state where a record is pointed forward but still reads as valid.
+**Supersession.** The `supersession_closes_validity` check constraint forbids the half-state where a record is pointed forward but still reads as valid. It is deliberately one-directional, so the test suite must cover both legal shapes: superseded with a successor and a closed window, and expired with a closed window and no successor.
 
 - `superseded_by` set with `valid_until` null → rejected.
 - `valid_until` set with `superseded_by` null → rejected. (Worth noting this constraint also forbids a record that legitimately expires without a successor — a commitment whose due date passes. §14 records this as a design question rather than papering over it in the test.)
@@ -394,7 +394,7 @@ Open questions, each of which should be resolved before or during the increment 
 |---|---|---|
 | 1 | `ARCHITECTURE.md` §5 specifies the gate as a pure function; `API_CONTRACTS.md` §6 specifies `evaluate` as async and audit-writing. §3.1 above recommends splitting `decide` from `evaluate`. Both documents need updating to match whichever is chosen. | Gate implementation and its suite |
 | 2 | `dedupe_key` derivation has no specification (`DATA_MODEL.md` §13). The labelled corpus in §8 is proposed as the specification's acceptance criteria. Who owns writing it? | Distillation, increment 1a |
-| 3 | The `supersession_complete` constraint forbids `valid_until` without `superseded_by`, which also forbids a fact that legitimately expires with no successor — a commitment whose deadline passes. Is that intended? | Semantic layer, increment 1a |
+| 3 | ~~The `supersession_complete` constraint forbids `valid_until` without `superseded_by`, which also forbids a fact that legitimately expires with no successor.~~ **Resolved:** `DATA_MODEL.md` §7 now uses the one-directional `supersession_closes_validity`, which permits expiry without a successor. Both cases need invariant tests: superseded-with-successor, and expired-without-successor. | Semantic layer, increment 1a |
 | 4 | On episodic re-fetch with a changed `content_hash`, are derived semantic records re-distilled, superseded, or left stale? Currently unspecified. | Distillation correctness |
 | 5 | Evaluation-set authorship. Cases must be drawn from real founder data to be meaningful, which means the evaluation set contains personal content and needs a handling policy (`PRIVACY_MODEL.md`). | Prompt regression testing |
 | 6 | No voice transcript provider chosen (`ADR-0006`), so 1b's fixtures cannot be shaped and its ASR-confidence tests cannot be calibrated. | Increment 1b |

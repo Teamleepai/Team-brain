@@ -74,6 +74,15 @@ Severity here is graded by **damage to trust**, not by blast radius. That is del
 | R25 | **`episodic_record` partitioning deferred.** Monthly range partitioning would ease the 400-day retention sweep. | Accepted as premature at Phase 1 volume, but the retention job is materially simpler with it, so decide before volume arrives (`DATA_MODEL.md` §13). |
 | R26 | **Non-reproducible agent output.** Identical inputs may yield differently-worded proposals, so golden-file testing of agent output is impossible. | Accepted, and correctly so. Assertions target structure and permissibility; prompt regression is statistical over an evaluation set (`ADR-0003`, `TESTING_STRATEGY.md`). |
 | R27 | **Bus factor of one.** One contributor holds all context. | Accepted for Phase 1, and the reason the documentation standard is set where it is: `MASTER_CONSTITUTION.md` §17 requires that a developer understand the system from documentation alone, and this risk is why that requirement is not ceremonial. |
+| R28 | **Error-flag signal pollution.** The flag endpoint is unauthenticated by deliberate choice (`ADR-0007`). Abuse yields false flags, which corrupt the phase's primary metric and, later, the learning loop's ground truth. | Accepted at Phase 1, where volume is low and flags are reviewed by hand. Bounded by single-use, item-scoped, expiring, rate-limited tokens. Must be re-evaluated **before** the learning loop is permitted to act on flags without review, because the exposure grows with the loop's authority rather than staying constant. |
+
+### R29 — Erasure tooling is designed but unbuilt
+
+**Severity: Medium. Owner: Implementation. Closes: before increment 1a reaches production with real third-party data.**
+
+Phase 1 has a coherent erasure design (`PRIVACY_MODEL.md` §6) and no code implementing it. The first real request would therefore be handled by hand-written SQL, under time pressure, against a schema with two constraint interactions that specifically complicate erasure: the no-orphans trigger and the append-only audit table.
+
+This is worth more attention than its severity suggests, because a minimal tested erasure path does double duty — it discharges a legal obligation and it *proves the retention design is coherent*. A retention policy that has never been executed is a retention policy nobody has checked.
 
 ---
 

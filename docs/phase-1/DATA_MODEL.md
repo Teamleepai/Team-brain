@@ -118,6 +118,28 @@ create table ingestion_watermark (
 );
 ```
 
+```sql
+-- Checked by the normalizer before writing any episodic record.
+--
+-- This is what makes a data subject's objection or restriction request
+-- meaningful (PRIVACY_MODEL.md §6). Without it, erasure is futile:
+-- the record is deleted today and re-ingested on the next run, because
+-- the source system still holds the message. Deletion without
+-- suppression is a loop, not a remedy.
+create table ingestion_suppression (
+  id           uuid primary key default gen_random_uuid(),
+  org_id       uuid not null references organization(id),
+  -- Email address or platform identifier. Hashed, because a plaintext
+  -- list of people who asked not to be processed is itself sensitive
+  -- personal data, and storing it defeats its own purpose.
+  identifier_hash bytea not null,
+  reason       text not null,
+  created_by   uuid not null references app_user(id),
+  created_at   timestamptz not null default now(),
+  unique (org_id, identifier_hash)
+);
+```
+
 `secret_ref` is a name, never a value. A schema that *can* hold a credential eventually will, and then it is in every backup — so the column that would have held it does not exist.
 
 The watermark advances only past fully-processed data (`ARCHITECTURE.md` §4). `consecutive_failures` drives alerting: a source that has failed repeatedly is silently producing an incomplete briefing, which is a correctness problem disguised as an availability problem.
@@ -216,14 +238,27 @@ create table semantic_record (
   created_by_id     text not null,
   created_at        timestamptz not null default now(),
 
-  unique (org_id, dedupe_key),
-  -- A superseded record must have an end to its validity, and vice
-  -- versa. Prevents half-completed supersession.
-  constraint supersession_complete check (
-    (superseded_by is null and valid_until is null)
-    or (superseded_by is not null and valid_until is not null)
+  -- A superseded record must have a closed validity window. The
+  -- converse deliberately does not hold: a fact may expire with no
+  -- successor — a commitment whose deadline simply passes — so
+  -- valid_until may be set while superseded_by stays null.
+  constraint supersession_closes_validity check (
+    superseded_by is null or valid_until is not null
   )
 );
+
+-- Claim identity is unique among *open current* records only.
+--
+-- A table-wide unique (org_id, dedupe_key) would be wrong, and wrong in
+-- a way that fails on the very first supersession: a supersession chain
+-- shares one claim identity by definition, so the successor would
+-- collide with its own predecessor. Scoping the index to open records
+-- expresses the actual rule — at most one live version of a claim —
+-- while leaving the historical chain intact. Same pattern as
+-- one_active_prompt_per_agent in §8.
+create unique index one_open_record_per_claim
+  on semantic_record (org_id, dedupe_key)
+  where superseded_by is null and valid_until is null;
 
 create index on semantic_record (org_id, kind)
   where superseded_by is null;
@@ -231,7 +266,7 @@ create index on semantic_record
   using hnsw (embedding vector_cosine_ops);
 ```
 
-Two constraints deserve attention. `unique (org_id, dedupe_key)` turns the no-duplicates rule into something the database refuses rather than something the Knowledge Manager remembers. And `supersession_complete` prevents the specific half-state where a record has been pointed forward but still reads as currently valid — an inconsistency that would silently produce contradictory briefing items.
+Two constraints deserve attention. The partial unique index on `dedupe_key` turns the no-duplicates rule into something the database refuses rather than something the Knowledge Manager remembers, without breaking supersession. And `supersession_closes_validity` prevents the specific half-state where a record has been pointed forward but still reads as currently valid — an inconsistency that would silently produce contradictory briefing items.
 
 ### Links to sources — mandatory
 
@@ -299,27 +334,21 @@ create unique index one_active_prompt_per_agent
 
 `rationale` is non-null because `CONTINUOUS_IMPROVEMENT.md` requires every hypothesis to state the failure pattern it targets. A prompt change with no stated reason cannot be evaluated against its intent later.
 
-```sql
--- The founder's "this was wrong" signal (PRD.md B3). Phase 1 collects
--- it; Phase 3's learning loop consumes it.
-create table error_flag (
-  id                uuid primary key default gen_random_uuid(),
-  org_id            uuid not null references organization(id),
-  briefing_item_id  uuid not null references briefing_item(id),
-  flagged_by        uuid not null references app_user(id),
-  note              text,
-  created_at        timestamptz not null default now()
-);
-```
+The founder's "this was wrong" signal (`PRD.md` B3) also belongs to this layer, but its table references `briefing_item` and so is defined in §10 alongside it. Migration order is briefing tables before `error_flag`; the document's layer-by-layer ordering is for reading, not for execution.
 
 ## 9. Agent proposals and audit
 
 The gate is the only path from proposal to effect, and it writes the audit record (`ARCHITECTURE.md` §5). These two tables are that boundary made durable.
 
 ```sql
+-- What kind of effect a proposal would have. Deliberately NOT including
+-- 'high_impact': high impact is orthogonal to reversibility, and an
+-- enum forces a false choice. Deleting a customer record is both
+-- irreversible and high-impact per MASTER_CONSTITUTION.md §11, and a
+-- flat enum would make it declarable as only one of those.
 create type impact_class as enum (
   'observation', 'recommendation', 'draft',
-  'reversible_action', 'irreversible_action', 'high_impact'
+  'reversible_action', 'irreversible_action'
 );
 
 create type gate_disposition as enum (
@@ -336,6 +365,14 @@ create table agent_proposal (
   -- Declared by the agent; the gate refuses a malformed or absent
   -- value rather than inferring one — fail closed.
   impact_class        impact_class not null,
+
+  -- Orthogonal to impact_class. True when the proposal falls into any
+  -- category MASTER_CONSTITUTION.md §11 requires approval for
+  -- (financial, customer communication, legal, deletion, production
+  -- deploy, customer-facing prompt change, policy, security,
+  -- architecture rewrite). A high-impact proposal never reaches
+  -- 'executed' at any trust level; see PERMISSION_MODEL.md.
+  is_high_impact      boolean not null,
 
   -- Trust level asserted at gate time, not read from config later.
   trust_level         int not null check (trust_level between 0 and 5),
@@ -377,9 +414,49 @@ create table audit_record (
 
 create index on audit_record (org_id, occurred_at desc);
 
--- Append-only at the privilege level, not by convention.
+-- Append-only at the privilege level, not by convention. The
+-- application role can insert and select, nothing more.
 revoke update, delete on audit_record from public;
+revoke update, delete on audit_record from leap_app;
 ```
+
+### Redaction without an update path
+
+There is a genuine tension between this table being append-only and §12's requirement to redact personal data inside `inputs` and `outputs` on a data-subject erasure request. Both are real obligations: accountability requires that the record of an action survive, and privacy law requires that the personal data inside it not.
+
+Revoking `UPDATE` from the application role and then having the application update the row would be a fiction. The resolution is that redaction is a *different operation performed by a different principal*, not an application capability:
+
+```sql
+-- Owned by a dedicated role the application cannot assume. Can only
+-- overwrite designated keys with a tombstone value; cannot alter
+-- actor, action, trust_level, approval_chain, or occurred_at; and
+-- writes its own audit record, so redaction is itself audited.
+create function redact_audit_pii(
+  target_id uuid,
+  keys      text[],
+  reason    text
+) returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update audit_record
+     set inputs  = redact_keys(inputs,  keys),
+         outputs = redact_keys(outputs, keys)
+   where id = target_id;
+
+  insert into audit_record (org_id, actor_kind, actor_id, action,
+                            inputs, outputs, rationale)
+  select org_id, 'human', current_setting('app.current_user_id'),
+         'audit.redact', jsonb_build_object('target', target_id,
+         'keys', keys), '{}'::jsonb, reason
+    from audit_record where id = target_id;
+end;
+$$;
+```
+
+What survives redaction is exactly what accountability needs: that an action of a given kind occurred, at a given time, by a given actor, under a given trust level, through a given approval chain. What does not survive is the personal content the action operated on. `PRIVACY_MODEL.md` specifies which keys are redactable and what remains provable.
 
 `OBSERVABILITY.md` requires actor, trust level, inputs, outputs, rationale, and approval chain on every agent action. `approval_chain` is empty throughout Phase 1 and present because Phase 2 fills it — adding it now costs nothing and avoids migrating the audit table, which is the one table where a migration is most awkward.
 
@@ -432,7 +509,26 @@ create table briefing_item_evidence (
     semantic_record_id is not null or episodic_record_id is not null
   )
 );
+
+-- The founder's "this was wrong" signal (PRD.md B3), defined here
+-- rather than in §8 because it references briefing_item. Phase 1
+-- collects it; Phase 3's learning loop consumes it.
+create table error_flag (
+  id                uuid primary key default gen_random_uuid(),
+  org_id            uuid not null references organization(id),
+  briefing_item_id  uuid not null references briefing_item(id),
+  -- Stays NOT NULL. Anonymization per §12 repoints this at a reserved
+  -- tombstone user row rather than nulling it, for the same reason
+  -- redaction elsewhere writes a marker instead of NULL: "anonymized"
+  -- and "never recorded" must stay distinguishable, and that
+  -- distinction is itself audit-relevant.
+  flagged_by        uuid not null references app_user(id),
+  note              text,
+  created_at        timestamptz not null default now()
+);
 ```
+
+`PRD.md` B3 requires the flag to record the item, its source, and the reasoning that produced it. Only `briefing_item_id` is stored, because the other two are reachable by join and duplicating them would create two versions of the same truth: `briefing_item → proposal_id → agent_proposal.rationale` gives the reasoning and the prompt version, and `briefing_item_evidence` gives every contributing source. The join is the record.
 
 `trust_level` is denormalized onto `briefing_item` so a renderer cannot produce an item without one — `UX_PRINCIPLES.md` §1 becomes a type-level guarantee rather than a review checklist item, per `ARCHITECTURE.md` §7. The same commit-time trigger pattern used for `semantic_link` enforces at least one evidence row per item.
 
@@ -458,19 +554,34 @@ RLS is the most dangerous surface in this schema because a too-permissive policy
 
 | Table | Retention | Deletion on data-subject request |
 |---|---|---|
-| `episodic_record` | 400 days rolling | Hard delete by participant identifier |
+| `episodic_record` | 400 days rolling | **Content tombstone**, not row delete — see below |
 | `semantic_record` | Indefinite (the compounding asset) | Redact `statement` and `attributes`, preserve structure and links |
 | `semantic_link`, `semantic_edge` | Indefinite | Preserved |
-| `audit_record` | 7 years | **Never deleted** — legal-basis retention; redact PII in `inputs`/`outputs` |
+| `agent_proposal` | 7 years, matching `audit_record` | Redact `payload` and `rationale`; it is `audit_record`'s and `briefing_item`'s parent, so the row must survive |
+| `audit_record` | 7 years | **Never deleted** — legal-basis retention; redact PII via `redact_audit_pii` (§9) |
 | `prompt_version` | Indefinite | Not applicable |
 | `briefing`, `briefing_item` | 2 years | Hard delete |
-| `error_flag` | Indefinite | Anonymize `flagged_by` |
+| `briefing_item_evidence` | Follows `briefing_item` | Cascades |
+| `error_flag` | Indefinite | Repoint `flagged_by` at a reserved tombstone user |
+| Application logs | 30 days | Not individually addressable; short retention bounds a leak we cannot fully prevent |
+| Metrics, traces | 90 days | Not individually addressable |
 
-The tension is real and worth stating plainly: `audit_record` must survive for accountability while data subjects have deletion rights. The resolution is redaction of personal data within audit records rather than removal of the records, so that "an action occurred, authorized thus, at this time" remains provable while the personal content does not persist. Details in `PRIVACY_MODEL.md`.
+Logs and traces are meant to carry no personal data by construction (`OBSERVABILITY_STRATEGY.md`), but the redaction rule will occasionally be violated in practice, so short retention is the control that bounds the consequence rather than the one that prevents it.
+
+### Why episodic deletion is a tombstone, not a row delete
+
+Hard-deleting an episodic record would break the no-orphans invariant from §7. Every `semantic_record` must retain at least one `semantic_link` to an episodic record, so deleting the last source behind a fact either fails the commit-time trigger or leaves a fact with no provenance — and a fact with no provenance cannot be explained, which violates the explainability requirement rather than satisfying a privacy one.
+
+Erasure therefore clears content while preserving structure: `payload` is replaced with a tombstone marker, `participants` is emptied, `content_hash` is retained (it is a hash, not content), and the row and its links stay. The result is a system that can still say "this fact came from a message on this date" without retaining the message. `PRIVACY_MODEL.md` specifies the tombstone shape.
+
+### The audit tension, stated plainly
+
+`audit_record` must survive for accountability while data subjects have deletion rights, and both obligations are real. The resolution is redaction of personal data *within* audit records rather than removal of the records, performed by a principal the application cannot assume, and itself audited (§9). What stays provable is that an action of a given kind occurred at a given time by a given actor under a given trust level. What does not persist is the personal content it operated on.
 
 ## 13. Open questions
 
 1. **Embedding model and dimension.** `vector(1536)` is a placeholder. Changing it later requires re-embedding everything — cheap now, expensive at volume.
 2. **`episodic_record` partitioning.** Monthly range partitioning on `occurred_at` would ease the 400-day retention sweep. Deferred as premature at Phase 1 volume, but the retention job is materially simpler with it, so worth deciding before volume arrives.
 3. **`dedupe_key` derivation.** The most consequential unresolved detail in the schema: too strict and memory fills with near-duplicates, too loose and distinct facts collapse into one. Needs a written specification and its own test suite before distillation ships.
-4. **Encryption of `payload`.** Currently relying on at-rest encryption. Column-level encryption for message bodies and transcripts is stronger and complicates search. Decision belongs to `PRIVACY_MODEL.md`.
+4. **Encryption of `payload`.** Resolved in `PRIVACY_MODEL.md`: no column-level encryption in Phase 1, relying on at-rest encryption plus self-held backup encryption, with a Phase 4 revisit. Recorded here because the reasoning belongs with the schema.
+5. **`upsertMany` conflict semantics.** `API_CONTRACTS.md` §4 now specifies that a changed `content_hash` updates the payload rather than being skipped. Worth re-reading against this schema during review, because "re-run it" as the rollback answer for a bad ingestion run depends entirely on that choice.

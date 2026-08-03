@@ -22,7 +22,9 @@ None of these are information-retrieval failures. The information was all availa
 
 ## 2. What Phase 1 is
 
-One agent — the Chief of Staff — observes Gmail, Google Calendar, voice call transcripts, and Slack, builds structured organizational memory from what it sees, and delivers one email each morning that says: here is what matters today, here is what is waiting on you, and here is what you committed to that has not happened yet.
+One agent — the Chief of Staff — observes three source families across four adapters (Gmail and Google Calendar, voice call transcripts, and Slack), builds structured organizational memory from what it sees, and delivers one email each morning that says: here is what matters today, here is what is waiting on you, and here is what you committed to that has not happened yet.
+
+Throughout this document, "three sources" refers to the three families that define the delivery increments in `ADR-0006`; "four adapters" refers to the integrations implementing them, since Gmail and Calendar are separate APIs within increment 1a.
 
 It recommends. It does not act. There is no draft, no send, no schedule, no delete. Every item is a recommendation the founder acts on manually, in the source system, via a link.
 
@@ -45,7 +47,7 @@ Naming these matters as much as naming the scope, because each is a plausible ne
 | Earn Trust Level 1 credibility | Every later phase depends on the founder believing the system's judgment. That belief is built or destroyed in Phase 1 and it is the real deliverable. |
 | Build the memory substrate | Organizational memory is the compounding asset (`MEMORY_ARCHITECTURE.md`). Phase 1 starts its accumulation, and the value of that accumulation is realized in later phases. |
 | Establish the trust and audit machinery | The gating and logging architecture from `ADR-0003` is built and exercised in Phase 1 while the stakes are zero, so that Phase 2's first real action executes through a path that has been running for weeks. |
-| De-risk the integrations | Four adapters against live APIs, with real pagination, rate limits, and auth failures, before any of them is load-bearing for an action. |
+| De-risk the integrations | Four adapters across three source families, exercised against live APIs with real pagination, rate limits, and auth failures, before any of them is load-bearing for an action. |
 
 ## 5. Success metrics
 
@@ -104,7 +106,7 @@ Explicitly not served. A configuration surface is how this product becomes a too
 
 **A1.** *As the system, I ingest Gmail messages and calendar events so that the briefing can reason over the founder's commitments and correspondence.*
 
-- Given valid OAuth credentials, when ingestion runs, then new messages and events since the last watermark are written to the episodic layer within 5 minutes of the run.
+- Given valid OAuth credentials, when ingestion runs, then new messages and events since the last watermark are written to the episodic layer within 5 minutes of that run beginning. Combined with the 15-minute ingestion cycle in `ARCHITECTURE.md` §8, worst-case end-to-end lag from an event occurring to it being visible in memory is 20 minutes. That is the number to hold the system to; the 5-minute figure bounds the run, not the lag.
 - Every episodic record carries provenance: source system, source identifier, ingestion timestamp, and the agent or process that wrote it (`MEMORY_ARCHITECTURE.md`).
 - Given the source API returns a rate-limit or 5xx error, when ingestion runs, then it backs off and retries, and a partial failure never advances the watermark past unprocessed data.
 - Given ingestion runs twice over an overlapping window, then no duplicate episodic records are created — source identifier plus tenant is unique.
@@ -148,7 +150,7 @@ Explicitly not served. A configuration surface is how this product becomes a too
 
 - Each item carries a lightweight "this was wrong" affordance that records the flag against the item, its source, and the reasoning that produced it.
 - Flags are stored as procedural-layer input for the Phase 3 learning loop (`CONTINUOUS_IMPROVEMENT.md`), and drive the primary error metric above.
-- The flag affordance is the *only* interactive element in the briefing, and it changes no state outside LEAP OS — consistent with the no-action-links rule in `ADR-0004`.
+- The flag affordance is the *only* interactive element in the briefing, and it changes no state outside LEAP OS. It is a deliberate, single carve-out from the no-action-links rule in `ADR-0004`, with its security properties specified in `ADR-0007`: item-scoped, single-use, expiring, rate-limited, and incapable of any effect beyond writing one row.
 
 ### Epic C — Trust, audit, and safety
 
@@ -189,6 +191,8 @@ Phase 1 is complete when, with all three increments live:
 6. No unresolved critical items in the risk register.
 
 Failing (2) resets the 14-day window. That is intentional and it is the point of the metric.
+
+Note that 14 consecutive *weekdays* is close to three calendar weeks, which deliberately tightens `ROADMAP.md`'s "two consecutive weeks." Weekdays are the right unit because the briefing is a weekday artifact, and counting calendar weeks would let a quiet holiday week pad the record.
 
 ## 10. Open questions
 

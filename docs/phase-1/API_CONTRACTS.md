@@ -146,6 +146,17 @@ All data access. No SQL exists outside these modules (`ADR-0002`).
 
 ```ts
 export interface EpisodicRepository {
+  /** Conflict semantics, specified rather than left to the
+   *  implementation: on conflict against
+   *  (org_id, source_connection_id, source_id), compare `content_hash`.
+   *  Unchanged hash means skip and count as a duplicate. Changed hash
+   *  means UPDATE the payload.
+   *
+   *  This is not a detail. `ROLLBACK_STRATEGY.md` answers most failures
+   *  with "fix forward and re-run", and that answer is only true if
+   *  re-running can *repair* a bad payload. Plain `on conflict do
+   *  nothing` would make every re-run a no-op and quietly invalidate
+   *  the rollback story for its most-invoked case. */
   upsertMany(
     ctx: TenantContext,
     records: readonly NewEpisodicRecord[],
@@ -253,7 +264,17 @@ export interface AgentContract {
   /** One sentence, single purpose. If it needs "and", it is two
    *  agents (AI_AGENT_STANDARDS.md). */
   readonly responsibility: string;
-  readonly trustLevel: 0 | 1 | 2 | 3 | 4 | 5;
+  /** The level this agent is *designed* for, in source. Declaring it
+   *  here documents intent and drives tool scoping.
+   *
+   *  It is deliberately NOT the level the gate enforces. The effective
+   *  level is resolved from persisted configuration at gate time, so
+   *  that revoking trust is a configuration write taking effect on the
+   *  next proposal. A compile-time literal would make "instant
+   *  revocation" require a build, a CI run, and a deploy — which is
+   *  not instant, and the constitution's revocation guarantee
+   *  (AI_AGENT_STANDARDS.md) would be false. */
+  readonly designedTrustLevel: 0 | 1 | 2 | 3 | 4 | 5;
   /** Permitted tools, resolved at construction. An agent does not
    *  hold a tool it is instructed not to use — it does not hold the
    *  tool. Instruction is not a security control. */
@@ -288,6 +309,11 @@ export interface Proposal {
   /** Declared by the agent. The gate refuses an absent or malformed
    *  value rather than inferring one — fail closed. */
   readonly impactClass: ImpactClass;
+  /** Orthogonal to impactClass, not a member of it. An action can be
+   *  both irreversible and high-impact, and an enum would force a
+   *  false choice between saying so. High-impact proposals never reach
+   *  `executed` at any trust level (PERMISSION_MODEL.md). */
+  readonly isHighImpact: boolean;
   readonly payload: ProposalPayload;
   readonly rationale: string;
   readonly confidence: number;
@@ -298,7 +324,7 @@ export interface Proposal {
 
 export type ImpactClass =
   | 'observation' | 'recommendation' | 'draft'
-  | 'reversible_action' | 'irreversible_action' | 'high_impact';
+  | 'reversible_action' | 'irreversible_action';
 
 export interface EvidenceRef {
   readonly semanticId?: SemanticId;
@@ -319,19 +345,44 @@ export interface ToolScoper {
   scope(contract: AgentContract): readonly Tool[];
 }
 
+/** The gate is two functions, not one, because purity and durability
+ *  cannot live in the same signature. `decide` is the authority rule;
+ *  `evaluate` is the only sanctioned way to invoke it. */
 export interface TrustGate {
-  /** Pure and deterministic. Same inputs, same disposition, every
-   *  time, regardless of how the model phrased the proposal. Does not
-   *  read proposal prose — only its declared impact class.
+  /** PURE and SYNCHRONOUS. No I/O, no clock, no randomness. Same
+   *  inputs, same disposition, every time, regardless of how the model
+   *  phrased the proposal — it does not read proposal prose, only the
+   *  declared impact class and high-impact flag.
    *
-   *  This is also the only path from proposal to effect, and it writes
-   *  the audit record. Authorizing and logging are the same operation,
-   *  so an unlogged effect is not expressible. */
+   *  Being pure is what makes the truth table exhaustively testable
+   *  (TESTING_STRATEGY.md): 36 cells, no mocks, no database. */
+  decide(input: GateInput): GateVerdict;
+
+  /** The only path from proposal to effect. Resolves the agent's
+   *  effective trust level from persisted configuration, calls
+   *  `decide`, writes the audit record, and returns the outcome.
+   *
+   *  Authorizing and logging happen here together, which is what makes
+   *  an unlogged effect inexpressible rather than merely discouraged. */
   evaluate(
     ctx: TenantContext,
     contract: AgentContract,
     proposal: Proposal,
   ): Promise<Result<GateDecision>>;
+}
+
+export interface GateInput {
+  readonly impactClass: ImpactClass | 'malformed';
+  readonly isHighImpact: boolean;
+  readonly effectiveTrustLevel: number;
+  readonly hasEvidence: boolean;
+  readonly hasRationale: boolean;
+  readonly usesOnlyPermittedTools: boolean;
+}
+
+export interface GateVerdict {
+  readonly disposition: GateDisposition;
+  readonly refusalReason?: string;
 }
 
 export interface GateDecision {
@@ -410,7 +461,19 @@ export interface BriefingItem {
   /** Non-empty tuple: an item without evidence is not
    *  representable (PRD.md B2). */
   readonly evidence: readonly [EvidenceLink, ...EvidenceLink[]];
-  readonly flagUrl: string;         // the only interactive element
+  /** The only interactive element in the briefing. It is a
+   *  state-changing URL sitting in a mailbox, so it is typed with its
+   *  security properties rather than as a bare string — see ADR-0007. */
+  readonly flag: FlagAffordance;
+}
+
+export interface FlagAffordance {
+  readonly url: string;
+  /** Single-use, item-scoped, expiring. Bound to one briefing item so
+   *  a leaked token cannot flag anything else, and carrying no
+   *  ambient authority beyond writing one error_flag row. */
+  readonly token: string;
+  readonly expiresAt: Date;
 }
 
 export interface EvidenceLink {
@@ -435,11 +498,21 @@ export interface EmailPayload {
 }
 
 export interface BriefingDelivery {
+  /** Sending is the one non-idempotent operation in the system. Every
+   *  other step is protected by a database constraint; this one leaves
+   *  the building and cannot be recalled (ROLLBACK_STRATEGY.md).
+   *
+   *  The guard is therefore explicit and at the application layer:
+   *  send() must refuse if `briefing.delivered_at` is already set for
+   *  (org, recipient, date). Without it, a safe regeneration — which
+   *  the rollback strategy actively encourages — produces a second
+   *  email, and two briefings in one morning reads as a malfunction to
+   *  the one person whose trust the phase exists to earn. */
   send(
     ctx: TenantContext,
     recipient: UserId,
     payload: EmailPayload,
-  ): Promise<Result<DeliveryReceipt>>;
+  ): Promise<Result<DeliveryReceipt, AlreadyDeliveredError | AppError>>;
 
   /** Sent when generation fails. Silence is indistinguishable from
    *  "nothing mattered today", which is the worst failure mode

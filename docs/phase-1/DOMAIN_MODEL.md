@@ -297,7 +297,7 @@ Everything above depends on the Knowledge Manager making a three-way distinction
 
 The two error directions are not symmetric and Phase 1 should not treat them as equally bad. A false split produces a visible duplicate, which the founder notices, flags, and which costs credibility but is self-correcting. A false merge produces a **silently dropped promise**, which is indistinguishable from the system working and is the exact failure `PRD.md` §1 opens with. Therefore the dedupe key should err strict, and a duplicate-detection pass over near-neighbours should catch what strictness splits. Preferring the loud error over the quiet one is the general principle and it applies throughout this system.
 
-Note the tension with `DATA_MODEL.md` §7, which enforces `unique (org_id, dedupe_key)` across the whole table. If two rows in a supersession chain share an identity — which §6.2 says they do, since that is what identity means — that constraint cannot hold as written. It needs to be scoped to active records only. Recorded in §9.
+This is why `DATA_MODEL.md` §7 scopes claim uniqueness to open current records via the `one_open_record_per_claim` partial index rather than enforcing it across the whole table. Two rows in a supersession chain share an identity — that is what identity means here — so a table-wide constraint could not hold. The domain rule is "at most one live version of a claim," not "one row per claim ever," and the index expresses exactly that.
 
 ### 6.4 What a dedupe key for a commitment must and must not include
 
@@ -365,7 +365,7 @@ Named honestly, in rough order of how much they could hurt.
 
 1. **`dedupe_key` derivation for commitments.** The most consequential unresolved item in the domain, matching `DATA_MODEL.md` §13. §6.4 gives the constraints; a written specification and its own test suite are required before distillation ships. Until it exists, "never create duplicate knowledge" is an intention.
 
-2. **`unique (org_id, dedupe_key)` contradicts supersession.** As written in `DATA_MODEL.md` §7 the constraint spans all rows, but §6.2 establishes that a claim's supersession chain shares one identity. The constraint must be a partial unique index over active records only. This is a real inconsistency between the two documents and it should be resolved before the first migration, not discovered by a failing insert.
+2. **`unique (org_id, dedupe_key)` contradicted supersession. — RESOLVED.** The constraint originally spanned all rows, while §6.2 establishes that a claim's supersession chain shares one identity, so the successor insert would have failed against its own predecessor. `DATA_MODEL.md` §7 now uses the `one_open_record_per_claim` partial unique index over open current records. Resolved at design time rather than discovered by a failing insert, which was the point of writing this document before the schema was migrated.
 
 3. **How is a Commitment resolved to `Honored` at Trust Level 0–1?** §5.3 argues for conservatism, but "conservative" needs a threshold and a rule for what counts as resolving evidence. Getting this wrong produces the quiet failure mode, and the quiet failure mode is the one the exit criterion cannot detect.
 

@@ -14,6 +14,7 @@ An ADR is written **before** implementation, reviewed critically, and then treat
 | [0004](ADR-0004-briefing-delivery-surface.md) | Email as the Phase 1 briefing delivery surface | Accepted |
 | [0005](ADR-0005-tenancy-model.md) | Single active tenant, tenant-scoped schema from the first migration | Accepted |
 | [0006](ADR-0006-phase-1-data-sources.md) | Three Phase 1 data sources, delivered as three sequential increments | Accepted, one open question |
+| [0007](ADR-0007-error-flag-endpoint.md) | The error-flag endpoint as the sole carve-out from the no-action-links rule | Accepted, refines 0004 |
 
 ## Required sections
 

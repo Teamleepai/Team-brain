@@ -383,7 +383,7 @@ sequenceDiagram
     participant OB as Observability
 
     F->>M: taps "this was wrong" on an item
-    M->>EP: GET flagUrl (opaque, per-item token)
+    M->>EP: GET flag URL (single-use, per-item token)
     EP->>EP: resolve token → (org, briefing_item, recipient)
     EP->>BR: load item → proposal → rationale → evidence
     BR-->>EP: full reasoning chain
@@ -404,7 +404,7 @@ This depends on the immutability of everything downstream of the flag. Proposals
 
 `ADR-0004` prohibits action links of any kind, and names the reason: a click-to-approve URL is a credential in a mailbox, forwardable and replayable. The flag survives that prohibition because of a narrow and important property. **Its worst-case abuse is a false negative signal about a briefing item.** Nothing sends, nothing schedules, nothing deletes, nothing outside LEAP OS changes. A replayed flag URL produces a duplicate flag on an item that was already flagged, which is why the flag is idempotent per `(briefing_item_id, flagged_by)`.
 
-That does not make the endpoint uninteresting to security. It is an unauthenticated, network-reachable, tenant-scoped write, and the token must be unguessable, scoped to one item, and non-enumerable. It is the correct thing to make the only exception, and it is not exempt from the threat model. `API_CONTRACTS.md` §7 types it as a bare `flagUrl: string`, which is thin for something carrying this much security weight; §7 below records that.
+That does not make the endpoint uninteresting to security. It is an unauthenticated, network-reachable, tenant-scoped write, and the token must be unguessable, scoped to one item, and non-enumerable. It is the correct thing to make the only exception, and it is not exempt from the threat model. `ADR-0007` now records it as the single deliberate carve-out from `ADR-0004`'s no-action-links rule, narrows that rule to its actual test (no effect outside LEAP OS, no ambient authority), and specifies the required properties; `API_CONTRACTS.md` §7 types it as `FlagAffordance` with a token and expiry rather than a bare string.
 
 ### 5.3 Where the signal goes
 

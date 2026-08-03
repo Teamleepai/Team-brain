@@ -33,6 +33,12 @@ If you read three documents, read the first three.
 
 Decisions are in [`../decisions/`](../decisions/). `ADR-0003` and `ADR-0006` are the two worth reading in full: the first establishes the authority boundary the architecture is built on, the second records a scope disagreement and its resolution.
 
+## A note on the state of these documents
+
+They have been through one adversarial cross-review pass, and it found real defects rather than typos. Two were schema bugs that would have failed at runtime: a unique constraint on `dedupe_key` that would have rejected the first supersession, and a check constraint that made it impossible to invalidate a hallucinated fact with no replacement. Others were contradictions between documents — an append-only audit table that also had to permit PII redaction, an episodic deletion rule that would have violated the no-orphans invariant, a trust level typed as a compile-time constant in a system promising instant revocation, and a gate specified as pure in one document and asynchronous in another. All are fixed, and the fixes are visible in the affected documents rather than quietly applied.
+
+This is what the review gate in `MASTER_CONSTITUTION.md` §6 is for, and it is the argument for the gate: every one of those defects was cheap to fix on paper and would have been a migration, an incident, or a false guarantee if found later.
+
 ## The one idea to hold onto
 
 > **The model decides what to propose. Deterministic code decides what is permitted.**

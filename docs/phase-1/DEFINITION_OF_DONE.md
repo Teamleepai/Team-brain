@@ -30,7 +30,7 @@ The Phase-1-specific instantiation of `constitution/DEFINITION_OF_DONE.md`. That
 | Rollback strategy | `ROLLBACK_STRATEGY.md` | Drafted, awaiting review |
 | Failure mode analysis | `FAILURE_MODES.md` | Drafted, awaiting review |
 | Risk register | `RISK_REGISTER.md` | Drafted, awaiting review |
-| Architectural decisions | `../decisions/ADR-0001` … `ADR-0006` | Accepted |
+| Architectural decisions | `../decisions/ADR-0001` … `ADR-0007` | Accepted |
 | Definition of done | this file | Drafted |
 
 **Gate:** every row reads reviewed, and the six open questions in `PRD.md` §10 are answered or explicitly deferred with a recorded reason. Implementation does not begin before this gate. Drafted is not reviewed, and the distinction is the entire point of §6 — a plan written and never challenged is a plan that will be challenged by production instead.

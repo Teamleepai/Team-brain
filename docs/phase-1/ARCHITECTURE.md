@@ -174,15 +174,24 @@ An agent's permitted tools are computed from its declared contract *before the l
 
 This distinction is the whole defense against prompt injection and against model error alike. Instruction is not a security control. Absence is.
 
-### The gate is a pure function
+### The gate is a pure function, wrapped
+
+The authority rule itself is pure and synchronous:
 
 ```
-disposition = gate(proposal.impactClass, agent.trustLevel, policy)
+verdict = decide(impactClass, isHighImpact, effectiveTrustLevel, wellFormedness)
 ```
 
-Same inputs, same disposition, every time, regardless of how the model phrased the proposal. The gate does not read the proposal's prose. It reads its declared impact class, and if a proposal arrives without a well-formed impact class it is refused — fail closed.
+Same inputs, same verdict, every time, regardless of how the model phrased the proposal. The gate does not read the proposal's prose. It reads the declared impact class, and a proposal arriving without a well-formed one is refused — fail closed.
 
-At Phase 1 the gate's entire truth table is small, and that is deliberate: the machinery is built and exercised for weeks while the stakes are zero, so that Phase 2's first real action runs through a path with a proven track record.
+Purity is not an aesthetic preference here. It is what makes the truth table exhaustively testable with no mocks and no database (`TESTING_STRATEGY.md`), and a security control that cannot be exhaustively tested is a security control nobody can vouch for.
+
+Durability cannot live in that same function, so it lives in a thin wrapper: `evaluate` resolves the agent's **effective** trust level from persisted configuration, calls `decide`, and writes the audit record. Two consequences worth naming:
+
+- The effective trust level comes from configuration, not from a compile-time constant in the agent's source. Otherwise revoking trust would require a build, a CI run, and a deploy, and the constitution's instant-revocation guarantee would be false (`API_CONTRACTS.md` §5).
+- Authorizing and logging happen together in `evaluate`, which is what makes an unlogged effect inexpressible rather than merely discouraged.
+
+**High impact is orthogonal to impact class, not a member of it.** Deleting a customer record is both irreversible and high-impact under `MASTER_CONSTITUTION.md` §11; a flat enum would force a proposal to declare only one of those and lose the other. It is a separate flag, and it is a veto: a high-impact proposal never reaches `executed` at any trust level.
 
 | Impact class | Trust 0 | Trust 1 (Phase 1) | Trust 2 | Trust 3 |
 |---|---|---|---|---|
@@ -191,7 +200,11 @@ At Phase 1 the gate's entire truth table is small, and that is deliberate: the m
 | `draft` | refuse | **refuse** | render | render |
 | `reversible_action` | refuse | **refuse** | refuse | queue for approval |
 | `irreversible_action` | refuse | **refuse** | refuse | refuse |
-| high-impact per `MASTER_CONSTITUTION.md` §11 | refuse | **refuse** | refuse | queue for approval |
+| malformed or absent | refuse | **refuse** | refuse | refuse |
+
+And independently of the row: `isHighImpact` forces at best `queue_for_approval`, never `executed`, at every trust level including 4 and 5. The full six-level table is in `PERMISSION_MODEL.md`.
+
+At Phase 1 only the bolded column is reachable, and that is deliberate: the machinery is built and exercised for weeks while the stakes are zero, so Phase 2's first real action runs through a path with a proven track record.
 
 Refusals are logged *and alerted* (`OBSERVABILITY.md`). A refusal means either a bug or an injection attempt, and both warrant a human look.
 

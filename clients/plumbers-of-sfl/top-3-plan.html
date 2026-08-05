@@ -1,0 +1,1018 @@
+<title>Plumbers of South Florida — The Top 3 Plan</title>
+
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --paper:#EDEFEC;
+  --surface:#F8F9F7;
+  --surface-2:#E3E7E3;
+  --ink:#15201E;
+  --ink-soft:#5C6A67;
+  --ink-faint:#8A9793;
+  --rule:#D0D6D1;
+  --rule-strong:#B8C0BA;
+
+  --copper:#A85A2B;
+  --copper-soft:#EADFD5;
+  --patina:#1B6B63;
+  --patina-soft:#D8E6E3;
+  --brass:#8A6414;
+  --brass-soft:#EEE6D2;
+  --valve:#A32A26;
+  --valve-soft:#F2DEDC;
+
+  --meter-track:#DCE2DD;
+
+  --font-display:"Helvetica Neue","Segoe UI",Helvetica,Arial,sans-serif;
+  --font-body:Charter,"Bitstream Charter","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --font-data:ui-monospace,"SF Mono",SFMono-Regular,Menlo,"DejaVu Sans Mono",monospace;
+
+  --pad:clamp(1.5rem,4vw,5rem);
+  --maxw:74rem;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --paper:#0F1513; --surface:#18201E; --surface-2:#202b28;
+    --ink:#E7EBE8; --ink-soft:#98A5A1; --ink-faint:#6E7C78;
+    --rule:#293331; --rule-strong:#3A4643;
+    --copper:#D08A55; --copper-soft:#33241A;
+    --patina:#4FB0A2; --patina-soft:#132927;
+    --brass:#CFA04A; --brass-soft:#2B2415;
+    --valve:#E0756D; --valve-soft:#301A19;
+    --meter-track:#2A3532;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1513; --surface:#18201E; --surface-2:#202b28;
+  --ink:#E7EBE8; --ink-soft:#98A5A1; --ink-faint:#6E7C78;
+  --rule:#293331; --rule-strong:#3A4643;
+  --copper:#D08A55; --copper-soft:#33241A;
+  --patina:#4FB0A2; --patina-soft:#132927;
+  --brass:#CFA04A; --brass-soft:#2B2415;
+  --valve:#E0756D; --valve-soft:#301A19;
+  --meter-track:#2A3532;
+}
+:root[data-theme="light"]{
+  --paper:#EDEFEC; --surface:#F8F9F7; --surface-2:#E3E7E3;
+  --ink:#15201E; --ink-soft:#5C6A67; --ink-faint:#8A9793;
+  --rule:#D0D6D1; --rule-strong:#B8C0BA;
+  --copper:#A85A2B; --copper-soft:#EADFD5;
+  --patina:#1B6B63; --patina-soft:#D8E6E3;
+  --brass:#8A6414; --brass-soft:#EEE6D2;
+  --valve:#A32A26; --valve-soft:#F2DEDC;
+  --meter-track:#DCE2DD;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:var(--font-body); font-size:clamp(1rem,.95rem + .2vw,1.12rem);
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+
+/* ============ DECK SHELL ============ */
+.deck{height:100dvh;overflow-y:scroll;scroll-snap-type:y proximity;scroll-behavior:smooth;scrollbar-width:none}
+.deck::-webkit-scrollbar{display:none}
+@media (prefers-reduced-motion:reduce){.deck{scroll-behavior:auto}}
+
+.slide{
+  min-height:100dvh; scroll-snap-align:start;
+  padding:calc(var(--pad) * .9) var(--pad) calc(var(--pad) * .8) calc(var(--pad) + 2.5rem);
+  display:flex; flex-direction:column; justify-content:center;
+  border-bottom:1px solid var(--rule);
+  position:relative;
+}
+.slide > .inner{width:100%;max-width:var(--maxw);margin:0 auto;display:flex;flex-direction:column;gap:clamp(1rem,2vw,1.75rem)}
+
+/* rail */
+.rail{
+  position:fixed; left:0; top:0; bottom:0; width:2.5rem; z-index:40;
+  background:var(--surface); border-right:1px solid var(--rule);
+  display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+  padding:.9rem 0;
+}
+.rail .mark{font-family:var(--font-data);font-size:.6rem;letter-spacing:.14em;color:var(--copper);font-weight:700}
+.rail .track{flex:1;width:2px;background:var(--meter-track);margin:.9rem 0;position:relative;border-radius:2px}
+.rail .fill{position:absolute;top:0;left:0;width:2px;height:0;background:var(--copper);border-radius:2px}
+.rail .count{font-family:var(--font-data);font-size:.62rem;color:var(--ink-faint);writing-mode:vertical-rl;letter-spacing:.12em}
+.themer{
+  position:fixed;right:.75rem;top:.75rem;z-index:41;
+  font-family:var(--font-data);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+  background:var(--surface);color:var(--ink-soft);border:1px solid var(--rule);
+  padding:.4rem .6rem;cursor:pointer;border-radius:2px;
+}
+.themer:hover{color:var(--copper);border-color:var(--copper)}
+.themer:focus-visible,a:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
+
+/* ============ TYPE ============ */
+.eyebrow{
+  font-family:var(--font-data);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-faint);display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;
+}
+.eyebrow b{color:var(--copper);font-weight:700}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance;line-height:1.02}
+h1{font-size:clamp(2.6rem,7vw,5.5rem)}
+h2{font-size:clamp(1.9rem,4.4vw,3.4rem)}
+h3{font-size:clamp(1.1rem,1.7vw,1.4rem);letter-spacing:-.015em}
+h4{font-size:.72rem;font-family:var(--font-data);font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+p{margin:0}
+.lede{font-size:clamp(1.1rem,1.5vw,1.42rem);color:var(--ink-soft);max-width:60ch;line-height:1.5}
+.small{font-size:.82rem;color:var(--ink-soft);line-height:1.5}
+.tiny{font-family:var(--font-data);font-size:.66rem;letter-spacing:.06em;color:var(--ink-faint);line-height:1.6}
+strong{font-weight:700;color:var(--ink)}
+em{font-style:italic}
+
+/* the recurring "kid version" voice */
+.kid{
+  border-left:3px solid var(--copper); padding:.2rem 0 .2rem 1.15rem;
+  font-size:clamp(1.15rem,2.1vw,1.75rem); line-height:1.35; max-width:52ch;
+}
+.kid::before{content:"\201C";color:var(--copper);font-size:1.1em;line-height:0;vertical-align:-.18em;margin-right:.06em}
+.kid::after{content:"\201D";color:var(--copper);font-size:1.1em;line-height:0;vertical-align:-.18em}
+
+/* ============ CHIPS ============ */
+.chip{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-family:var(--font-data);font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  padding:.3rem .6rem .3rem .5rem;border:1px solid currentColor;border-radius:2px;white-space:nowrap;
+}
+.chip::before{content:"";width:.4rem;height:.4rem;border-radius:50%;background:currentColor;flex:none}
+.chip.crit{color:var(--valve);background:var(--valve-soft)}
+.chip.high{color:var(--brass);background:var(--brass-soft)}
+.chip.med{color:var(--ink-soft);background:var(--surface-2)}
+.chip.good{color:var(--patina);background:var(--patina-soft)}
+
+/* ============ CARD GRIDS ============ */
+.triad{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.duo{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.quad{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.cell{background:var(--surface);padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.55rem}
+.cell h4{color:var(--ink-faint)}
+.cell.fix h4{color:var(--patina)}
+.cell.cost h4{color:var(--valve)}
+.cell p{font-size:.94rem;line-height:1.55}
+.cell ul{margin:0;padding-left:1.05rem;font-size:.9rem;line-height:1.5;display:flex;flex-direction:column;gap:.3rem}
+
+.evidence{
+  background:var(--surface-2);border:1px solid var(--rule);padding:.7rem .95rem;
+  font-family:var(--font-data);font-size:.68rem;letter-spacing:.02em;color:var(--ink-soft);line-height:1.65;
+}
+.evidence b{color:var(--copper);font-weight:700}
+
+/* ============ METERS / KPI ============ */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--rule);border:1px solid var(--rule)}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.kpis{grid-template-columns:1fr}}
+.kpi{background:var(--surface);padding:1rem 1.1rem 1.15rem;display:flex;flex-direction:column;gap:.55rem}
+.kpi .lab{font-family:var(--font-data);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-faint)}
+.kpi .val{font-family:var(--font-display);font-weight:800;font-size:clamp(1.7rem,3vw,2.5rem);letter-spacing:-.04em;line-height:1}
+.kpi .sub{font-size:.76rem;color:var(--ink-soft);line-height:1.4}
+.meter{height:5px;background:var(--meter-track);border-radius:3px;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:3px;background:var(--copper)}
+.meter i.bad{background:var(--valve)}
+.meter i.warn{background:var(--brass)}
+.meter i.ok{background:var(--patina)}
+
+/* ============ TABLES ============ */
+.tw{overflow-x:auto;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:44rem;font-size:.86rem}
+th,td{text-align:left;padding:.62rem .8rem;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:var(--font-data);font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-faint);background:var(--surface-2);border-bottom:1px solid var(--rule-strong);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td.num,th.num{font-family:var(--font-data);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.kw{font-family:var(--font-data);font-size:.8rem;color:var(--ink);font-weight:700;white-space:nowrap}
+tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+table.compact{min-width:34rem}
+
+/* ============ STEPS ============ */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.step{background:var(--surface);padding:1rem 1.05rem;display:flex;flex-direction:column;gap:.4rem}
+.step .n{font-family:var(--font-data);font-size:.66rem;font-weight:700;letter-spacing:.1em;color:var(--copper)}
+.step h3{font-size:.98rem;letter-spacing:-.01em}
+.step p{font-size:.85rem;color:var(--ink-soft);line-height:1.5}
+.step code{font-family:var(--font-data);font-size:.76rem;background:var(--surface-2);padding:.08rem .3rem;border-radius:2px;color:var(--ink);word-break:break-word}
+
+/* ============ PHONE MOCK ============ */
+.mockrow{display:grid;grid-template-columns:minmax(0,17rem) 1fr;gap:clamp(1.25rem,3vw,2.5rem);align-items:start}
+.phone{border:1px solid var(--rule-strong);background:var(--surface);border-radius:14px;padding:.75rem;box-shadow:0 1px 0 var(--rule)}
+.phone .bar{display:flex;justify-content:space-between;font-family:var(--font-data);font-size:.56rem;color:var(--ink-faint);padding:.1rem .3rem .55rem}
+.phone .biz{border:1px solid var(--rule);border-radius:9px;padding:.75rem;display:flex;flex-direction:column;gap:.5rem;background:var(--paper)}
+.phone .name{font-family:var(--font-display);font-weight:800;font-size:1rem;letter-spacing:-.02em}
+.phone .stars{font-family:var(--font-data);font-size:.66rem;color:var(--ink-soft)}
+.phone .stars b{color:var(--brass)}
+.phone .open{font-family:var(--font-data);font-size:.62rem;color:var(--patina);font-weight:700}
+.phone .btns{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;margin-top:.15rem}
+.phone .btn{
+  font-family:var(--font-data);font-size:.55rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  text-align:center;padding:.5rem .2rem;border:1px solid var(--rule-strong);border-radius:5px;color:var(--ink-soft);
+  display:flex;align-items:center;justify-content:center;min-height:2.4rem;line-height:1.25;
+}
+.phone .btn.hero{background:var(--copper);border-color:var(--copper);color:#fff}
+:root[data-theme="dark"] .phone .btn.hero{color:#14100c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .phone .btn.hero{color:#14100c}}
+.phone .btn.txt{border-color:var(--patina);color:var(--patina)}
+.phone .cap{font-family:var(--font-data);font-size:.58rem;color:var(--ink-faint);text-align:center;padding-top:.6rem;letter-spacing:.08em}
+
+/* ============ MISC ============ */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.25rem,3vw,2.5rem);align-items:start}
+.stack{display:flex;flex-direction:column;gap:.85rem}
+.hero-fig{font-family:var(--font-display);font-weight:800;font-size:clamp(4rem,13vw,10rem);letter-spacing:-.05em;line-height:.88;color:var(--copper)}
+.rule{height:1px;background:var(--rule)}
+.bars{display:flex;flex-direction:column;gap:.85rem}
+.bar-row{display:grid;grid-template-columns:9rem 1fr;gap:.9rem;align-items:center}
+.bar-row .bl{font-family:var(--font-data);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.bar-track{background:var(--meter-track);height:2.1rem;position:relative;border-radius:0 3px 3px 0}
+.bar-fill{height:100%;background:var(--copper);border-radius:0 3px 3px 0;display:flex;align-items:center;justify-content:flex-end;padding-right:.6rem}
+.bar-fill span{font-family:var(--font-data);font-size:.76rem;font-weight:700;color:var(--paper);font-variant-numeric:tabular-nums}
+:root[data-theme="dark"] .bar-fill span{color:#14100c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bar-fill span{color:#14100c}}
+.bar-fill.f1{background:color-mix(in srgb,var(--copper) 45%,var(--meter-track))}
+.bar-fill.f2{background:color-mix(in srgb,var(--copper) 72%,var(--meter-track))}
+.bar-fill.f1 span,.bar-fill.f2 span{color:var(--ink)}
+
+.callout{border:1px solid var(--copper);background:var(--copper-soft);padding:1rem 1.15rem;display:flex;flex-direction:column;gap:.45rem}
+.callout h4{color:var(--copper)}
+.callout p{font-size:.92rem;line-height:1.55}
+.callout.green{border-color:var(--patina);background:var(--patina-soft)}
+.callout.green h4{color:var(--patina)}
+
+.checklist{display:flex;flex-direction:column;gap:.55rem;margin:0;padding:0;list-style:none}
+.checklist li{position:relative;padding-left:2.1rem;font-size:.92rem;line-height:1.5}
+.checklist li::before{
+  content:attr(data-n);position:absolute;left:0;top:.18em;
+  font-family:var(--font-data);font-size:.68rem;font-weight:700;color:var(--copper);
+}
+
+.timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.phase{background:var(--surface);padding:1rem 1.05rem;display:flex;flex-direction:column;gap:.5rem}
+.phase .when{font-family:var(--font-data);font-size:.62rem;letter-spacing:.13em;text-transform:uppercase;color:var(--copper);font-weight:700}
+.phase h3{font-size:1rem}
+.phase ul{margin:0;padding-left:1rem;font-size:.84rem;color:var(--ink-soft);line-height:1.5;display:flex;flex-direction:column;gap:.25rem}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:900px){
+  .triad,.quad,.split,.mockrow,.duo{grid-template-columns:1fr}
+  .slide{padding-left:calc(var(--pad) + 2.2rem)}
+  .bar-row{grid-template-columns:1fr;gap:.3rem}
+}
+
+@media print{
+  .rail,.themer{display:none}
+  .deck{height:auto;overflow:visible}
+  .slide{min-height:auto;page-break-after:always;padding:1.2rem}
+}
+</style>
+
+<div class="rail" aria-hidden="true">
+  <span class="mark">L</span>
+  <span class="track"><i class="fill" id="railFill"></i></span>
+  <span class="count" id="railCount">01</span>
+</div>
+<button class="themer" id="themer" type="button">Theme</button>
+
+<main class="deck" id="deck">
+
+<!-- ========== 01 COVER ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Prepared for</b> Plumbers of South Florida &nbsp;·&nbsp; 5711 NE 14th Ave, Suite 200, Fort Lauderdale FL 33334</p>
+    <h1>Getting you into<br>the top&nbsp;3.</h1>
+    <p class="lede">Your website audit, translated out of nerd-speak. What's broken, what it's costing you in calls, exactly how we fix it — and the ten searches we'll guarantee you own within six miles of your front door.</p>
+    <div class="quad">
+      <div class="cell"><h4>The goal</h4><p>Top 3 on Google Maps</p></div>
+      <div class="cell"><h4>The radius</h4><p>6 miles from your shop</p></div>
+      <div class="cell"><h4>The clock</h4><p>90 days / 180 days</p></div>
+      <div class="cell"><h4>The price</h4><p>$495 per month</p></div>
+    </div>
+    <p class="tiny">Built from the Website Analysis Report for plumbersofsfl.com — 10 audit areas, 8 crawled URLs, ~6 indexed. Use ↓ / ↑ or Space to move through the deck.</p>
+  </div>
+</section>
+
+<!-- ========== 02 HOW TO READ ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>How to read this</b></p>
+    <h2>Every problem gets the same four boxes.</h2>
+    <p class="lede">No jargon. If a section can't be explained to a ten-year-old, it doesn't belong in a plan you're paying for.</p>
+    <div class="quad">
+      <div class="cell"><h4>1 · What's broken</h4><p>Said in plain English, with a picture you can hold in your head.</p></div>
+      <div class="cell cost"><h4>2 · What it costs you</h4><p>How that specific thing turns into calls you never got.</p></div>
+      <div class="cell fix"><h4>3 · What we do</h4><p>The actual work. Not "optimize" — the real task and who does it.</p></div>
+      <div class="cell"><h4>4 · The proof</h4><p>The exact number from your audit that says we're not making it up.</p></div>
+    </div>
+    <div class="callout">
+      <h4>The one-sentence version of this whole deck</h4>
+      <p>Google can only recommend a plumber it fully understands, fully trusts, and can reach right now — and today your site is hard to understand, barely trusted, and closed half the day. We fix all three.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 03 SCOREBOARD ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Where you stand</b> Today's scoreboard, straight from the audit</p>
+    <h2>Nine gauges. Six of them are near zero.</h2>
+    <div class="kpis">
+      <div class="kpi">
+        <span class="lab">Domain Rating (Ahrefs)</span>
+        <span class="val">0.2<span style="font-size:.4em;color:var(--ink-faint)"> / 100</span></span>
+        <span class="meter"><i class="bad" style="width:2%"></i></span>
+        <span class="sub">How much Google trusts your website. This is essentially a zero.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Authority Score (Semrush)</span>
+        <span class="val">8<span style="font-size:.4em;color:var(--ink-faint)"> / 100</span></span>
+        <span class="meter"><i class="bad" style="width:8%"></i></span>
+        <span class="sub">Second opinion, same verdict: you're a stranger to Google.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Pages Google actually found</span>
+        <span class="val">6<span style="font-size:.4em;color:var(--ink-faint)"> / 14</span></span>
+        <span class="meter"><i class="bad" style="width:43%"></i></span>
+        <span class="sub">Over half your pages are invisible to the world's biggest phone book.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Pages with a headline (H1)</span>
+        <span class="val">4<span style="font-size:.4em;color:var(--ink-faint)"> / 8</span></span>
+        <span class="meter"><i class="warn" style="width:50%"></i></span>
+        <span class="sub">Half your pages don't tell Google what they're about.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Page titles long enough</span>
+        <span class="val">4<span style="font-size:.4em;color:var(--ink-faint)"> / 8</span></span>
+        <span class="meter"><i class="warn" style="width:50%"></i></span>
+        <span class="sub">Half your Google listings are too short to say what you do.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Backlinks that actually count</span>
+        <span class="val">15<span style="font-size:.4em;color:var(--ink-faint)">%</span></span>
+        <span class="meter"><i class="bad" style="width:15%"></i></span>
+        <span class="sub">467 links exist. Only 15% pass any credit. Only 7% of the sites do.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Monthly organic visits</span>
+        <span class="val">110</span>
+        <span class="meter"><i class="warn" style="width:11%"></i></span>
+        <span class="sub">Up 13% — the trend is right, the volume is tiny.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Broken links found</span>
+        <span class="val">0<span style="font-size:.4em;color:var(--ink-faint)"> / 153</span></span>
+        <span class="meter"><i class="ok" style="width:100%"></i></span>
+        <span class="sub">Clean. Nothing to fix here — a real positive.</span>
+      </div>
+      <div class="kpi">
+        <span class="lab">Canonical tags correct</span>
+        <span class="val">8<span style="font-size:.4em;color:var(--ink-faint)"> / 8</span></span>
+        <span class="meter"><i class="ok" style="width:100%"></i></span>
+        <span class="sub">Whoever built the site did this part right.</span>
+      </div>
+    </div>
+    <p class="tiny">Source: Website Analysis Report — plumbersofsfl.com. Ahrefs, Semrush, Screaming Frog, Google Rich Results Test, Google site: search.</p>
+  </div>
+</section>
+
+<!-- ========== 04 WHAT TOP 3 IS WORTH ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The prize</b> Why we're aiming at three spots and not one</p>
+    <h2>44% of every local click goes to three boxes on a map.</h2>
+    <p class="kid">There's a map at the top of Google with exactly three plumbers on it. Almost half of everybody who searches picks one of those three. Everybody else has to click "more places" — and almost nobody does.</p>
+    <div class="triad">
+      <div class="cell"><h4>Spot #1</h4><span class="val" style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;letter-spacing:-.04em">17.6%</span><p class="small">of clicks</p></div>
+      <div class="cell"><h4>Spot #2</h4><span class="val" style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;letter-spacing:-.04em">15.4%</span><p class="small">of clicks</p></div>
+      <div class="cell"><h4>Spot #3</h4><span class="val" style="font-family:var(--font-display);font-weight:800;font-size:2.2rem;letter-spacing:-.04em">15.1%</span><p class="small">of clicks</p></div>
+    </div>
+    <div class="callout green">
+      <h4>Here's the part most people miss</h4>
+      <p>The gap between spot #1 and spot #3 is only 2.5 percentage points. Getting <em>into</em> the three is worth almost everything. Fighting for #1 over #3 is worth almost nothing. That's why the guarantee is written as <strong>top 3</strong> — it's where the money is and it's the honest thing to promise.</p>
+    </div>
+    <p class="tiny">Local pack CTR by position, First Page Sage 2026 study. ~44% of local search clicks land in the 3-pack.</p>
+  </div>
+</section>
+
+<!-- ========== 05 HOW GOOGLE PICKS ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The rules of the game</b></p>
+    <h2>How Google picks the three.</h2>
+    <p class="kid">Imagine Google is a kid at a new school picking three people for his kickball team. He picks the ones he knows the name of, the ones close enough to actually show up, and the ones everyone else says are good.</p>
+    <div class="split">
+      <div class="stack">
+        <div class="bars">
+          <div class="bar-row"><span class="bl">Your Google listing</span><span class="bar-track"><span class="bar-fill" style="width:100%"><span>32%</span></span></span></div>
+          <div class="bar-row"><span class="bl">Your website pages</span><span class="bar-track"><span class="bar-fill f2" style="width:59%"><span>19%</span></span></span></div>
+          <div class="bar-row"><span class="bl">Your reviews</span><span class="bar-track"><span class="bar-fill f2" style="width:50%"><span>16%</span></span></span></div>
+          <div class="bar-row"><span class="bl">Other sites linking</span><span class="bar-track"><span class="bar-fill f2" style="width:47%"><span>15%</span></span></span></div>
+          <div class="bar-row"><span class="bl">Customer behavior</span><span class="bar-track"><span class="bar-fill f1" style="width:25%"><span>8%</span></span></span></div>
+          <div class="bar-row"><span class="bl">Directory listings</span><span class="bar-track"><span class="bar-fill f1" style="width:22%"><span>7%</span></span></span></div>
+        </div>
+        <p class="tiny">Weighting of local-pack ranking signal groups, 2026 industry consensus. Eight of the top ten individual factors come straight off the Google Business Profile.</p>
+      </div>
+      <div class="stack">
+        <div class="callout">
+          <h4>Read that chart again</h4>
+          <p><strong>Your Google listing is a third of the score</strong> — and it's the cheapest, fastest thing on the board to fix. That's why the booking button, the text option, and 24/7 hours aren't "extras" in this plan. They <em>are</em> the plan.</p>
+        </div>
+        <div class="evidence">
+          <b>PROXIMITY REALITY CHECK.</b> 70% of top local-pack spots go to businesses within 1–3 miles of the person searching. Distance is the one lever nobody can pull. It's why the guarantee is written as "top 3 across most of the map" rather than "top 3 from every driveway in Broward" — see the guarantee slide.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 06 SITEMAPS ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 04</b> XML Sitemaps <span class="chip crit">Critical</span></p>
+    <h2>You handed Google two different maps to the same house.</h2>
+    <p class="kid">You mailed the delivery driver two maps of your neighborhood, and they don't match. So he stops trusting both of them and just guesses.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>Two plugins are each publishing their own sitemap — Jetpack makes <code style="font-family:var(--font-data);font-size:.8em">/sitemap.xml</code>, Rank Math makes <code style="font-family:var(--font-data);font-size:.8em">/sitemap_index.xml</code> — and both are announced to Google. There's a third for news you don't publish.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>Google splits its attention across three conflicting lists, crawls the wrong URLs, and gives up before finding your money pages. This is the #1 reason only 6 of your pages are indexed.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>Turn Jetpack's sitemap off entirely</li><li>Keep Rank Math as the single source of truth</li><li>Delete the news sitemap (you're not a newsroom)</li><li>Resubmit one clean sitemap in Search Console and Bing</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> robots.txt declares three sitemaps — /sitemap.xml, /news-sitemap.xml, /sitemap_index.xml. The news sitemap contains only your homepage. Two competing sitemap systems are live at the same time.</div>
+  </div>
+</section>
+
+<!-- ========== 07 GHOST PAGES ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 04</b> Sitemap contents <span class="chip crit">Critical</span></p>
+    <h2>Your map has rooms on it that were never built.</h2>
+    <p class="kid">Your site is handing Google a list of pages that includes stuff like "The Art of Connection" and "Collaboration Magic." You're a plumber. Google reads that and thinks: I don't know what this business actually is.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>Leftover demo pages from the website template are still being submitted to Google: <em>The Art of Connection</em>, <em>Beyond the Obstacle</em>, <em>Growth Unlocked</em>, <em>Collaboration Magic</em>. Plus a duplicate <code style="font-family:var(--font-data);font-size:.8em">/about-2/</code> page and 137 image entries.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>Google spends its limited crawl budget on motivational-poster nonsense instead of your drain-cleaning page. Worse, it muddies what Google thinks you sell — which directly weakens every plumbing keyword you want.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>Delete or de-index every demo post</li><li>Merge <code style="font-family:var(--font-data);font-size:.8em">/about-2/</code> into <code style="font-family:var(--font-data);font-size:.8em">/about/</code> with a redirect</li><li>Strip the image sitemap down to real job photos</li><li>Leave only live, canonical, 200-status pages in the list</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> The Jetpack sitemap contains 14 page URLs and an image sitemap with 137 entries, "including apparently irrelevant or leftover template posts."</div>
+  </div>
+</section>
+
+<!-- ========== 08 INDEXING ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 10</b> Google Indexing <span class="chip crit">Critical</span></p>
+    <h2>Google only knows six of your rooms exist.</h2>
+    <p class="kid">You built a house with a bunch of rooms. Google walked through, found six doors, and wrote down six. Everything else might as well not be there.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>A <code style="font-family:var(--font-data);font-size:.8em">site:</code> search on Google returns roughly 6 results, while your sitemaps advertise 14+ pages, posts, appointment URLs and categories. That's the indexing gap.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>A page that isn't indexed can't rank for anything, ever. It's not "ranking low" — it's not in the contest. Every service page not indexed is a keyword you've already forfeited.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>Pull the Page Indexing report in Search Console and get the real reason per URL</li><li>Fix the causes above (one sitemap, no ghost pages, redirects)</li><li>Add internal links from the homepage to every service page</li><li>Manually request indexing on priority pages after the fixes land</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> "Approximately 6 URLs appear indexed in a Google site: search" against multiple pages, posts, appointment URLs, categories and image entries submitted.</div>
+  </div>
+</section>
+
+<!-- ========== 09 H1 ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 02</b> Heading Tags <span class="chip high">High priority</span></p>
+    <h2>Half your rooms have no name on the door.</h2>
+    <p class="kid">Every page needs one big sign at the top saying what the page is. Four of your eight pages have no sign at all. Google walks in, looks around, shrugs, and leaves.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>Four pages have no H1 headline: <strong>Contact, Book a Plumber, Services,</strong> and <strong>About</strong>. Only the homepage has a proper one. One page also has headings out of order.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>Your <em>Book a Plumber</em> page — the page that makes you money — has no headline telling Google it's a booking page for a plumber. That's a free win sitting on the table.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>One unique H1 per page, 20–70 characters</li><li>Each one written around a service + a place: e.g. "Book a Plumber in Oakland Park &amp; Wilton Manors — Same Day"</li><li>Fix heading order so H1 → H2 → H3 runs clean</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> 4 of 8 pages missing H1 tags (50%); 1 page with non-sequential heading structure (12.5%). No duplicate or over-long H1 issues.</div>
+  </div>
+</section>
+
+<!-- ========== 10 TITLES/META ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 01</b> Metadata <span class="chip high">High priority</span></p>
+    <h2>Your storefront sign just says "Home".</h2>
+    <p class="kid">When you show up on Google, people see a headline and two lines of description. Right now some of yours say things like "Home / Contact." Nobody drives to a store whose sign says "Home."</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>Half your page titles are under 30 characters — too short to fit a service and a city. Half your descriptions are under 70 characters, and several are just breadcrumb junk: "Home / Contact", "Home / About", "Home / Services".</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>This is the one thing on this list a human being actually reads. A weak sign means people scroll past you to the plumber whose sign says "24/7 Emergency Plumber in Oakland Park — Answer in 60 Seconds."</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>Rewrite all 8 titles to 55–60 characters with service + city</li><li>Rewrite all 8 descriptions to 155–160 characters with a benefit and a call to action</li><li>Every one unique, every one written to get the click</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> 4 of 8 titles below 30 characters (50%); 2 below 200 pixels. 4 of 8 meta descriptions below 70 characters and below 400 pixels (50%). Good news: nothing missing or duplicated.</div>
+  </div>
+</section>
+
+<!-- ========== 11 SCHEMA ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 06</b> Schema Markup <span class="chip high">High priority</span></p>
+    <h2>Your ID badge says "magazine writer."</h2>
+    <p class="kid">Every website wears a name tag that only computers can read. Yours says "Article" — like you're a blog. It should say "Plumber." Google's been reading the wrong badge this whole time.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>Google's Rich Results Test found exactly one piece of structured data on your homepage: <strong>Article</strong> schema. Valid, but wrong — Article is for blog posts, not for a local plumbing company.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>You're invisible to every plumbing-specific rich result: service listings, star ratings, service area, hours, emergency availability. And you're quietly telling Google's local algorithm you're a publisher, not a contractor.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>Replace Article with <strong>Plumber</strong> / <strong>LocalBusiness</strong> schema</li><li>Add Organization, WebSite, Service and BreadcrumbList markup</li><li>Bake in your 24/7 hours, service area radius, license, and phone</li><li>Re-validate in Google's tester after it goes live</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> "1 valid Article schema item… Article schema is not the most relevant primary markup for the homepage of a local plumbing business and may misrepresent the page's purpose."</div>
+  </div>
+</section>
+
+<!-- ========== 12 ROBOTS ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 03</b> robots.txt <span class="chip high">High priority</span></p>
+    <h2>The note on your front door gives three addresses.</h2>
+    <p class="kid">There's a little note taped to your website that tells Google's robot where to go. The note lists three different places. The robot has to pick one and hope.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>The file itself is healthy — it loads, returns a 200, and correctly blocks the WordPress admin area while keeping the front end crawlable. The problem is it points at three sitemaps at once.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>Duplicate and conflicting instructions make crawling inefficient and sitemap reporting in Search Console useless — you can't tell what's working because three files are fighting.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>Strip it to a single sitemap declaration</li><li>Keep the admin block and the admin-ajax allowance exactly as they are</li><li>Test it in Search Console and set a monthly re-check</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> robots.txt accessible, 200 status, admin correctly blocked, admin-ajax.php correctly allowed — but three sitemap declarations present.</div>
+  </div>
+</section>
+
+<!-- ========== 13 BACKLINKS ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 08</b> Backlink Profile <span class="chip high">High priority</span></p>
+    <h2>467 people vouched for you. Only 15% signed it.</h2>
+    <p class="kid">A link from another website is like a kid at school saying "he's good." You've got a lot of kids saying it — but most of them whispered it with their hand over their mouth, so the teacher never heard.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>467 backlinks from 393 websites, but only <strong>15% of links</strong> and <strong>7% of sites</strong> pass any credit. Domain Rating: 0.2 out of 100. That combination usually means low-quality, irrelevant or auto-generated sources.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>Links are 15% of the local ranking score and they're the main reason the head-term keywords ("plumber Fort Lauderdale") stay out of reach. It's also why Google won't spend crawl budget indexing your deeper pages.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>Audit the existing profile and disavow the junk</li><li>Build consistent local citations (chamber, BBB, trade directories, supplier pages)</li><li>2–4 genuine local links per quarter — sponsorships, partner contractors, local press</li><li>Recover any valuable links that were lost</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> ~467 backlinks / 393 referring domains; 15% dofollow links, 7% dofollow domains; Ahrefs Domain Rating 0.2. Semrush shows 157 backlinks / 66 referring domains and Authority Score 8.</div>
+  </div>
+</section>
+
+<!-- ========== 14 URL CASE ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Audit section 05</b> URL variants <span class="chip med">Medium priority</span></p>
+    <h2>Two addresses on the same mailbox.</h2>
+    <p class="kid">Your Contact page has two addresses — one with a capital C and one without. It's the same room, but Google walks the block twice to figure that out.</p>
+    <div class="triad">
+      <div class="cell"><h4>What's broken</h4><p>Uppercase and lowercase versions of <code style="font-family:var(--font-data);font-size:.8em">/Contact/</code>, <code style="font-family:var(--font-data);font-size:.8em">/About/</code> and <code style="font-family:var(--font-data);font-size:.8em">/Services/</code> both exist. Canonical tags already point at the right one, so nothing is broken — it's just wasteful.</p></div>
+      <div class="cell cost"><h4>What it costs you</h4><p>Crawl budget burned on duplicates instead of your service pages. On a site where Google has already only indexed 6 pages, wasted crawls are expensive.</p></div>
+      <div class="cell fix"><h4>What we do</h4><ul><li>301 redirect the uppercase versions to lowercase</li><li>Update every internal link to lowercase</li><li>Keep only lowercase URLs in the sitemap</li></ul></div>
+    </div>
+    <div class="evidence"><b>PROOF FROM YOUR AUDIT:</b> 5 of 8 URLs self-canonical (62.5%); 3 uppercase variants canonicalized to lowercase (37.5%). "Canonical tags do not prevent unnecessary crawling of duplicate case-sensitive URLs."</div>
+  </div>
+</section>
+
+<!-- ========== 15 WHAT'S WORKING ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Credit where it's due</b> <span class="chip good">Already working</span></p>
+    <h2>Three things you don't have to pay us to fix.</h2>
+    <p class="lede">An honest audit says what's right, not just what's wrong. Your site has a solid foundation — that's exactly why the rest of this is worth doing.</p>
+    <div class="triad">
+      <div class="cell fix"><h4>Zero broken links</h4><p>153 links scanned. All 153 returned clean. No dead ends for customers or crawlers. We'll re-check monthly and keep it that way.</p></div>
+      <div class="cell fix"><h4>Canonical tags all correct</h4><p>All 8 URLs have proper canonical tags — nothing missing, conflicting, or misplaced. Whoever built this got the hard part right.</p></div>
+      <div class="cell fix"><h4>You're already growing</h4><p>Organic visits up 13%. Ranked keywords up 7.1% to 60. Three ChatGPT mentions. Small numbers — but the arrow points the right way with zero effort behind it.</p></div>
+    </div>
+    <div class="callout green">
+      <h4>Why this matters to the price</h4>
+      <p>Because the foundation is clean, the $495 goes into growth work — listing, reviews, booking, content, links — instead of into an expensive rebuild. If your site were broken, this would be a $3,000 conversation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 16 BOOK ONLINE — THE VISION ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The ask</b> One-click booking on mobile Google</p>
+    <h2>What your listing looks like when we're done.</h2>
+    <div class="mockrow">
+      <div class="phone">
+        <div class="bar"><span>9:41</span><span>Google</span><span>▮▮▮</span></div>
+        <div class="biz">
+          <span class="name">Plumbers of South Florida</span>
+          <span class="stars"><b>★★★★★</b> 4.9 · 112 reviews · Plumber</span>
+          <span class="open">Open 24 hours</span>
+          <div class="btns">
+            <span class="btn">Call</span>
+            <span class="btn txt">Text</span>
+            <span class="btn hero">Book online</span>
+          </div>
+        </div>
+        <p class="cap">Google Search / Maps — mobile</p>
+      </div>
+      <div class="stack">
+        <p class="kid">Right now, someone with water on the floor at 11pm has exactly one way to reach you: call, and hope. We're going to give them three buttons, and make sure all three are answered.</p>
+        <div class="duo">
+          <div class="cell"><h4>Why booking beats calling</h4><p>A booking button converts people who won't call — renters, people at work, people who hate phones, and anyone who's already been put on hold by two other plumbers tonight.</p></div>
+          <div class="cell"><h4>Why it also ranks you</h4><p>Booking and messaging actions are engagement signals on your Google listing, and your listing is 32% of the local ranking score. This is a conversion feature that doubles as a ranking feature.</p></div>
+        </div>
+        <div class="evidence"><b>NOTE ON THE MOCKUP.</b> The review count and rating shown are the target we're building toward, not today's numbers. The three buttons are real Google features and are covered step-by-step on the next three slides.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 17 BOOKING ROUTE A ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Booking · Route A</b> The appointment link — works for everyone, live in 48 hours</p>
+    <h2>Getting the "Book online" button turned on.</h2>
+    <p class="lede">This is the version that works regardless of category or region. We do all of it — you just approve the access request.</p>
+    <div class="steps">
+      <div class="step"><span class="n">STEP 1</span><h3>Get manager access</h3><p>You add us as a <strong>Manager</strong> on your Google Business Profile. You stay the Owner — you can remove us in one click, any time.</p></div>
+      <div class="step"><span class="n">STEP 2</span><h3>Fix the booking page first</h3><p>Your <code>/book-a-plumber/</code> page currently has no H1 and thin metadata. We rebuild it: headline, service list, service area, trust badges, and a form that works on a phone in under 20 seconds.</p></div>
+      <div class="step"><span class="n">STEP 3</span><h3>Open the profile editor</h3><p>Signed in as manager, search your own business name on Google → <strong>Edit profile</strong> → <strong>Contact</strong> tab.</p></div>
+      <div class="step"><span class="n">STEP 4</span><h3>Paste the appointment link</h3><p>Under <strong>Website → Appointment links</strong>, we add <code>https://plumbersofsfl.com/book-a-plumber/</code> with UTM tracking so we can prove how many jobs it produced.</p></div>
+      <div class="step"><span class="n">STEP 5</span><h3>Wait for Google's review</h3><p>Google validates the link. Usually instant, sometimes 24–48 hours. It then appears as <strong>"Book online"</strong> or <strong>"Appointments"</strong> on Search and Maps.</p></div>
+      <div class="step"><span class="n">STEP 6</span><h3>Mirror it on the website</h3><p>Sticky bar on the bottom of every mobile page: <strong>[Call] [Text] [Book Now]</strong>. Same three actions, always in thumb reach, never scrolls away.</p></div>
+      <div class="step"><span class="n">STEP 7</span><h3>Test it from a cold phone</h3><p>We book a fake job from a phone that's never touched your site, confirm it lands in your calendar, then delete it. Then you do the same, so you've seen it work.</p></div>
+      <div class="step"><span class="n">STEP 8</span><h3>Report it monthly</h3><p>Bookings from Google get their own line in your monthly report. If the button isn't producing, we change the page — not the excuse.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 18 BOOKING ROUTE B ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Booking · Route B</b> Reserve with Google — the native button with real time slots</p>
+    <h2>The upgrade: booking without ever leaving Google.</h2>
+    <p class="lede">Route A sends people to your website. Route B lets them pick a real time slot <em>inside Google</em>. It converts better. It needs an approved booking provider, so it's a two-to-four week project, not a two-day one.</p>
+    <div class="steps">
+      <div class="step"><span class="n">STEP 1</span><h3>Confirm your scheduling software</h3><p>Reserve with Google only works through a Google-approved partner. For plumbing, <strong>Housecall Pro</strong> is the practical path. If you're on Jobber, ServiceTitan or nothing at all, we confirm what's supported before we promise anything.</p></div>
+      <div class="step"><span class="n">STEP 2</span><h3>Verify the Google profile</h3><p>Your Business Profile must be verified and carry a real address — this is the requirement that trips most contractors up.</p></div>
+      <div class="step"><span class="n">STEP 3</span><h3>Load real availability</h3><p>Your actual arrival windows go into the calendar — including overnight slots, since we're going 24/7. Google can only sell time you've actually made available.</p></div>
+      <div class="step"><span class="n">STEP 4</span><h3>Flip the switch</h3><p>In Housecall Pro: <strong>Settings → Online Booking → Google</strong>, toggle on <strong>Book Online</strong>, then enable Reserve with Google in the Job Inbox section.</p></div>
+      <div class="step"><span class="n">STEP 5</span><h3>Force the match if it stalls</h3><p>No address on the profile means no automatic match. Fix: contact provider support with your Business Profile URL and they'll pair the accounts manually. Button typically appears within 24 hours.</p></div>
+      <div class="step"><span class="n">STEP 6</span><h3>Handle a category rejection</h3><p>Google keeps an unpublished list of unsupported categories that shifts by region. If plumbing gets rejected on your profile, we don't fight it — Route A stays live permanently and loses you nothing.</p></div>
+      <div class="step"><span class="n">STEP 7</span><h3>Route bookings to a human</h3><p>Every Google booking fires an instant SMS to dispatch and to the AI agent, which calls the customer back within 5 minutes to confirm. A booked slot nobody confirms is a cancelled job.</p></div>
+      <div class="step"><span class="n">STEP 8</span><h3>Watch the no-show rate</h3><p>Online bookings no-show more than phone bookings. We add an automatic confirm-and-remind sequence at 24 hours and 2 hours before arrival.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 19 TEXT BUBBLE — STRAIGHT TALK ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The text bubble</b> Straight talk before the plan</p>
+    <h2>Google's own chat bubble is gone. Here's what's real.</h2>
+    <p class="kid">You remember seeing a little message bubble on Google. It's not there anymore — Google turned it off for everyone in 2024. But there are still three ways to put a "text us" button in front of the same customer, and we're going to use all three.</p>
+    <div class="quad">
+      <div class="cell cost"><h4>Dead — don't pay anyone for it</h4><p>Google Business Profile <strong>Chat</strong> and <strong>Call History</strong> were shut off on <strong>31 July 2024</strong>. New chats stopped 15 July 2024. Any agency still selling you "Google chat setup" is selling a ghost.</p></div>
+      <div class="cell"><h4>Rolling out — we'll claim it the day it lands</h4><p>Google is rolling out a new <strong>Chat</strong> section where you add an <strong>SMS number</strong> and/or <strong>WhatsApp number</strong>, producing a real text link on Search and Maps. Availability is uneven per profile. We check yours monthly and switch it on the moment it appears.</p></div>
+      <div class="cell fix"><h4>Live today — the website text button</h4><p>A one-tap <code style="font-family:var(--font-data);font-size:.8em">sms:</code> button on your mobile site opens the customer's own texting app with the message pre-written. No app, no signup, works on every phone. This is the workhorse.</p></div>
+      <div class="cell fix"><h4>Live today — missed-call text-back</h4><p>Any call you don't answer triggers an automatic text within 10 seconds: <em>"Sorry we missed you — what's the issue and what's your address?"</em> This alone recovers jobs you're currently losing to voicemail.</p></div>
+    </div>
+    <div class="callout">
+      <h4>Why we're telling you the unflattering version</h4>
+      <p>Because the guarantee later in this deck only means something if you believe what we say. We'd rather lose the "Google chat bubble" line item than sell you something Google deleted two years ago.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 20 TEXT STACK STEPS ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The text stack</b> Step by step</p>
+    <h2>Building the "text us" path.</h2>
+    <div class="steps">
+      <div class="step"><span class="n">STEP 1</span><h3>Get a textable number</h3><p>Your main line may not receive SMS. We provision a local 954 tracking number that both rings your phone <em>and</em> receives texts, or we SMS-enable your existing line. One number on every listing — Google hates mismatches.</p></div>
+      <div class="step"><span class="n">STEP 2</span><h3>Add the sticky mobile bar</h3><p>Fixed bar at the bottom of every page on mobile: <strong>[Call] [Text] [Book]</strong>. The Text button is a plain <code>sms:</code> link with a pre-filled message so the customer only has to type their address.</p></div>
+      <div class="step"><span class="n">STEP 3</span><h3>Turn on missed-call text-back</h3><p>Every unanswered call — busy, after hours, on a roof — gets an automatic text in under 10 seconds. Replies land in one shared inbox the AI agent watches.</p></div>
+      <div class="step"><span class="n">STEP 4</span><h3>Put the SMS number in the profile</h3><p>We check the Business Profile's <strong>Chat</strong> section every month. The day the SMS/WhatsApp field is available on your profile, we add the number and verify it. No extra charge — it's in the retainer.</p></div>
+      <div class="step"><span class="n">STEP 5</span><h3>Add texting to the review flow</h3><p>Review requests go out by text, not email. Text requests get answered far more often — and reviews are 16% of your ranking score.</p></div>
+      <div class="step"><span class="n">STEP 6</span><h3>Give every text a 60-second answer</h3><p>The AI agent answers instantly, 24/7, gathers address + issue + urgency, and either books the slot or wakes the on-call tech. A text nobody answers is worse than no text button.</p></div>
+    </div>
+    <div class="evidence"><b>ONE RULE:</b> the same phone number appears on your website, Google profile, Yelp, Apple Maps, Facebook and every directory. Inconsistent numbers are a top cause of local ranking suppression, and citations are 7% of the score.</div>
+  </div>
+</section>
+
+<!-- ========== 21 24/7 WHY ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>24/7 hours + AI agent</b> Why this is a ranking play, not a staffing decision</p>
+    <h2>"Open now" is a ranking factor. You're closed most of the day.</h2>
+    <p class="kid">When someone searches at 2am, Google tries hard to only show places that are actually open. If your hours say closed, you're not in the running — no matter how good your website is.</p>
+    <div class="split">
+      <div class="stack">
+        <div class="callout">
+          <h4>The three things 24/7 hours unlock</h4>
+          <p><strong>1.</strong> You become eligible to appear for every overnight and weekend search — historically the least competitive, highest-urgency, highest-ticket window of the week.</p>
+          <p><strong>2.</strong> Three of the ten keywords we're guaranteeing contain the words "emergency" or "24 hour." Those are unwinnable with 9-to-5 hours listed.</p>
+          <p><strong>3.</strong> Emergency calls average roughly <strong>$450</strong> versus about <strong>$275</strong> for a routine call. The overnight window isn't just extra volume — it's better volume.</p>
+        </div>
+      </div>
+      <div class="stack">
+        <div class="callout" style="border-color:var(--valve);background:var(--valve-soft)">
+          <h4 style="color:var(--valve)">The rule you cannot break</h4>
+          <p>Google's guidance is explicit: <strong>do not list 24/7 hours if nobody is reachable 24/7.</strong> Google cross-references your other listings and directories for consistency, and customers report businesses that don't answer.</p>
+          <p>So we don't flip the hours first and hope. <strong>We build the AI agent first, prove it answers, and only then change the hours.</strong> That order is non-negotiable and it's written into the contingencies.</p>
+        </div>
+        <div class="evidence"><b>SEQUENCING:</b> AI agent live and tested in week 2 → hours flipped to 24/7 in week 3 → emergency keywords enter the guarantee basket in week 4. Flipping hours early is the single fastest way to get a profile suspended.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 22 AI AGENT STEPS ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The AI agent</b> Step by step, week by week</p>
+    <h2>How we make you reachable at 3am.</h2>
+    <div class="steps">
+      <div class="step"><span class="n">WEEK 1 · STEP 1</span><h3>Record how you actually talk</h3><p>We sit on a 45-minute call and capture your real intake: what you ask, your dispatch fee, your price bands, what you will and won't quote on the phone. The agent copies you, not a script from the internet.</p></div>
+      <div class="step"><span class="n">WEEK 1 · STEP 2</span><h3>Draw the service map</h3><p>The 6-mile radius goes into the agent. Inside it: book. Outside it: take the lead, quote a travel fee, or decline politely. No more driving 40 minutes for a $180 job.</p></div>
+      <div class="step"><span class="n">WEEK 1 · STEP 3</span><h3>Write the guardrails</h3><p>Hard limits on what it may promise — never a firm price on an unseen job, never a warranty claim, never a licensing statement. Anything outside the rails goes to a human.</p></div>
+      <div class="step"><span class="n">WEEK 2 · STEP 4</span><h3>Connect the calendar</h3><p>The agent reads live availability and books real slots in your scheduling software. Not "we'll call you back" — an actual arrival window, confirmed by text before hanging up.</p></div>
+      <div class="step"><span class="n">WEEK 2 · STEP 5</span><h3>Build the emergency escalation</h3><p>Burst pipe, sewage, no water, gas smell → the agent warm-transfers to the on-call tech. No answer in 60 seconds → SMS plus a second call to the backup. Third failure → your cell.</p></div>
+      <div class="step"><span class="n">WEEK 2 · STEP 6</span><h3>Test it 20 times before it's live</h3><p>Twenty scripted calls: angry customer, bad connection, Spanish speaker, out-of-area caller, price shopper, wrong number. We break it on purpose while it costs nothing.</p></div>
+      <div class="step"><span class="n">WEEK 3 · STEP 7</span><h3>Flip the hours to 24/7</h3><p>Only now. Business Profile → Hours → <strong>Open 24 hours</strong>, all seven days. Same change on the website, Yelp, Apple Business Connect, Facebook, BBB and every directory the same week.</p></div>
+      <div class="step"><span class="n">WEEK 3 · STEP 8</span><h3>Tell Google in three more places</h3><p>Add "24/7 Emergency Service" to the Services list on your profile, publish a dedicated <code>/24-hour-emergency-plumber/</code> page with a proper H1, and put <code>openingHoursSpecification</code> 00:00–23:59 into the new schema.</p></div>
+      <div class="step"><span class="n">WEEK 4 · STEP 9</span><h3>Mystery-shop it weekly</h3><p>Every week we call your number at a random overnight hour from a number you've never seen. The result goes in your monthly report — answered, how fast, and whether it booked.</p></div>
+      <div class="step"><span class="n">ONGOING · STEP 10</span><h3>Retrain every month</h3><p>We listen to real calls, find where it fumbled, and fix the prompt. Booking rate on AI-answered calls is a standing line item in your report.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 23 GUARANTEE KEYWORDS ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The guarantee list</b> Ten keywords · 99% confidence · 90–180 days</p>
+    <h2>The ten searches we'll put in writing.</h2>
+    <p class="lede">These aren't the flashiest keywords — they're the ones the math says we win. Every one is close to your address, high-intent, and thin on serious competition. That's what makes a 99% promise honest instead of reckless.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th class="num">#</th><th>Keyword</th><th>Why it's a safe promise</th><th class="num">Top 3 by</th></tr></thead>
+        <tbody>
+          <tr><td class="num">01</td><td class="kw">plumber oakland park fl</td><td>Your office sits in Oakland Park — 33334 is 73% Oakland Park. Proximity is the strongest signal you can't buy, and you already have it.</td><td class="num">Day 60</td></tr>
+          <tr><td class="num">02</td><td class="kw">emergency plumber oakland park fl</td><td>Unlocked the moment hours go 24/7. Very few local profiles are marked open overnight, so the field thins out dramatically.</td><td class="num">Day 90</td></tr>
+          <tr><td class="num">03</td><td class="kw">24 hour plumber oakland park</td><td>Same mechanism. Google filters hard on "open now" for this phrasing — the AI agent is what makes it winnable.</td><td class="num">Day 90</td></tr>
+          <tr><td class="num">04</td><td class="kw">drain cleaning oakland park fl</td><td>Service + neighborhood long-tail. Low competition, and it's a job you already do every week.</td><td class="num">Day 90</td></tr>
+          <tr><td class="num">05</td><td class="kw">water heater repair oakland park fl</td><td>Dedicated service page plus Service schema clears this one. Higher ticket than a drain call.</td><td class="num">Day 120</td></tr>
+          <tr><td class="num">06</td><td class="kw">plumber wilton manors fl</td><td>About 1.5 miles away and inside the same ZIP. Small municipality, few plumber profiles physically located there.</td><td class="num">Day 90</td></tr>
+          <tr><td class="num">07</td><td class="kw">emergency plumber wilton manors</td><td>Proximity plus 24/7 hours plus a dedicated page. Three signals stacked on a thin field.</td><td class="num">Day 120</td></tr>
+          <tr><td class="num">08</td><td class="kw">clogged drain repair wilton manors fl</td><td>Four-word long-tail with clear intent. Almost nobody has built a page for it.</td><td class="num">Day 120</td></tr>
+          <tr><td class="num">09</td><td class="kw">plumber lauderdale-by-the-sea fl</td><td>Roughly 3–4 miles out, and one of the least contested municipalities in the radius — very few plumbers hold an address there.</td><td class="num">Day 150</td></tr>
+          <tr><td class="num">10</td><td class="kw">backflow testing fort lauderdale fl</td><td>You're already a listed backflow tester. Licensed niche, low volume, almost no competition, and it wins city-wide rather than neighborhood-wide.</td><td class="num">Day 150</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tiny">Confidence is based on: your physical address inside the target municipalities, the low competitive density of these long-tail phrases, the fact that the fixes in this deck are all still undone (large headroom), and a sustained 8–12 reviews per month. Search-volume estimates should be re-validated in Semrush before signature.</p>
+  </div>
+</section>
+
+<!-- ========== 24 TIER 2 ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The rest of the board</b> What we chase but will not guarantee</p>
+    <h2>The keywords we're going after without a promise attached.</h2>
+    <p class="lede">These are bigger, richer, and slower. We work them from day one — we just won't put a 99% guarantee on something that turns on how much a competitor spends next quarter.</p>
+    <div class="tw">
+      <table class="compact">
+        <thead><tr><th>Tier 2 — likely inside 6–12 months</th><th>Why it's not in the guarantee</th></tr></thead>
+        <tbody>
+          <tr><td class="kw">emergency plumber fort lauderdale</td><td>City-wide head term. Roto-Rooter and a dozen funded competitors bid on it daily.</td></tr>
+          <tr><td class="kw">water heater replacement fort lauderdale</td><td>High ticket, high competition. Needs authority we don't have yet at DR 0.2.</td></tr>
+          <tr><td class="kw">plumber pompano beach fl</td><td>Just inside 6 miles but on the far edge — proximity works against us up there.</td></tr>
+          <tr><td class="kw">sewer line repair fort lauderdale</td><td>Big-ticket, specialist competitors with 300+ reviews each.</td></tr>
+          <tr><td class="kw">repipe / slab leak repair fort lauderdale</td><td>Needs case studies and photo evidence we'll build over the first two quarters.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tw">
+      <table class="compact">
+        <thead><tr><th>Tier 3 — never guaranteeable by anyone</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td class="kw">plumber near me</td><td>"Near me" results change with every step the searcher takes. Nobody controls it; anyone who promises it is guessing.</td></tr>
+          <tr><td class="kw">plumber fort lauderdale</td><td>The single most contested term in the market. We'll climb it — we won't sell it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="evidence"><b>WHY THIS SLIDE EXISTS.</b> Any agency that guarantees you "plumber Fort Lauderdale" in 90 days is either going to fail or going to redefine the word "guarantee" in the fine print. We'd rather show you the line.</div>
+  </div>
+</section>
+
+<!-- ========== 25 THE GUARANTEE ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The guarantee</b> Written so it can actually be measured</p>
+    <h2>Top 3, six-mile radius, in writing.</h2>
+    <p class="kid">A promise you can't measure isn't a promise. So we picked one map, one ruler, and one scoreboard — and we show you the same picture every single month.</p>
+    <div class="duo">
+      <div class="cell">
+        <h4>How we measure</h4>
+        <ul>
+          <li><strong>Tool:</strong> geo-grid rank tracker (Local Falcon or BrightLocal), reported monthly</li><li><strong>Grid:</strong> 7×7 = 49 measurement points across a 12-mile square — a full 6-mile radius</li><li><strong>Center:</strong> 5711 NE 14th Ave, Suite 200, Fort Lauderdale FL 33334</li><li><strong>Consistency:</strong> same grid, same tool, same time window, every month, shared with you in full — including the months it looks bad</li>
+        </ul>
+      </div>
+      <div class="cell fix">
+        <h4>What we're promising</h4>
+        <ul>
+          <li><strong>By day 90:</strong> all 10 keywords in the Google map-pack top 3 at <strong>50%+ of grid points inside the inner 3-mile ring</strong></li><li><strong>By day 180:</strong> all 10 keywords top 3 at <strong>60%+ of all 49 grid points across the full 6 miles</strong>, and <strong>80%+ inside the 3-mile ring</strong></li><li><strong>If we miss:</strong> we work for free — no invoices — until we hit it, up to 6 extra months</li><li><strong>Still short after that:</strong> cancel with no fee, and we refund your last 2 payments</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout">
+      <h4>Why it says "60% of grid points" and not "everywhere"</h4>
+      <p>Because of physics, not effort. 70% of top local-pack spots go to businesses within 1–3 miles of the person searching. Standing in a driveway six miles north, next door to another plumber's shop, that plumber will often outrank you — and no amount of money changes that. Anyone promising top 3 from <em>every</em> point in a six-mile circle is promising something Google's algorithm structurally will not do. Measuring across the whole grid is how we prove real coverage instead of cherry-picking one lucky screenshot.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 26 CLIENT SIDE ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Your side of the deal</b> The contingencies — this is the part that decides it</p>
+    <h2>Ten things we need from you.</h2>
+    <p class="lede">Reviews and answered calls are roughly a quarter of the ranking score and we cannot generate either one. If these slip, the guarantee clock pauses — it doesn't disappear, but it stops.</p>
+    <div class="split">
+      <div class="stack">
+        <ol class="checklist">
+          <li data-n="01"><strong>8 new Google reviews a month, minimum.</strong> Target 12. Category median for plumbing is 3–6 per month, so 8 alone puts you ahead of most of the market — and reviews from the last 90 days carry the most weight.</li>
+          <li data-n="02"><strong>A job list every Monday by 5pm.</strong> First name and mobile number for every completed job. We send the review requests; you just supply the list. This is the single highest-leverage 10 minutes of your week.</li>
+          <li data-n="03"><strong>Somebody answers, 24/7, within 3 rings.</strong> Human or the AI agent we build. If the phone goes unanswered overnight, the 24/7 hours have to come back down and three guaranteed keywords come off the list.</li>
+          <li data-n="04"><strong>10 real job photos a month.</strong> Taken on real jobs inside the radius, on your phone, no staging. Before-and-afters are worth double.</li>
+          <li data-n="05"><strong>Access within 5 business days.</strong> Google Business Profile (Manager), WordPress admin, hosting/DNS, Search Console, Analytics, scheduling software.</li>
+        </ol>
+      </div>
+      <div class="stack">
+        <ol class="checklist">
+          <li data-n="06"><strong>3 business days to approve copy.</strong> Page copy, service descriptions, profile edits. Silence past 3 days counts as approved so nothing stalls.</li>
+          <li data-n="07"><strong>No second SEO vendor, no surprise edits.</strong> Two agencies working the same profile undo each other. If you change hours, services, address or the phone number, tell us the same day.</li>
+          <li data-n="08"><strong>One phone number, everywhere.</strong> Same number and address on the website, Google, Yelp, Apple Maps, Facebook, BBB and every directory. Mismatches actively suppress local rankings.</li>
+          <li data-n="09"><strong>Two 30-minute calls a month.</strong> One mid-month working call, one end-of-month review. Twelve hours a year total.</li>
+          <li data-n="10"><strong>Account current.</strong> The free-work remedy only applies to an account in good standing.</li>
+        </ol>
+        <div class="evidence"><b>THE FAIR-PLAY CLAUSE.</b> If you miss a requirement we tell you in writing and you get 14 days to fix it. Only if the same requirement is missed two months running does the guarantee clock pause — for those months only. It restarts the month you're back on track. We're not looking for a loophole; we're looking for a reason it works.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 27 OUR SIDE ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Our side of the deal</b> What $495 buys every month</p>
+    <h2>What we're on the hook for.</h2>
+    <div class="triad">
+      <div class="cell">
+        <h4>Months 1–2 · The rebuild</h4>
+        <ul><li>Every fix in this deck, executed</li><li>One sitemap, ghost pages killed</li><li>8 titles + 8 descriptions rewritten</li><li>4 missing H1s written</li><li>Plumber / LocalBusiness / Service schema</li><li>Uppercase URLs redirected</li><li>Booking button live (Route A)</li><li>Text stack + AI agent live</li><li>24/7 hours flipped, everywhere</li></ul>
+      </div>
+      <div class="cell">
+        <h4>Every month · The engine</h4>
+        <ul><li>1 new service or location page, fully optimized</li><li>8 Google Business Profile posts</li><li>10 job photos uploaded and geo-tagged</li><li>Review requests after every job, automatically</li><li>Every review responded to inside 24 hours</li><li>4 citations built or cleaned</li><li>2–4 quality local links per quarter</li><li>AI agent retraining from real calls</li></ul>
+      </div>
+      <div class="cell">
+        <h4>Every month · The proof</h4>
+        <ul><li>The 49-point geo-grid, same grid every time</li><li>Position for all 10 guaranteed keywords</li><li>Calls, texts and bookings from Google, tracked</li><li>Booked-job rate on AI-answered calls</li><li>Overnight mystery-shop results</li><li>Indexed page count vs. target</li><li>A 30-minute call to walk through it</li></ul>
+      </div>
+    </div>
+    <div class="callout green"><h4>The honest note on price</h4><p>$495 is below the market rate for this scope — most agencies quote $1,200–$2,500 a month for a guaranteed local program. It's priced this way because you're an early client and because a six-month runway is what makes the 180-day guarantee mathematically safe for us. It's a founding rate, held for 12 months.</p></div>
+  </div>
+</section>
+
+<!-- ========== 28 TIMELINE ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The clock</b> 180 days, phase by phase</p>
+    <h2>What happens when.</h2>
+    <div class="timeline">
+      <div class="phase"><span class="when">Days 1–14</span><h3>Stop the bleeding</h3><ul><li>Access granted</li><li>One sitemap, ghost pages removed</li><li>robots.txt cleaned</li><li>Uppercase URLs redirected</li><li>Booking link live on Google</li><li>AI agent trained and tested</li></ul></div>
+      <div class="phase"><span class="when">Days 15–30</span><h3>Make you legible</h3><ul><li>8 titles + 8 descriptions rewritten</li><li>4 missing H1s added</li><li>Plumber schema replaces Article</li><li>24/7 hours flipped everywhere</li><li>Text stack live</li><li>Review engine switched on</li></ul></div>
+      <div class="phase"><span class="when">Days 31–90</span><h3>Take the neighborhood</h3><ul><li>Oakland Park + Wilton Manors pages</li><li>24-hour emergency page</li><li>Citations and directories cleaned</li><li>First 24+ reviews banked</li><li><strong>Guarantee check #1 at day 90</strong></li></ul></div>
+      <div class="phase"><span class="when">Days 91–180</span><h3>Widen the circle</h3><ul><li>Lauderdale-by-the-Sea + backflow pages</li><li>Local link building</li><li>Reserve with Google native button</li><li>Review count past 60</li><li><strong>Guarantee check #2 at day 180</strong></li></ul></div>
+    </div>
+    <div class="evidence"><b>WHY DAY 90 AND DAY 180.</b> Map-pack positions typically start moving in 60–90 days once technical fixes land and review velocity is steady. Six months is the honest window for the outer ring, because links and citations settle on Google's schedule, not ours.</div>
+  </div>
+</section>
+
+<!-- ========== 29 MONEY ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The money math</b> What top 3 is actually worth to you</p>
+    <h2>Three scenarios. All of them beat $495.</h2>
+    <div class="tw">
+      <table class="compact">
+        <thead><tr><th>Per month, once ranking</th><th class="num">Conservative</th><th class="num">Expected</th><th class="num">Strong</th></tr></thead>
+        <tbody>
+          <tr><td>New contacts from Google (calls + texts + bookings)</td><td class="num">18</td><td class="num">32</td><td class="num">50</td></tr>
+          <tr><td>Booking rate on those contacts</td><td class="num">65%</td><td class="num">70%</td><td class="num">75%</td></tr>
+          <tr><td>Booked jobs</td><td class="num">11</td><td class="num">22</td><td class="num">37</td></tr>
+          <tr><td>Average ticket</td><td class="num">$325</td><td class="num">$400</td><td class="num">$475</td></tr>
+          <tr><td><strong>New revenue per month</strong></td><td class="num"><strong>$3,575</strong></td><td class="num"><strong>$8,800</strong></td><td class="num"><strong>$17,575</strong></td></tr>
+          <tr><td>Cost of the program</td><td class="num">$495</td><td class="num">$495</td><td class="num">$495</td></tr>
+          <tr><td><strong>Return on every $1 spent</strong></td><td class="num"><strong>$7.22</strong></td><td class="num"><strong>$17.78</strong></td><td class="num"><strong>$35.51</strong></td></tr>
+          <tr><td><strong>New revenue per year</strong></td><td class="num"><strong>$42,900</strong></td><td class="num"><strong>$105,600</strong></td><td class="num"><strong>$210,900</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="duo">
+      <div class="cell"><h4>Where the inputs come from</h4><p>Booking rates use industry CSR benchmarks (65–75% average, 85%+ for top performers). Ticket sizes use 2026 residential plumbing benchmarks: roughly $275 routine, $450 emergency, $300–500 typical range. The contact counts are modeled from top-3 map-pack visibility across the keyword basket.</p></div>
+      <div class="cell cost"><h4>Read this before you get excited</h4><p><strong>Rankings are guaranteed. Revenue is modeled, not guaranteed.</strong> These numbers assume you answer the phone, show up, and do good work — which is on you, not us. We're showing the arithmetic so you can sanity-check the price, not so you can bank the top column.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 30 PRICE ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>The number</b></p>
+    <div class="split" style="align-items:center">
+      <div class="stack">
+        <p class="hero-fig">$495</p>
+        <p class="lede" style="margin-top:-.5rem">per month, all in. No setup fee, no ad spend markup, no per-page charges, no contract beyond the six months the guarantee needs.</p>
+      </div>
+      <div class="stack">
+        <div class="quad" style="grid-template-columns:1fr 1fr">
+          <div class="cell"><h4>Term</h4><p>6 months, then month-to-month</p></div>
+          <div class="cell"><h4>Setup fee</h4><p>$0</p></div>
+          <div class="cell"><h4>Founding rate held</h4><p>12 months</p></div>
+          <div class="cell fix"><h4>If we miss</h4><p>We work free until we hit it</p></div>
+        </div>
+        <div class="callout">
+          <h4>Break-even</h4>
+          <p>One booked job a month covers this. At an average residential ticket of $325–$400, the program pays for itself on <strong>call number two</strong> — everything after that is yours.</p>
+        </div>
+      </div>
+    </div>
+    <div class="evidence"><b>WHY SIX MONTHS.</b> Not to lock you in — because the 180-day half of the guarantee physically requires 180 days. Links, citations and review history compound on Google's clock. A 90-day contract with a 180-day guarantee would be a sales trick, and we're not going to write one.</div>
+  </div>
+</section>
+
+<!-- ========== 31 NEXT ========== -->
+<section class="slide">
+  <div class="inner">
+    <p class="eyebrow"><b>Next steps</b> Nothing here takes you more than an hour</p>
+    <h2>Four things, and we start Monday.</h2>
+    <div class="quad">
+      <div class="cell"><h4>This week</h4><p><strong>Sign and send access.</strong> Google Business Profile manager invite, WordPress login, and a 45-minute call to record how you handle an intake.</p></div>
+      <div class="cell"><h4>Week 1</h4><p><strong>We fix the critical items.</strong> One sitemap, ghost pages gone, redirects live, booking link submitted to Google.</p></div>
+      <div class="cell"><h4>Week 2–3</h4><p><strong>AI agent goes live, then hours go 24/7.</strong> In that order. You mystery-shop it yourself before we flip anything.</p></div>
+      <div class="cell fix"><h4>Day 30</h4><p><strong>First geo-grid report.</strong> The same 49-point map you'll see every month for the rest of the engagement.</p></div>
+    </div>
+    <div class="callout green">
+      <h4>The one thing that decides this</h4>
+      <p>Everything technical on this list, we can do without you. The one thing we can't do is get your customers to leave reviews. <strong>Eight a month.</strong> Send us the Monday list, and the rest of the plan works. Skip it, and the best-built site in Broward County still loses to the guy with 200 reviews.</p>
+    </div>
+    <p class="tiny">Prepared for Plumbers of South Florida · plumbersofsfl.com · Based on the Website Analysis Report covering 10 audit areas, 8 crawled URLs and ~6 indexed URLs. Ranking, CTR and industry benchmark figures cited from 2026 published studies; keyword confidence should be re-validated against live Semrush volume data before contract signature.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var deck = document.getElementById('deck');
+  var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var fill = document.getElementById('railFill');
+  var count = document.getElementById('railCount');
+  var total = slides.length;
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  function current(){
+    var best = 0, bestDist = Infinity;
+    for (var i = 0; i < slides.length; i++){
+      var d = Math.abs(slides[i].getBoundingClientRect().top);
+      if (d < bestDist){ bestDist = d; best = i; }
+    }
+    return best;
+  }
+
+  function paint(){
+    var i = current();
+    count.textContent = pad(i + 1) + ' / ' + pad(total);
+    fill.style.height = ((i) / (total - 1) * 100) + '%';
+  }
+
+  var ticking = false;
+  deck.addEventListener('scroll', function(){
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function(){ paint(); ticking = false; });
+  });
+
+  function go(dir){
+    var i = current() + dir;
+    if (i < 0) i = 0;
+    if (i > total - 1) i = total - 1;
+    slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.addEventListener('keydown', function(e){
+    if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' '){ e.preventDefault(); go(1); }
+    else if (e.key === 'ArrowUp' || e.key === 'PageUp'){ e.preventDefault(); go(-1); }
+    else if (e.key === 'Home'){ e.preventDefault(); slides[0].scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    else if (e.key === 'End'){ e.preventDefault(); slides[total - 1].scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+
+  var root = document.documentElement;
+  document.getElementById('themer').addEventListener('click', function(){
+    var isDark;
+    if (root.hasAttribute('data-theme')) isDark = root.getAttribute('data-theme') === 'dark';
+    else isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  });
+
+  paint();
+})();
+</script>

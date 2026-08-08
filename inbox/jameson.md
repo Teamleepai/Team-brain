@@ -24,18 +24,24 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
 
 ## Build order — start here
 
-- [ ] **Dental first.** The **NPPES NPI bulk file from CMS is free**, a full-replacement monthly CSV, and
-  includes practice address, specialty taxonomy, website and email. **Use Version 2** — V1 was retired
-  3 March 2026. It's the best data situation of any vertical we looked at.
-- [ ] **Auto repair second.** Google Maps universe plus software-install data. Together with dental this
-  covers both lead products (reactivation and voice AI) and both buckets.
-- [ ] **Do not build all six verticals.** The playbook documents six because the research covered six.
+> **Scope changed 2026-08-07: dental and veterinary are OUT.** If you already started on the NPPES
+> file, stop — it was dental-specific. See `prospecting/09-audit-2026-08-07.md`.
+
+- [ ] **Independent auto repair first.** Google Maps universe + Orbital/6sense software-install data.
+  Best-documented voice AI pain available, and voice AI is the product with the most reps behind it.
+  **Qualify on bays and technicians, never on revenue** — sources conflict badly ($450K vs $500K–1.2M)
+  and a scraper can't see revenue anyway. It can see bay count in Maps photos and Street View.
+- [ ] **Med spa second.** Maps + Boulevard booking-widget detection. Together with auto repair this
+  covers both lead products (voice AI and reactivation) and both buckets.
+- [ ] **Do not build all five verticals.** The playbook documents five because the research covered five.
   Two is the plan.
 
 ## Open research items — answer these, don't assume
 
-- [ ] **Verify 6sense / Orbital actually cover Boulevard, Zenoti and the veterinary PIMS platforms.** I
-  confirmed auto repair and dental coverage only. **Get a quote and test before committing budget.**
+- [ ] **Verify 6sense / Orbital actually cover Boulevard and Zenoti.** I confirmed auto repair coverage
+  only. **Get a quote and test before committing budget.**
+- [ ] **Reconcile the collision facility count** (105,000 IBISWorld vs 8,000+ elsewhere) before any TAM
+  sizing. Don't size off either number.
 - [ ] **Check bulk license-data availability for your actual target states.** Confirmed: Texas plumbing
   (free daily CSV), and the Apify professional-licenses actor covering NJ and Indiana. Everything else
   is unverified.

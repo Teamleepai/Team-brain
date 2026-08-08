@@ -171,6 +171,13 @@ payback but you'd be betting the quarter on an unvalidated channel with a $303 t
 
 ### 4.3 Recommended channel mix
 
+> **Refined since.** This section proposes 12 customers at a flat $4,000. `05-industry-icp-fast-market.md`
+> §6.2 replaced it with the **barbell — 5 Group @ $4,500 + 12 Fast @ $2,000 = 17 customers**, sourced
+> 9 outbound / 5 ads / 3 referral. Both reach ~$46,500; the barbell is what the live workbook models,
+> because the Fast tier's shorter cycle insures the 30 November deadline. Read the mix below as the
+> channel *logic*; take the counts from doc `05`.
+
+
 | Channel | Customers | Why |
 |---|---|---|
 | **Outbound** (dials → consent → cadence) | **6** | Proven motion, controllable, doesn't depend on unvalidated CPL |

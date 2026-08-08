@@ -23,7 +23,7 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
 - [ ] **Confirm the git commit identity question** — see the note at the bottom of
   `sessions/claude/2026-08-07.md`. All commits so far are attributed to Claude, not to you.
 
-## Legal — one review, five questions (Gate 1)
+## Legal — one review, four questions (Gate 1)
 
 - [ ] **Book one telecom/privacy attorney session covering all of these together.** Same lawyer, one
   conversation, marginal extra cost per item:
@@ -33,15 +33,26 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
   3. Call recording — which states require all-party consent, and what's the exact opener sentence?
   4. Meta Custom Audience: rights-to-use attestation for scraped data, and whether uploading to Meta
      constitutes CCPA "sharing" for cross-context behavioural advertising.
-  5. **HIPAA for dental and veterinary** — handling patient contact data and AI-answered calls in a
-     clinical setting. Newly urgent now that doc `08` proposes downloading the federal NPPES provider
-     file. **Not researched by me. Do not send a dental email before this is answered.**
+
+  **HIPAA dropped off this list** when dental and veterinary went out of scope on 2026-08-07 — the one
+  genuine simplification from that decision.
 
 ## Verify before use in outreach
 
-- [ ] **The $843,000 veterinary lost-revenue figure comes from a vendor selling AI voice agents to vets.**
-  Use the 22% miss rate instead until it can be sourced independently. Ref `07` §4.1.
+- [ ] **The $75,000/month auto repair missed-call figure is a ceiling, not a median** — and it's now
+  attached to your top-ranked vertical. Build the arithmetic live from the three well-sourced components
+  (25–45 calls/day, 20–30% missed, their own average repair order) rather than asserting the headline.
+  Ref `07` §2.1.
 - [ ] **Med spa net margin (15–25%) in `05` §3 is my estimate, not a citation.** Med spa ranks top on
   affordability *because* of that number, and you have client P&L exposure to check it.
 - [ ] **Auto repair revenue conflicts across sources** ($450K vs $500K–1.2M). Qualify on bay and
   technician count, not the industry average, or you'll pitch $2,000/mo to a shop clearing $450K.
+  **Now load-bearing — auto repair is the top vertical.**
+
+## New — from the 2026-08-07 audit
+
+- [ ] **Read `prospecting/09-audit-2026-08-07.md` §1.1.** Backing out of dental cost you the free NPPES
+  federal data source and the 31 Dec benefits timing hook. Both were real advantages. The decision is
+  yours and defensible — just hold the cost consciously.
+- [ ] **Cost-per-qualified-prospect should be re-tested, not inherited.** The $50 kill criterion was set
+  when a free bulk source was in the mix. It isn't any more.

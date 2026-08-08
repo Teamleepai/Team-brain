@@ -4,6 +4,28 @@
 **Horizon:** 4 months to 31 December 2026, with a 3-year arc behind it
 **Depends on:** `00-readback`, `01-pain-signal-matrix-and-icp`, `02-aisdr-brief-jameson`
 
+> ## ⚠️ SUPERSEDED IN PART — read this first
+>
+> This document was written before two facts were known. **Its deadlines and its arithmetic are wrong.**
+>
+> | This doc says | Actual |
+> |---|---|
+> | Target is **exit run-rate** | **Collected revenue** — contracts must be billing by 1 Dec |
+> | Signature deadline **31 December** | **~30 November** |
+> | Build freeze **1 October** | **~1 September** |
+> | Gap **$50,000** from zero MRR | **$46,500** — current MRR is $3–4K |
+> | $2,500 ACV → **20 customers** | Superseded by the barbell: **17 customers**, 5 Group + 12 Fast |
+>
+> **Current plan:** `04-upmarket-multichannel-model.md` (target, deadline, channels, ad spend) and
+> `05-industry-icp-fast-market.md` §6.2 (the barbell composition). Live model:
+> `50k-collected-multichannel-model.xlsx`.
+>
+> **What in here is still good:** §2.4 close-rate-as-price-thermometer, §3 the sourced committee
+> threshold, §4 the commoditisation finding, §5 the enterprise-value frame, §6 the council, and the
+> three-year arc. The phase structure holds; only the dates shift.
+
+---
+
 **On skills:** you asked me to use every skill you've downloaded. I checked — this environment has only
 the standard set (`docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, `morning`, `session-start-hook`). No
 custom GitHub skills are installed. I'm not going to pretend otherwise. I used `xlsx` to build you a

@@ -17,9 +17,9 @@ Highest priority first:
 - [ ] **JJ Jardina project details** — you said you'd push these to Aaron's inbox. This is the
   reverse-engineering formula for the highest-value segment (high revenue, invisible on Google) and it's
   also the model for the strongest lead-gen row in the matrix. Ref `00` §5.
-- [ ] **Aaron's SEO deep research.** Arbitrates which SEO signals are cheap-at-scale vs audit-grade. Now
-  doubly needed: doc `07` recommends collision repair, where **SEO is the lead product and it's the
-  capability with the least documentation.** Ref `01` §1.4.
+- [ ] **Aaron's SEO deep research.** Arbitrates which SEO signals are cheap-at-scale vs audit-grade.
+  **More urgent after the 2026-08-07 scope change**, not less: with dental gone, collision moved up the
+  ranking, and **SEO is collision's lead product and your least-documented capability.** Ref `01` §1.4.
 - [ ] **Armand + Aisha accounts.** The SMS chat agent column is currently *inferred*, not derived from
   our own wins. Also settles whether it's ever been sold standalone.
 - [ ] **Your GTM research from last week, specifically Avoca.** Needed for the competitive framing behind

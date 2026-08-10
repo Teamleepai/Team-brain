@@ -3,6 +3,20 @@
 Added by Claude session `session_01NYeVaKj98DGejrZgz9KFKL` on 2026-08-07.
 Branch: `claude/prospecting-strategy-framework-nae2oh`
 
+## NEW — your GTM assignments
+
+`prospecting/10-gtm-week-by-week.md`.
+
+- [ ] **Week 2 Monday: write both openers.** Division A leads on the missed-call arithmetic computed from
+      *their* numbers; Division B leads on the dormant patient database. **Neither is a pitch** — each
+      reads one true thing back and asks a question.
+- [ ] **Week 2 Tuesday: train Grace and Javid** on both.
+- [ ] **You own the objection library.** It builds from the recorded calls, and it's also the claim
+      registry the AI SDR will need later.
+- [ ] **Stop doing Division A dialing.** Your 20/day goes to Division B, where a peer voice wins.
+- [ ] **Front-load Division B in weeks 3–8.** A 90-day Group cycle starting after ~1 October does not
+      sign by 30 November.
+
 ## Source dumps — this is the #1 blocker on everything
 
 Eight strategy documents are now in `prospecting/`. **All of them are grounded in public research

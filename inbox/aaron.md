@@ -3,6 +3,25 @@
 Added by Claude session `session_01NYeVaKj98DGejrZgz9KFKL` on 2026-08-07.
 Branch: `claude/prospecting-strategy-framework-nae2oh`
 
+## NEW — the 16-week GTM plan is live
+
+`prospecting/10-gtm-week-by-week.md`. **Read §1 first — it inverts the earlier plan.**
+
+- [ ] **Your real roster gives you ~3× the pipeline you need.** 175 dials/day across four people, ~79
+      meetings/month, against 14 customers required. **Grace alone covers 1.5× the requirement.**
+      Lead flow is no longer the constraint — **delivery capacity and your calendar are.**
+- [ ] **Therefore: raise price rather than add dials.** Recommended 6 Group @ $5,000 + 8 Fast @ $2,100 =
+      $46,800 from **14 customers instead of 17** — 18% less delivery load for the same revenue.
+- [ ] **Stop doing Division A dialing.** Every hour you or Alec spend on it is an hour Grace covers at a
+      third the cost. Your 20/day goes to Division B (multi-location) where a peer voice changes the
+      outcome, and to reviving stalls.
+- [ ] **Cold calling does not need Gate 1.** Human-dialed B2B calls are legal without prior consent —
+      only SMS and email need the consent gate. **Dialing starts week 3 regardless of the attorney
+      timeline.** That was ambiguous in earlier docs.
+- [ ] **Consider splitting the divisions between you and Alec** rather than both doing both. Different
+      products, buyers and objections — one each halves the context-switching and deepens each objection
+      library. `10` §8.4.
+
 ## Decisions only you can make
 
 - [ ] **Confirm the prospecting domain spelling before purchase.** You wrote `itsleapai.com` but the
@@ -20,6 +39,8 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
   opener and it strengthens the TCPA consent trail. Ref `02` §A.5, §A.7.
 - [ ] **Pick the SMS consent mechanic:** inbound keyword text, one-field opt-in link, or email reply. A
   verbal "sure, text me" is **not** valid consent for marketing SMS. Ref `02` §A.1.
+- [ ] **Buy the domain MONDAY 10 AUGUST.** 4–8 week warmup, needed live by ~1 Sept. It is the critical
+  path and it is the one item that cannot be compressed.
 - [ ] **Confirm the git commit identity question** — see the note at the bottom of
   `sessions/claude/2026-08-07.md`. All commits so far are attributed to Claude, not to you.
 

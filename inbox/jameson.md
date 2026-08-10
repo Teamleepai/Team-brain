@@ -3,6 +3,22 @@
 Added by Claude session `session_01NYeVaKj98DGejrZgz9KFKL` on 2026-08-07.
 Branch: `claude/prospecting-strategy-framework-nae2oh`
 
+## YOUR TWO-WEEK SPRINT STARTS MONDAY 10 AUGUST
+
+`prospecting/10-gtm-week-by-week.md` §4 has your day-by-day. Headlines:
+
+- **Week 1:** both universe scrapes → mobile line-type filter (drop non-mobiles) → review and
+  job-posting mining → Boulevard/Zenoti detection → bay-count estimation → merge, score, rank.
+  **Friday: report the measured false-positive rate per signal.** Not estimated. Measured.
+- **Week 2 Monday:** verify the top 200 Division A and top 100 Division B by hand. **Build call sheets —
+  one page per prospect: the signal, the evidence, the opener.** Grace and Javid live on these.
+- **Week 2 Thursday:** fix whatever the pilot dials prove wrong, re-score.
+- **Track your own hours from day one.** Raw data is under $200 for ~5,000 entities; your time is the
+  line item that will breach the $50-per-qualified-prospect criterion, and the free NPPES source left
+  with dental.
+
+**You never contact a prospect.** Data, scoring, dossiers, call sheets, and the cadence build only.
+
 ## Read these two first, in this order
 
 - [ ] **`prospecting/02-aisdr-brief-jameson.md`** — your brief. Part A is context written for Aaron and

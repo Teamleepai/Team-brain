@@ -44,7 +44,14 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
 - [ ] **Confirm the git commit identity question** — see the note at the bottom of
   `sessions/claude/2026-08-07.md`. All commits so far are attributed to Claude, not to you.
 
-## Legal — one review, four questions (Gate 1)
+## DECIDE BEFORE JAMESON SCRAPES MONDAY
+
+- [ ] **"Auto body" or "mechanical repair" for Division A?** You said body shop; the plan says mechanical.
+      **Body = collision = SEO lead product** (your least documented, research still not in the repo).
+      **Mechanical = voice AI lead product** (your strongest, best-documented pain of any vertical).
+      Discovery tooling is ~80% shared, but the opener and product differ. Ref `11` §0.
+
+## Legal — one review, FIVE questions (Gate 1)
 
 - [ ] **Book one telecom/privacy attorney session covering all of these together.** Same lawyer, one
   conversation, marginal extra cost per item:
@@ -55,8 +62,22 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
   4. Meta Custom Audience: rights-to-use attestation for scraped data, and whether uploading to Meta
      constitutes CCPA "sharing" for cross-context behavioural advertising.
 
-  **HIPAA dropped off this list** when dental and veterinary went out of scope on 2026-08-07 — the one
-  genuine simplification from that decision.
+  5. **DNC and the mobile-targeting problem — NEW, and it constrains how we dial.** Our top signal
+     ("main line rings to a mobile") selects for **sole proprietors using personal cells for business.**
+     Sources say that number **is a residential line and IS on the DNC registry if they registered it**,
+     and that FTC enforcement treats micro-businesses blurring the consumer/commercial line **as
+     consumers.** Also: **the TCPA applies to mobiles even in B2B — a power dialer needs express
+     consent.** Questions for the attorney: (a) do we scrub national + state DNC? (b) is manual-dial-only
+     mandatory on these numbers? (c) **is marketing/sales outreach a permitted use under a skip-trace
+     provider's licence** — marketing is *not* a permissible purpose under FCRA, and DPPA makes
+     marketing use of DMV data a federal violation. Ref `11` §1 and §2 Tier 4.
+
+  **HIPAA dropped off this list** when dental and veterinary went out of scope — question 5 takes its
+  slot, so it's still one session and four-to-five questions.
+
+- [ ] **Check whether anyone was planning dialer software for Grace's 90/day.** If so, that's a TCPA
+      question before it's an efficiency question. Manual dialing at 90/day is achievable; a power dialer
+      on cell numbers may not be lawful without consent.
 
 ## Verify before use in outreach
 

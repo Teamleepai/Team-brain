@@ -19,6 +19,33 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
 
 **You never contact a prospect.** Data, scoring, dossiers, call sheets, and the cadence build only.
 
+### Read `prospecting/11-contact-data-stack.md` before you buy anything
+
+Four things in it that change your week 1:
+
+- [ ] **Tier 1 first, always — manual, free, most accurate.** For owner-operators the cell is often
+      literally published: site footer, Google Business Profile, owner responses to reviews, vehicle
+      wraps in Street View. **It also yields the owner's NAME**, which everything else depends on.
+- [ ] **B2B waterfall gets only 20–35% mobiles** on this population (BetterContact, 20+ providers).
+      Great for email at 87–95%. **Don't rely on it for cells.**
+- [ ] **Skip-trace providers get 65–75% mobiles** (SmartSkip) at ~3¢/record (DataZapp) — 2–3× the yield,
+      because they match a *person* by name+address rather than a corporate contact. **Sequence is
+      owner name → address → skip trace.** Not company → phone.
+- [ ] **Never TLO or IDI.** Marketing is not a permissible purpose under FCRA, and DPPA makes marketing
+      use of DMV data a federal violation. Both require permissible-purpose credentialing. **Off the
+      table.**
+
+- [ ] **Run 200 records through two providers in week 1 and measure the real hit rate.** Every number
+      above is vendor-reported. Industry consensus: above 70% match is very high quality, 60–70% usable
+      on cold data is realistic, and **anyone promising 90%+ is selling optimism.**
+- [ ] **Confirm bulk-download availability with each state board by phone.** California BAR has 34,483
+      licensed repair dealers and a searchable Auto Shop Locator, but **I could not confirm a bulk file
+      exists.** Don't assume.
+- [ ] **AmSpa is ruled out** as a list source — 3,000+ members but no public directory, members-only
+      portal, and mining it for cold outreach would likely breach their terms. Don't spend time there.
+- [ ] **Measure your bay-count estimation error** against 20 hand-checked shops. It's the affordability
+      qualifier for the top vertical and its accuracy is currently unknown.
+
 ## Read these two first, in this order
 
 - [ ] **`prospecting/02-aisdr-brief-jameson.md`** — your brief. Part A is context written for Aaron and

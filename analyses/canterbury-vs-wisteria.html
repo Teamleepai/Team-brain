@@ -1,0 +1,905 @@
+<title>Canterbury vs. Wisteria</title>
+<style>
+  :root {
+    --paper:      #F4F6F5;
+    --surface:    #FFFFFF;
+    --surface-2:  #EAEEEC;
+    --ink:        #17242B;
+    --ink-soft:   #35474F;
+    --muted:      #5C6E75;
+    --rule:       #CBD5D3;
+    --rule-soft:  #DFE5E3;
+    --accent:     #0F6E6E;
+    --accent-ink: #0B5252;
+    --accent-wash:#E2EDEB;
+    --warn:       #A8601A;
+    --warn-wash:  #F6EADC;
+    --critical:   #8E2F2F;
+    --crit-wash:  #F6E6E4;
+    --good:       #2F6B45;
+    --good-wash:  #E3EDE6;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", Menlo, Consolas, monospace;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    --measure: 68ch;
+    --s1: 0.5rem; --s2: 0.875rem; --s3: 1.25rem; --s4: 2rem; --s5: 3rem; --s6: 4.5rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #0E1619;
+      --surface:    #162126;
+      --surface-2:  #1D2C32;
+      --ink:        #E4EAE8;
+      --ink-soft:   #C2CFCD;
+      --muted:      #8CA0A4;
+      --rule:       #2C3F46;
+      --rule-soft:  #24343A;
+      --accent:     #4FB5AE;
+      --accent-ink: #7FCFC8;
+      --accent-wash:#14312F;
+      --warn:       #D99A4E;
+      --warn-wash:  #33261544;
+      --critical:   #D9736B;
+      --crit-wash:  #3418174a;
+      --good:       #6DBE8B;
+      --good-wash:  #16301f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #0E1619;
+    --surface:    #162126;
+    --surface-2:  #1D2C32;
+    --ink:        #E4EAE8;
+    --ink-soft:   #C2CFCD;
+    --muted:      #8CA0A4;
+    --rule:       #2C3F46;
+    --rule-soft:  #24343A;
+    --accent:     #4FB5AE;
+    --accent-ink: #7FCFC8;
+    --accent-wash:#14312F;
+    --warn:       #D99A4E;
+    --warn-wash:  #33261544;
+    --critical:   #D9736B;
+    --crit-wash:  #3418174a;
+    --good:       #6DBE8B;
+    --good-wash:  #16301f;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: var(--s5) var(--s3) var(--s6);
+  }
+
+  .col { max-width: var(--measure); }
+
+  /* ---------- masthead ---------- */
+
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: var(--s3);
+    margin-bottom: var(--s4);
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.688rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 var(--s2);
+  }
+  h1 {
+    font-size: clamp(2.1rem, 5.5vw, 3.4rem);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    margin: 0 0 var(--s2);
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 60ch;
+    margin: 0;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s3);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: var(--s3);
+  }
+
+  /* ---------- verdict ---------- */
+
+  .verdict {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    padding: var(--s4);
+    margin-bottom: var(--s5);
+    display: grid;
+    gap: var(--s3);
+  }
+  .verdict h2 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0;
+    font-weight: 600;
+  }
+  .verdict p { margin: 0; max-width: 72ch; }
+  .verdict .lede { font-size: 1.22rem; line-height: 1.45; }
+
+  /* ---------- sections ---------- */
+
+  section { margin-bottom: var(--s6); }
+
+  h2.sec {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    margin: 0 0 var(--s2);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--ink);
+    text-wrap: balance;
+  }
+  h3 {
+    font-size: 1.16rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin: var(--s4) 0 var(--s2);
+    text-wrap: balance;
+  }
+  h4 {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin: var(--s3) 0 var(--s1);
+  }
+  p { margin: 0 0 var(--s2); }
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  strong { font-weight: 600; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 0.94em; }
+
+  ul, ol { max-width: var(--measure); padding-left: 1.15rem; margin: 0 0 var(--s2); }
+  li { margin-bottom: var(--s1); }
+
+  /* ---------- tables ---------- */
+
+  .scroll {
+    overflow-x: auto;
+    margin: var(--s3) 0;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 640px;
+    font-size: 0.875rem;
+  }
+  caption {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: var(--s2) var(--s3);
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface-2);
+  }
+  th, td {
+    padding: 0.6rem var(--s2);
+    text-align: left;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  thead th {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  tbody th { font-weight: 600; font-family: var(--serif); white-space: nowrap; }
+  td.n, th.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: none; }
+  tr.hi { background: var(--accent-wash); }
+  tr.out td, tr.out th { color: var(--muted); }
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.15em 0.5em;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .tag.fit  { background: var(--good-wash); color: var(--good); }
+  .tag.edge { background: var(--warn-wash); color: var(--warn); }
+  .tag.no   { background: var(--crit-wash); color: var(--critical); }
+  .tag.est  { background: var(--surface-2); color: var(--muted); }
+
+  /* ---------- findings ---------- */
+
+  .findings { display: grid; gap: var(--s2); margin: var(--s3) 0; }
+  .finding {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 var(--s3);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: var(--s3);
+  }
+  .finding .sev {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    padding: 0.35em 0.2em;
+    border-radius: 2px;
+    align-self: start;
+    font-weight: 600;
+  }
+  .finding.dealbreaker .sev { background: var(--crit-wash); color: var(--critical); }
+  .finding.material   .sev { background: var(--warn-wash); color: var(--warn); }
+  .finding.watch      .sev { background: var(--surface-2); color: var(--muted); }
+  .finding h4 { margin: 0 0 var(--s1); color: var(--ink); font-family: var(--serif); font-size: 1.02rem; letter-spacing: 0; text-transform: none; }
+  .finding p { margin: 0 0 var(--s1); font-size: 0.95rem; color: var(--ink-soft); }
+  .finding p:last-child { margin-bottom: 0; }
+  .ask {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--accent-ink);
+    border-left: 2px solid var(--accent);
+    padding-left: var(--s2);
+    margin-top: var(--s2) !important;
+    display: block;
+  }
+
+  /* ---------- callout ---------- */
+
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--warn);
+    padding: var(--s3);
+    margin: var(--s3) 0;
+  }
+  .callout.crit { border-left-color: var(--critical); }
+  .callout.pos { border-left-color: var(--good); }
+  .callout h4 { color: var(--ink); font-family: var(--serif); font-size: 1.02rem; letter-spacing: 0; text-transform: none; margin: 0 0 var(--s1); }
+  .callout p:last-child { margin-bottom: 0; }
+
+  /* ---------- two-up ---------- */
+
+  .duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--s3); margin: var(--s3) 0; }
+  .card { background: var(--surface); border: 1px solid var(--rule); padding: var(--s3); }
+  .card h3 { margin-top: 0; }
+  .card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.35rem var(--s2); font-size: 0.9rem; }
+  .card dt { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding-top: 0.28em; }
+  .card dd { margin: 0; }
+
+  /* ---------- checklist ---------- */
+
+  ol.checklist { list-style: none; padding: 0; max-width: var(--measure); counter-reset: q; }
+  ol.checklist > li {
+    counter-increment: q;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--s2);
+    padding: var(--s2) 0;
+    border-bottom: 1px solid var(--rule-soft);
+    margin: 0;
+  }
+  ol.checklist > li::before {
+    content: counter(q, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    padding-top: 0.35em;
+  }
+
+  details {
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    padding: var(--s2) var(--s3);
+    margin: var(--s3) 0;
+  }
+  summary { cursor: pointer; font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); }
+  details[open] summary { margin-bottom: var(--s2); }
+
+  footer {
+    border-top: 2px solid var(--ink);
+    padding-top: var(--s3);
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: var(--measure);
+  }
+
+  @media (max-width: 640px) {
+    body { font-size: 16px; }
+    .wrap { padding: var(--s4) var(--s2) var(--s5); }
+    .verdict { padding: var(--s3); }
+    .finding { grid-template-columns: 1fr; gap: var(--s2); }
+    .finding .sev { writing-mode: horizontal-tb; justify-self: start; padding: 0.2em 0.5em; }
+  }
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow">Decision brief · Prepared for family review</p>
+  <h1>Canterbury vs. Wisteria</h1>
+  <p class="standfirst">A structural read of two California Life Plan communities against the Windsor benchmark — where the money actually goes, what the fee sheets don't say, and the one clause that matters more than every price on either page.</p>
+  <div class="meta">
+    <span>Sources: 2026 fee schedules, both communities</span>
+    <span>Canterbury eff. 07·01·2026</span>
+    <span>Wisteria eff. 02·01·2026</span>
+  </div>
+</header>
+
+<div class="verdict">
+  <h2>Bottom line</h2>
+  <p class="lede">Given that one spouse is expected to need care soon, <strong>the contract structure is worth more than the entrance-fee difference</strong> — and the two communities are not structured the same way. Wisteria is a Type&nbsp;A Life Care contract, where the monthly fee stays roughly flat if a resident moves into assisted living or memory care. Canterbury's own sheet offers a <strong>5% discount</strong> in Assisted Living, the Courtyard and Care Suites — which is fee-for-service with a courtesy discount, not life care.</p>
+  <p>On a realistic memory-care scenario, that single difference runs <span class="num">$80,000–$105,000 per year</span> in Canterbury's disfavor. It overwhelms the roughly <span class="num">$250,000–$300,000</span> Canterbury saves on the way in. <strong>If the spouse who needs care can pass Wisteria's health underwriting, Wisteria is the better structure for this family.</strong> If she cannot — and Type&nbsp;A communities underwrite hardest precisely because they carry the care risk — that decision gets made for you, and Canterbury becomes the answer by default.</p>
+  <p>Everything below is the evidence for that, plus the eleven things I'd want answered in writing before anyone signs.</p>
+</div>
+
+<section>
+  <h2 class="sec">Three premises that don't survive the fee sheets</h2>
+
+  <div class="findings">
+    <div class="finding dealbreaker">
+      <span class="sev">Correction</span>
+      <div>
+        <h4>The house sale does not pay for this "in perpetuity"</h4>
+        <p>It pays the <em>entrance fee</em>. That is the smaller number. The entrance fee buys the right to occupy and the care promise; it does not prepay the monthly fee, which runs for the rest of both lives and rises every year. You've said the monthly is covered by the annuity, Social Security and book royalties — good, and that removes the near-term problem. It does not remove the long-term one, which I model in <a href="#escalation">the escalation section</a>: monthly fees in this sector typically climb 4–6% a year, while a fixed annuity climbs 0% and royalties usually decline. Those lines diverge.</p>
+      </div>
+    </div>
+
+    <div class="finding dealbreaker">
+      <span class="sev">Correction</span>
+      <div>
+        <h4>At a $1.2M ceiling, Wisteria has no 1,700 sq ft option</h4>
+        <p>Every Wisteria floor plan at or near 1,700 sq ft starts above your maximum. Sycamore (1,604–1,734 sq ft) starts at <span class="num">$1,439,360</span>. Heritage Oak (1,619) starts at <span class="num">$1,439,360</span>. Birch (1,653) starts at <span class="num">$1,725,360</span>. Against a <span class="num">$1,200,000</span> ceiling, the realistic Wisteria unit is roughly <strong>1,225–1,360 sq ft</strong> — about 300–475 sq ft less than the Windsor apartment, a 20–28% reduction in floor area.</p>
+      </div>
+    </div>
+
+    <div class="finding material">
+      <span class="sev">Correction</span>
+      <div>
+        <h4>Neither community offers a two-car garage</h4>
+        <p>Nothing in either document shows private garages. Wisteria is a six-story mid-rise; the floor plans show decks with exterior storage closets, not garages. Canterbury's plans show decks and balconies. Both will have resident parking, but a two-car garage attached to the residence is not part of either product. If the garage is where the workshop, the boxes and the second car live, that capacity has to be replaced — and at Wisteria the deck storage closet is what's on offer.</p>
+        <span class="ask">Ask both: how many parking spaces per residence, garage or surface, assigned or not, included or extra — and what separate storage is available and at what monthly cost?</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2 class="sec">The Windsor benchmark, and what actually compares</h2>
+
+  <p class="col">Your reference point is <strong>1,700 sq ft, two bedrooms, two-car garage</strong>, with a $20,000–$30,000 deposit already placed at Windsor. I've matched on interior square footage and bedroom count, since neither community can match the garage.</p>
+
+  <div class="callout">
+    <h4>One gap I couldn't close</h4>
+    <p>I could not identify which "Windsor" this is from the materials provided — there are several unrelated senior communities in California using that name. That matters for two reasons: whether your $20–30k deposit is <em>refundable</em> (most priority-reservation deposits are, minus a processing fee, but some become non-refundable at contract signing), and whether Windsor is even a Life Plan/CCRC community at all or a straight rental. <strong>Tell me which Windsor and I'll fold it in as a true third column</strong> — including whether walking away from that deposit costs you anything.</p>
+  </div>
+
+  <h3>Wisteria at Warner Center — options within your $900k–$1.2M range</h3>
+
+  <div class="scroll">
+    <table>
+      <caption>Wisteria · 2026 schedule · two-bedroom plans · repayable entrance fee</caption>
+      <thead>
+        <tr>
+          <th>Floor plan</th><th>Configuration</th><th class="n">Sq ft</th>
+          <th class="n">Entrance fee</th><th class="n">Monthly from</th><th>vs. budget</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="hi">
+          <th>Extended Willow</th><td>2 bed / 2 bath</td><td class="n">1,225–1,234</td>
+          <td class="n">$1,044,160–$1,101,360</td><td class="n">$7,801</td><td><span class="tag fit">Full range fits</span></td>
+        </tr>
+        <tr>
+          <th>Willow</th><td>2 bed / 2 bath</td><td class="n">1,160–1,425</td>
+          <td class="n">$929,760–$1,402,960</td><td class="n">$7,682</td><td><span class="tag edge">Lower half only</span></td>
+        </tr>
+        <tr>
+          <th>Juniper</th><td>2 bed / 2 bath</td><td class="n">1,161–1,360</td>
+          <td class="n">$888,160–$1,278,160</td><td class="n">$7,682</td><td><span class="tag edge">Lower half only</span></td>
+        </tr>
+        <tr>
+          <th>Grand Willow</th><td>2 bed / 2 bath / den</td><td class="n">1,312–1,744</td>
+          <td class="n">$1,044,160–$1,668,160</td><td class="n">$8,039</td><td><span class="tag edge">Bottom of range only</span></td>
+        </tr>
+        <tr class="out">
+          <th>Pacific Willow</th><td>2 bed / 2 bath</td><td class="n">1,518–1,573</td>
+          <td class="n">$1,397,760</td><td class="n">$8,522</td><td><span class="tag no">Over</span></td>
+        </tr>
+        <tr class="out">
+          <th>Sycamore</th><td>2 bed / 2 bath</td><td class="n">1,604–1,734</td>
+          <td class="n">$1,439,360–$1,626,560</td><td class="n">$8,156</td><td><span class="tag no">Over</span></td>
+        </tr>
+        <tr class="out">
+          <th>Heritage Oak</th><td>2 bed / 2 bath / 2 den</td><td class="n">1,619</td>
+          <td class="n">$1,439,360–$1,626,560</td><td class="n">$8,156</td><td><span class="tag no">Over</span></td>
+        </tr>
+        <tr class="out">
+          <th>Birch</th><td>2 bed / 2 bath / den</td><td class="n">1,653</td>
+          <td class="n">$1,725,360–$1,787,760</td><td class="n">$8,039</td><td><span class="tag no">Over</span></td>
+        </tr>
+        <tr class="out">
+          <th>Woodland</th><td>2 bed / 3 bath / den</td><td class="n">1,827–1,933</td>
+          <td class="n">$1,652,560–$1,824,160</td><td class="n">$8,691</td><td><span class="tag no">Over</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="col"><strong>Closest true match within budget: Extended Willow.</strong> It's the only plan whose <em>entire</em> price range sits inside your ceiling, which means you aren't fighting for the one remaining ground-floor unit. Layout is a genuine two-bedroom split — Master 12&times;15, second bedroom 12&times;13, living 14&times;15, in-unit washer/dryer, deck with exterior storage. <strong>Grand Willow at its floor price</strong> (<span class="num">$1,044,160</span>, 1,312 sq ft) is the alternative: same money, ~80 sq ft more, and you gain a den — but at the bottom of a range that tops out at <span class="num">$1,668,160</span>, so you are by definition buying the least desirable exposure in that plan.</p>
+
+  <div class="callout">
+    <h4>Read the price spread as a floor-and-view map</h4>
+    <p>Willow spans <span class="num">$929,760</span> to <span class="num">$1,402,960</span> — a 51% swing for the same floor plan. That spread is almost entirely floor level and view. The units at the bottom of each range are the ground-floor, interior-facing, or least-desirable-exposure homes, and in a filling community they are the first to go. <strong>Any quote you're given needs a specific unit number attached</strong>, or you're comparing a price that may not be available.</p>
+  </div>
+
+  <h3>The Canterbury — two-bedroom options</h3>
+
+  <div class="callout crit">
+    <h4>Canterbury's fee sheet discloses no square footage — anywhere</h4>
+    <p>Both pricing pages and both floor plans omit it entirely. For a community asking <span class="num">$670,000–$872,000</span> to walk in, that is a conspicuous omission, and it makes the comparison you asked for impossible to do precisely. The figures below are <strong>my estimates</strong>, derived from the room dimensions printed on the floor plans plus normal allowances for kitchen, closets, circulation and wall thickness. Treat them as ±10% and <strong>demand the real numbers in writing.</strong></p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <caption>Canterbury · prices effective 1 July 2026 · both contract choices</caption>
+      <thead>
+        <tr>
+          <th>Floor plan</th><th class="n">Est. sq ft</th>
+          <th class="n">Choice 1 · 80% repayable</th>
+          <th class="n">Choice 2 · 36-mo amortized</th>
+          <th class="n">Monthly</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Ladera</th><td class="n">~1,000 <span class="tag est">est</span></td>
+          <td class="n">$670,843–$741,459</td><td class="n">$436,048–$481,948</td><td class="n">$7,853</td>
+        </tr>
+        <tr>
+          <th>La Venta</th><td class="n">~1,100 <span class="tag est">est</span></td>
+          <td class="n">$723,516–$795,868</td><td class="n">$470,286–$517,315</td><td class="n">$8,292</td>
+        </tr>
+        <tr class="hi">
+          <th>Mira Costa</th><td class="n">~1,400 <span class="tag est">est</span></td>
+          <td class="n">$792,974–$872,271</td><td class="n">$515,433–$566,976</td><td class="n">$8,584</td>
+        </tr>
+        <tr>
+          <th>Riviera</th><td class="n">~1,500 <span class="tag est">est</span></td>
+          <td class="n">$839,279</td><td class="n">$545,532</td><td class="n">$8,874</td>
+        </tr>
+        <tr class="out">
+          <th>Hermosa</th><td class="n">1 bedroom</td>
+          <td class="n">$385,489–$471,153</td><td class="n">$250,568–$306,250</td><td class="n">$6,981</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="col"><strong>Closest match: Mira Costa</strong> — bedrooms of 16'4"&times;11'6" and 14'3"&times;15', a 11'4"&times;23'6" living room, two full baths (one of them 11'&times;11'6", which is unusually generous and matters if a walker or wheelchair is coming), a pantry, in-unit washer/dryer and two balconies. It is the largest genuine two-bedroom on the sheet apart from Riviera. Notably, <strong>the whole Canterbury two-bedroom range fits inside the $950,000 house proceeds even on the fully repayable contract</strong> — you would be buying the top of their inventory, not the bottom.</p>
+
+  <details>
+    <summary>How I estimated the square footage</summary>
+    <p>Mira Costa: bedrooms 187.8 + 213.8 sq ft, living room 266.3, baths 126.5 + 54 = 848 sq ft of dimensioned space. Adding a kitchen (~120), pantry, closets (~80), entry and circulation (~90), then ~8% for wall thickness, lands near 1,400 sq ft. La Venta: bedrooms 192.7 + 140, living 233.3, baths 78.8 + 28.3 = 673 sq ft dimensioned; with kitchen, dressing area, closets and circulation, roughly 1,100. Ladera and Riviera are inferred from their price positions relative to those two, since no plans were provided for either — which is itself worth noting: <strong>you were shown plans for two of the four two-bedroom units.</strong></p>
+  </details>
+
+  <h3>Against the Windsor benchmark</h3>
+
+  <div class="scroll">
+    <table>
+      <caption>Space comparison · 1,700 sq ft two-bedroom benchmark</caption>
+      <thead>
+        <tr><th>Option</th><th class="n">Sq ft</th><th class="n">vs. Windsor</th><th>Garage</th><th>Entrance fee</th></tr>
+      </thead>
+      <tbody>
+        <tr><th>Windsor (benchmark)</th><td class="n">1,700</td><td class="n">—</td><td>2-car</td><td class="n">$20–30k deposit placed</td></tr>
+        <tr class="hi"><th>Wisteria · Extended Willow</th><td class="n">1,225–1,234</td><td class="n">−28%</td><td>None</td><td class="n">$1,044,160–$1,101,360</td></tr>
+        <tr><th>Wisteria · Grand Willow (base)</th><td class="n">1,312</td><td class="n">−23%</td><td>None</td><td class="n">$1,044,160</td></tr>
+        <tr class="hi"><th>Canterbury · Mira Costa</th><td class="n">~1,400 <span class="tag est">est</span></td><td class="n">−18%</td><td>None</td><td class="n">$792,974–$872,271</td></tr>
+        <tr><th>Canterbury · Riviera</th><td class="n">~1,500 <span class="tag est">est</span></td><td class="n">−12%</td><td>None</td><td class="n">$839,279</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="col">On space per dollar, Canterbury wins clearly: roughly 1,400–1,500 estimated sq ft for <span class="num">$793k–$872k</span> against Wisteria's 1,225–1,312 sq ft for <span class="num">$1.04M–$1.10M</span>. <strong>That is the entire case for Canterbury, and the next section is why it may not be enough.</strong></p>
+</section>
+
+<section id="care">
+  <h2 class="sec">The clause that decides this</h2>
+
+  <p class="col">You told me one spouse is independent and one is likely to need care within a few years. That fact makes the care-cost clause the most valuable line item in either contract — worth multiples of the square footage, the view, or the entrance fee spread.</p>
+
+  <div class="duo">
+    <div class="card">
+      <h3>Wisteria — Type A (Life Care)</h3>
+      <dl>
+        <dt>Structure</dt><dd>Type A life care contract</dd>
+        <dt>On moving to higher care</dt><dd>Monthly fee stays substantially the same</dd>
+        <dt>Care on site</dt><dd>Assisted living, memory care and skilled nursing in an adjacent health center</dd>
+        <dt>Effect</dt><dd>The community absorbs the cost of long-term care. That risk transfer <em>is</em> the product.</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3>Canterbury — discount, not life care</h3>
+      <dl>
+        <dt>Structure</dt><dd>Sheet states <strong>5% discount</strong> in Assisted Living, the Courtyard and Care Suites</dd>
+        <dt>On moving to higher care</dt><dd>You pay 95% of the prevailing rate, on top of the independent-living fee for the remaining spouse</dd>
+        <dt>Care on site</dt><dd>Assisted living and memory care; skilled nursing needs verification (see below)</dd>
+        <dt>Effect</dt><dd>The family retains essentially all of the care-cost risk.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <h3>What that difference costs, modelled</h3>
+
+  <p class="col">Assume the scenario you described: one spouse moves into memory care, the other stays in the two-bedroom. Los Angeles County memory care in 2026 realistically runs <span class="num">$9,000–$13,000</span> a month at a community of this calibre; I'll use <span class="num">$11,000</span> as the midpoint.</p>
+
+  <div class="scroll">
+    <table>
+      <caption>Monthly cost once one spouse enters memory care</caption>
+      <thead>
+        <tr><th>Component</th><th class="n">Canterbury (Mira Costa)</th><th class="n">Wisteria (Extended Willow)</th></tr>
+      </thead>
+      <tbody>
+        <tr><th>Independent living, remaining spouse</th><td class="n">$8,584</td><td class="n">$7,801</td></tr>
+        <tr><th>Second-person fee</th><td class="n">— (drops off)</td><td class="n">$2,583</td></tr>
+        <tr><th>Memory care, at market less discount</th><td class="n">$10,450 <span class="tag est">$11,000 less 5%</span></td><td class="n">Included under Type A</td></tr>
+        <tr class="hi"><th>Total per month</th><td class="n">≈ $19,034</td><td class="n">≈ $10,384</td></tr>
+        <tr class="hi"><th>Difference per year</th><td class="n" colspan="2">≈ $103,800 in Wisteria's favour</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="col">Across a five-year memory-care episode — which is a normal duration, not a pessimistic one — that gap is roughly <strong><span class="num">$400,000 to $520,000</span></strong>. Canterbury's entrance-fee advantage over Wisteria is about <span class="num">$250,000–$300,000</span>. <strong>The care structure is worth more than the entire price difference, and it reverses the ranking.</strong></p>
+
+  <div class="callout">
+    <h4>Two things that would change this conclusion</h4>
+    <p><strong>One:</strong> if Canterbury's Residence &amp; Care Agreement turns out to contain a genuine life-care or modified (Type B) benefit that the marketing sheet compressed into the words "5% discount," the gap narrows sharply. The sheet is a summary, not the contract. Verify against the actual agreement.</p>
+    <p><strong>Two:</strong> Type A pricing at Wisteria already embeds the care risk — that is part of why the entrance fee is higher and why the monthly fee is what it is. You are not getting the care free; you are buying insurance. The question is whether this particular couple, with a known near-term care need, is a good buyer of that insurance. <strong>Given the facts you've described, they are almost the textbook case for it.</strong></p>
+  </div>
+
+  <div class="callout crit">
+    <h4>And the gate on all of it: health underwriting</h4>
+    <p>Type A communities underwrite health and finances hardest, precisely because they are assuming the care liability. A prospective resident with an existing dementia diagnosis or significant care needs may be <strong>declined for independent living, required to enter assisted living directly at a different price, or offered a modified contract that strips the life-care benefit</strong> — which would eliminate the entire advantage above. This needs to be established before you spend another hour on floor plans.</p>
+    <span class="ask">Ask Wisteria first, in writing: given this specific diagnosis and care profile, does she qualify for the standard Type A contract in independent living — and if not, what exactly is offered instead, and at what price?</span>
+  </div>
+</section>
+
+<section>
+  <h2 class="sec">Canterbury's two contracts: which one</h2>
+
+  <p class="col">Canterbury offers the same apartments under two entrance-fee structures. Same monthly fee either way — the only variable is what comes back.</p>
+
+  <div class="scroll">
+    <table>
+      <caption>Mira Costa · contract comparison at the low end of each range</caption>
+      <thead>
+        <tr><th>&nbsp;</th><th class="n">Choice 1 · 80% repayable</th><th class="n">Choice 2 · 36-month amortized</th></tr>
+      </thead>
+      <tbody>
+        <tr><th>Paid in</th><td class="n">$792,974</td><td class="n">$515,433</td></tr>
+        <tr><th>Extra cash required</th><td class="n">$277,541</td><td class="n">—</td></tr>
+        <tr><th>Returned after 3+ years</th><td class="n">$634,379 (80%)</td><td class="n">$0</td></tr>
+        <tr><th>Net cost of the entrance fee</th><td class="n">$158,595</td><td class="n">$515,433</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="col"><strong>Recommendation: Choice 1, the 80% repayable contract.</strong> The reasoning is a break-even against what that extra <span class="num">$277,541</span> would earn if invested instead:</p>
+
+  <ul class="col">
+    <li>At a 6% alternative return, the opportunity cost of the extra capital reaches the <span class="num">$634,379</span> repayment at roughly <strong>year 14</strong>. Below that, Choice 1 wins; beyond it, Choice 2 edges ahead.</li>
+    <li>For a <strong>short stay</strong> Choice 1 wins decisively — Choice 2 amortizes to zero at month 37, so an unexpected death or move in year four forfeits the entire <span class="num">$515,433</span>.</li>
+    <li>Given that one spouse already faces a near-term care need, a stay beyond 14 years is not the base case. <strong>Choice 1 is the better expected outcome and the far better estate outcome.</strong></li>
+  </ul>
+
+  <p class="col">The caveat that undoes this: Choice 1's advantage depends entirely on the 80% actually being <em>paid</em>. That is the subject of the next section, and it applies to both communities.</p>
+</section>
+
+<section>
+  <h2 class="sec">The repayment problem nobody advertises</h2>
+
+  <p class="col">Both communities market a large refund. Canterbury calls it an <strong>"80% Re-occupancy Benefit."</strong> Wisteria calls it a <strong>"Repayable Entrance Fee."</strong> Read both names literally — the money is conditioned on the unit being re-occupied or resold, and neither sheet states a date certain.</p>
+
+  <p class="col">This is a known and active problem in California. The legislature has addressed it twice. <strong>SB 939</strong>, effective 2017, forces interest to accrue on unpaid repayments — 4% after 180 days from vacancy, 6% after 240 days, compounding annually thereafter — and requires providers to make a good-faith effort to re-occupy. Critically, it also requires contracts to disclose <strong>the average and the longest time the provider has taken to resell a unit over the last five calendar years</strong>. That disclosure is your single best diagnostic, and you are entitled to it.</p>
+
+  <div class="callout crit">
+    <h4>AB 1983 is moving through the legislature right now, and it targets Wisteria's model</h4>
+    <p>AB 1983 (Rubio, 2025–26 session, passed the Senate committee stage as of June 2026) expands the definition of a "repayable contract" to cover fees repaid <strong>"based on the sequential order in which repayable contracts are terminated"</strong> — that is, a queue. Under a queue model your estate is not waiting for <em>your</em> unit to resell; it is waiting for everyone ahead of it in line to be paid first. The fact that the legislature is writing a bill specifically about this practice tells you how often it goes wrong.</p>
+    <span class="ask">Ask both, in writing: is repayment triggered by resale of my specific unit, or by position in a queue? What were the average and longest repayment times in the last five years?</span>
+  </div>
+
+  <div class="callout">
+    <h4>Wisteria cannot answer that question, and that is the point</h4>
+    <p>Wisteria opened in 2025 and is still filling 486 residences. It has <strong>no five-year resale history to disclose</strong>, because it has no history at all. Your estate's repayment would depend on the resale market for a large, brand-new, still-filling community — and on Wisteria's cash position during fill-up, which is the most capital-hungry phase of a CCRC's life. Canterbury, at 187 licensed beds and decades of operation, can produce a real track record. <strong>Make it.</strong></p>
+  </div>
+</section>
+
+<section>
+  <h2 class="sec">Who you'd actually be trusting</h2>
+
+  <p class="col">An entrance fee is an unsecured bet on an operator staying solvent for twenty years. The two operators here are structurally different in ways that matter.</p>
+
+  <div class="duo">
+    <div class="card">
+      <h3>Canterbury — Episcopal Communities &amp; Services</h3>
+      <dl>
+        <dt>Type</dt><dd>Not-for-profit, founded 1923</dd>
+        <dt>Credit</dt><dd><strong>Fitch A−, stable outlook</strong>, affirmed December 2024</dd>
+        <dt>Portfolio</dt><dd>The Canterbury (Rancho Palos Verdes), The Covington (Aliso Viejo), MonteCedro (Altadena), plus affordable housing</dd>
+        <dt>Metrics</dt><dd>Operating ratio 89.6% against a Fitch 'A' median of 95.2% — better than peer. Occupancy above 90%.</dd>
+        <dt>Faith</dt><dd>Episcopal-affiliated; states it serves people of all faiths. Sheet lists spiritual programs among amenities.</dd>
+        <dt>Reputation</dt><dd>≈4.1–4.5 stars across aggregators; US News "Best Senior Living" for both assisted and independent living; repeated local "South Bay's Best" awards</dd>
+        <dt>Setting</dt><dd>Coastal Rancho Palos Verdes, small (187 licensed capacity), ocean views</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3>Wisteria — Spieker Senior Development Partners</h3>
+      <dl>
+        <dt>Type</dt><dd><strong>Privately held, for-profit</strong>, owned by Warren "Ned" Spieker Jr.</dd>
+        <dt>Credit</dt><dd><strong>No public credit rating.</strong> Financial disclosure comes only through the CDSS annual filing.</dd>
+        <dt>Portfolio</dt><dd>Six California CCRCs including La Costa Glen, Reata Glen, Stoneridge Creek, The Glen at Scripps Ranch, University Village. Reports full occupancy and wait lists across them.</dd>
+        <dt>Track record</dt><dd>Strong on development and fill-up. Wisteria itself opened 2025 — <strong>no operating history for care quality</strong>.</dd>
+        <dt>Faith</dt><dd>Secular</dd>
+        <dt>Reputation</dt><dd>4.8 stars / 33 Google reviews — but read with care (below)</dd>
+        <dt>Setting</dt><dd>Warner Center, Woodland Hills. 17 acres, six storeys, 486 residences. Inland valley heat.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="findings">
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>Wisteria's glowing reviews are reviews of the sales process</h4>
+        <p>The praise that recurs is for "residency counselors" and the clarity of the admissions conversation. Those are sales staff. A community that opened in 2025 has not yet been tested on the thing you're actually buying — night-shift staffing in memory care, responsiveness when someone falls at 3am, whether the skilled nursing wing is adequately covered. <strong>Four-point-eight stars on a sales experience predicts very little about clinical care.</strong> Canterbury's reviews, by contrast, cover decades of actual operation, and they are more mixed — some families raise concerns about consistency of nursing skill mix and responsiveness. Mixed reviews of real care are more informative than perfect reviews of a tour.</p>
+      </div>
+    </div>
+
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>A California appellate court let a Spieker/Continuing Life community bill residents for its own legal costs</h4>
+        <p>In <em>Johnson v. Stoneridge Creek Pleasanton CCRC LLC</em>, a resident sued the community, owner Spieker Senior Development Partners and operator Continuing Life over alleged violations including the Consumer Legal Remedies Act and the Elder Abuse Act, and challenged the community passing anticipated litigation costs to residents through fee increases. <strong>The appellate court held the Health &amp; Safety Code permits a CCRC to include "reasonable projections" of litigation expense in monthly fees.</strong> Residents can therefore fund the defence of claims brought against the community — including their own neighbours' claims. This is now settled California law and applies across the sector, but it is live precedent involving this specific ownership group.</p>
+        <span class="ask">Ask Wisteria: is Continuing Life LLC the operator here, and does the monthly fee methodology include projected legal expense?</span>
+      </div>
+    </div>
+
+    <div class="finding watch">
+      <span class="sev">Watch</span>
+      <div>
+        <h4>Staffing signals — thin, but worth naming</h4>
+        <p>Employee reviews for Continuing Life LLC average about 3.6/5 with 68% recommending, and include direct complaints of high turnover among lower-paid staff and heavy micromanagement. That population — caregivers, dining, housekeeping — is exactly the group whose churn residents feel daily. For ECS the public employee data is unreliable: search results conflate it with several unrelated "Episcopal Community Services" organisations, so <strong>I would not put weight on any ECS turnover figure you find online.</strong> Ask each community directly for caregiver turnover in the last 12 months and the current agency-staffing percentage. A community that won't answer has answered.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2 class="sec">Hidden fees and disclosure gaps</h2>
+
+  <h3>Canterbury</h3>
+  <div class="findings">
+    <div class="finding dealbreaker">
+      <span class="sev">Dealbreaker</span>
+      <div>
+        <h4>Is there actually skilled nursing on site?</h4>
+        <p>The licence printed on Canterbury's own materials is <strong>RCFE 191603774</strong> — a Residential Care Facility for the Elderly, which is California's assisted-living licence, not a skilled nursing licence. The amenity list says "24-hour on site Licensed Nurses," which is not the same thing as a licensed skilled nursing facility. Third-party marketing sites assert Canterbury offers skilled nursing, but those aggregators are frequently wrong. <strong>If there is no on-site SNF, then long-term nursing care means leaving the campus</strong> — at LA County market rates of roughly $12,000–$16,000 a month, uncapped and undiscounted, at exactly the moment the family is least able to manage a move.</p>
+        <span class="ask">Ask: is there a CDPH-licensed skilled nursing facility on this campus? Licence number, bed count, and current CMS star rating.</span>
+      </div>
+    </div>
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>One meal a day, for a fee of $8,584 a month</h4>
+        <p>The included dining is "one meal per day." For a couple who eat mostly in the dining room, the other two meals each, at $15–25 per meal, run roughly <strong>$1,800–$3,000 a month</strong> on top. That is a real and recurring cost that appears nowhere on the fee sheet. It is partly offset by full kitchens in the apartments — but the spouse in declining health is the one least likely to cook.</p>
+      </div>
+    </div>
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>Prices already re-cut once this year</h4>
+        <p>The sheet reads "Prices effective July 1, 2026" — six weeks old at the time of writing. Neither the size nor the frequency of past increases is disclosed anywhere.</p>
+        <span class="ask">Ask: the last ten years of monthly fee increases, as percentages, year by year.</span>
+      </div>
+    </div>
+    <div class="finding watch">
+      <span class="sev">Watch</span>
+      <div>
+        <h4>Smaller line items</h4>
+        <p>$750 processing fee for the personalized nursing assessment. Telephone and internet excluded from the monthly fee — every other utility is included. Second person $1,250/month. Floor plans were supplied for only two of the four two-bedroom units (La Venta and Mira Costa); Ladera and Riviera were priced but not shown.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Wisteria</h3>
+  <div class="findings">
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>The monthly fee on the sheet can legally be 10% higher</h4>
+        <p>Footnote one: <em>"Estimated monthly fees may be up to 10% higher for premium priced homes."</em> The column is also headed <strong>"Monthly Service Fee Starting At"</strong> — a floor, not a price. So Extended Willow's <span class="num">$7,801</span> could be <span class="num">$8,581</span>, an undisclosed <span class="num">$780</span> a month, or <span class="num">$9,360</span> a year. And "premium priced homes" is undefined.</p>
+        <span class="ask">Ask: for this specific unit number, what is the exact monthly fee — not the starting-at figure?</span>
+      </div>
+    </div>
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>Second person costs $49,000 up front plus $2,583 a month</h4>
+        <p>More than double Canterbury's $1,250 second-person fee, plus a $49,000 entrance charge Canterbury doesn't levy at all. Over ten years the second-person difference alone is roughly <span class="num">$209,000</span>. This is the price of the Type A benefit extending to both spouses — it is not unreasonable, but it must be in the comparison. There is a footnote that <em>"pre-construction deposits not subject to Second Person Entrance Fee"</em>; you have no pre-construction standing, so assume the $49,000 applies, but it is worth one question.</p>
+      </div>
+    </div>
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>"Repayable" has no percentage attached anywhere on the sheet</h4>
+        <p>The column says "Repayable Entrance Fee" and nothing else. Public materials suggest at least 75%; the contract may say 75%, 80% or 90%. On a <span class="num">$1,044,160</span> entrance fee, the difference between 75% and 90% is <strong><span class="num">$156,624</span></strong>. That number is not on the page you were handed.</p>
+      </div>
+    </div>
+    <div class="finding watch">
+      <span class="sev">Watch</span>
+      <div>
+        <h4>The reservation-of-rights clause, and fill-up risk</h4>
+        <p>Footnote: <em>"Wisteria reserves the right to change product design, options, prices, fees and terms without prior notice."</em> Standard language, but combined with a community still filling 486 units it deserves attention: if fill-up runs slow, the pressure lands on fee increases and on the repayment queue. Also confirm the adjacent health centre is <strong>licensed, open and staffed today</strong> — not a later phase. A Type A promise is only as good as the building that has to honour it.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Both</h3>
+  <div class="findings">
+    <div class="finding dealbreaker">
+      <span class="sev">Dealbreaker</span>
+      <div>
+        <h4>The $950,000 is not $950,000</h4>
+        <p>Selling the house triggers capital gains. With the $500,000 married-couple exclusion and a long-held California home with a low basis, the taxable gain can still be substantial. On a $950,000 sale with, say, a $150,000 basis: $800,000 gain, less the $500,000 exclusion, leaves $300,000 taxable. At federal long-term rates plus the 3.8% net investment income tax plus California income tax, that is plausibly <strong><span class="num">$70,000–$100,000</span> gone</strong> — so the real proceeds are nearer <span class="num">$850,000–$880,000</span>. That is the difference between clearing Canterbury's Mira Costa comfortably and not clearing it at all.</p>
+        <span class="ask">Get the actual adjusted basis from their CPA before committing to any number. Improvements over the decades raise basis and reduce the bill.</span>
+      </div>
+    </div>
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>An entrance fee is not a house, and the tax treatment differs sharply</h4>
+        <p>They are converting an appreciating asset with a stepped-up basis at death into a contract right that does not appreciate, cannot be borrowed against, generates no mortgage interest deduction, and carries no Proposition 13 protection. That may well be the right trade for the care and the freedom from maintenance — but it should be a decision, not a surprise.</p>
+        <p>On the other side of the ledger: <strong>Type A contracts are the ones that qualify for the prepaid-medical-expense deduction</strong>, typically 30–40% of the non-refundable portion of the entrance fee and of monthly fees, subject to the 7.5%-of-AGI threshold, and claimable only in the year paid. Wisteria's Type A structure likely qualifies. Canterbury's, if it is genuinely a 5%-discount fee-for-service arrangement, likely does not — which quietly widens the real cost gap further in Wisteria's favour. <strong>Confirm with their CPA; this is worth real money and is routinely missed.</strong></p>
+      </div>
+    </div>
+    <div class="finding material">
+      <span class="sev">Material</span>
+      <div>
+        <h4>What happens if the money runs out</h4>
+        <p>Neither sheet addresses it. Most nonprofit CCRCs maintain a benevolence or resident-assistance fund and commit not to evict a resident who exhausts their assets in good faith; for-profit operators are less likely to. As a nonprofit with a century-old charitable mission, ECS is the more likely of the two to have such a policy in writing. Ask both — and get the answer from the contract, not the tour guide.</p>
+      </div>
+    </div>
+    <div class="finding watch">
+      <span class="sev">Watch</span>
+      <div>
+        <h4>Geography is a real variable here</h4>
+        <p>Rancho Palos Verdes and Woodland Hills are roughly 45 miles and, in Los Angeles traffic, 60–90 minutes apart. One is coastal and temperate; the other is inland valley, where summer routinely exceeds 100°F. Canterbury is small and intimate at 187 beds; Wisteria is 486 residences on 17 acres with an indoor pool, theatre, performing arts centre, pickleball and bocce. <strong>Which one the family can actually visit weekly for the next fifteen years is not a soft factor</strong> — visit frequency is among the better predictors of care quality outcomes, because someone is watching.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="escalation">
+  <h2 class="sec">The slow problem: fee escalation</h2>
+
+  <p class="col">You've said the monthly fee is covered by the annuity, Social Security and book royalties. For today, that's true. The issue is that these four lines move at different speeds.</p>
+
+  <div class="scroll">
+    <table>
+      <caption>Annual monthly-fee burden at 5% escalation · couple, two-bedroom</caption>
+      <thead>
+        <tr><th>Year</th><th class="n">Canterbury · Mira Costa</th><th class="n">Wisteria · Extended Willow</th></tr>
+      </thead>
+      <tbody>
+        <tr><th>Today</th><td class="n">$118,008</td><td class="n">$124,608</td></tr>
+        <tr><th>Year 5</th><td class="n">$143,500</td><td class="n">$151,500</td></tr>
+        <tr><th>Year 10</th><td class="n">$183,200</td><td class="n">$193,300</td></tr>
+        <tr><th>Year 15</th><td class="n">$233,800</td><td class="n">$246,700</td></tr>
+        <tr><th>Year 20</th><td class="n">$298,400</td><td class="n">$314,900</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="col">Against that: <strong>a fixed annuity rises 0%</strong>. Social Security rises with COLA, historically around 2.5%. Book royalties, absent new titles, decline — backlist income typically decays rather than compounds. A fee growing at 5% against income growing at 1–2% blended produces a gap that opens slowly and then suddenly.</p>
+
+  <div class="callout">
+    <h4>The two questions this raises</h4>
+    <p><strong>Is the annuity fixed or inflation-adjusted?</strong> If fixed, model the crossover year — the point where the fee exceeds covering income — and make sure there is a reserve sized to bridge from there. <strong>And what is each community's actual increase history?</strong> 5% is my assumption, not their disclosure. Ten years of actual percentages, from both, in writing. A community that has averaged 3% is a materially different proposition from one that has averaged 6.5%, and neither sheet says a word about it.</p>
+  </div>
+</section>
+
+<section>
+  <h2 class="sec">Get these eleven answers in writing before anyone signs</h2>
+
+  <ol class="checklist">
+    <li><div><strong>Wisteria, first and before anything else:</strong> given her specific diagnosis and care needs, does she qualify for the standard Type A contract in independent living? If not, what is offered instead and at what price? This gates the entire decision.</div></li>
+    <li><div><strong>Canterbury:</strong> the exact square footage of Ladera, La Venta, Mira Costa and Riviera — plus floor plans for Ladera and Riviera, which you were priced on but never shown.</div></li>
+    <li><div><strong>Canterbury:</strong> is there a CDPH-licensed skilled nursing facility on campus? Licence number, bed count, CMS star rating. If not, what is the plan when nursing-home-level care is needed?</div></li>
+    <li><div><strong>Canterbury:</strong> what exactly does the Residence &amp; Care Agreement provide on higher levels of care beyond the 5% discount? Is there any fee cap, any lifetime benefit, any Type B modified provision?</div></li>
+    <li><div><strong>Both:</strong> the exact repayment percentage, the repayment trigger — resale of my unit, or queue position — and the average and longest repayment times over the last five years, which SB 939 requires you to disclose.</div></li>
+    <li><div><strong>Both:</strong> ten years of monthly fee increases, year by year, as percentages.</div></li>
+    <li><div><strong>Wisteria:</strong> for this specific unit number, the exact monthly fee, not the "starting at" figure. Confirm whether the 10% premium-home uplift applies.</div></li>
+    <li><div><strong>Both:</strong> parking — spaces per residence, garage or surface, assigned, included or extra — and available separate storage with monthly cost.</div></li>
+    <li><div><strong>Both:</strong> caregiver turnover over the last twelve months, and current percentage of shifts filled by agency staff.</div></li>
+    <li><div><strong>Both:</strong> the written policy if a resident outlives their assets. Benevolence fund, non-eviction commitment, or neither.</div></li>
+    <li><div><strong>Both:</strong> the most recent audited financial statements and the CDSS annual disclosure. For Wisteria specifically, current occupancy and the fill-up schedule for all 486 residences.</div></li>
+  </ol>
+
+  <div class="callout pos">
+    <h4>And one for your own side</h4>
+    <p>Have their CPA confirm the adjusted basis on the house and model the actual after-tax proceeds, and confirm whether the entrance fee at the chosen community qualifies for the prepaid-medical-expense deduction. Those two answers can move six figures. Also determine whether the Windsor deposit is refundable — you may be holding an option worth keeping while this plays out, or a sunk cost worth writing off today.</p>
+  </div>
+</section>
+
+<section>
+  <h2 class="sec">Where I land</h2>
+
+  <p class="col"><strong>If she qualifies for Type A: Wisteria, Extended Willow.</strong> You give up roughly 175 estimated square feet and pay roughly $250,000 more going in, and in exchange you transfer the care-cost risk to the community at precisely the moment this family is about to need it. On the modelled memory-care scenario that trade pays for itself in under three years and keeps paying. The right unit is Extended Willow rather than Grand Willow's base price, because Extended Willow's full range fits your ceiling — you are choosing among units rather than taking the last one.</p>
+
+  <p class="col"><strong>If she does not qualify: Canterbury, Mira Costa, Choice 1.</strong> Roughly 1,400 estimated square feet for <span class="num">$792,974–$872,271</span> against a house that nets perhaps <span class="num">$850,000–$880,000</span> after tax — it fits, on the repayable contract, buying near the top of their inventory rather than the bottom. A Fitch A− nonprofit with a century of operating history and a real local reputation is a genuinely safer counterparty than an unrated for-profit still filling its first building. Then budget separately and honestly for market-rate care, because that contract will not cover it.</p>
+
+  <p class="col">What would change my mind: Canterbury's actual Residence &amp; Care Agreement containing a real life-care benefit that the marketing sheet buried, or a confirmed on-site skilled nursing facility with good CMS ratings. Both are checkable. Both are on the list above.</p>
+
+  <div class="callout">
+    <h4>The thing I'd want said plainly</h4>
+    <p>The premise this started from was that the house sale settles the question and cost isn't a worry. On these documents, cost isn't the worry — <strong>structure is</strong>. Two communities separated by about $250,000 on the way in are separated by roughly $100,000 <em>a year</em> on the way through, in the opposite direction, and none of that appears on either page you were handed. That asymmetry, not the price of the apartment, is the decision.</p>
+  </div>
+</section>
+
+<footer>
+  <p>Prepared from the two 2026 fee schedules supplied (Canterbury, effective 1 July 2026; Wisteria at Warner Center, effective 1 February 2026) plus public sources on operators, regulation and reputation. Square footage for Canterbury is estimated from printed room dimensions because the community discloses none — treat as ±10% pending written confirmation. Memory-care, tax and escalation figures are modelled on stated assumptions, not quotes. Nothing here substitutes for the Residence &amp; Care Agreement, the CDSS annual disclosure, or advice from the family's CPA and an elder-law attorney.</p>
+</footer>
+
+</div>

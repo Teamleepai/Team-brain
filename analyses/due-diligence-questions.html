@@ -1,0 +1,259 @@
+<title>Due Diligence Questions</title>
+<style>
+  :root {
+    --paper:      #FFFFFF;
+    --surface:    #FFFFFF;
+    --surface-2:  #F1F4F3;
+    --ink:        #17242B;
+    --ink-soft:   #35474F;
+    --muted:      #5C6E75;
+    --rule:       #CBD5D3;
+    --rule-soft:  #DFE5E3;
+    --accent:     #0F6E6E;
+    --accent-ink: #0B5252;
+    --critical:   #8E2F2F;
+    --crit-wash:  #F6E6E4;
+    --warn:       #A8601A;
+    --warn-wash:  #F6EADC;
+
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0E1619; --surface: #162126; --surface-2: #1D2C32;
+      --ink: #E4EAE8; --ink-soft: #C2CFCD; --muted: #8CA0A4;
+      --rule: #2C3F46; --rule-soft: #24343A;
+      --accent: #4FB5AE; --accent-ink: #7FCFC8;
+      --critical: #D9736B; --crit-wash: #3418174a;
+      --warn: #D99A4E; --warn-wash: #33261544;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0E1619; --surface: #162126; --surface-2: #1D2C32;
+    --ink: #E4EAE8; --ink-soft: #C2CFCD; --muted: #8CA0A4;
+    --rule: #2C3F46; --rule-soft: #24343A;
+    --accent: #4FB5AE; --accent-ink: #7FCFC8;
+    --critical: #D9736B; --crit-wash: #3418174a;
+    --warn: #D99A4E; --warn-wash: #33261544;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet { max-width: 820px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+
+  .head { border-bottom: 2px solid var(--ink); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); margin: 0 0 0.6rem;
+  }
+  h1 {
+    font-size: clamp(1.8rem, 4.5vw, 2.5rem); line-height: 1.06;
+    letter-spacing: -0.02em; font-weight: 600; margin: 0 0 0.6rem; text-wrap: balance;
+  }
+  .sub { margin: 0; color: var(--ink-soft); max-width: 62ch; }
+
+  .fields {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.9rem; margin: 1.4rem 0 2rem;
+  }
+  .field { border-bottom: 1px solid var(--rule); padding-bottom: 0.3rem; }
+  .field span {
+    display: block; font-family: var(--mono); font-size: 0.62rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem;
+  }
+
+  .note {
+    background: var(--surface-2); border-left: 3px solid var(--accent);
+    padding: 0.9rem 1.1rem; margin: 0 0 2rem; font-size: 0.95rem;
+  }
+  .note p { margin: 0; }
+
+  h2 {
+    font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.13em;
+    text-transform: uppercase; color: var(--muted); font-weight: 600;
+    margin: 2rem 0 0.8rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--rule);
+  }
+
+  /* `start` drives the list's own numbering but not a CSS counter, so each
+     section seeds the counter explicitly to keep 01–11 running continuously. */
+  ol { list-style: none; padding: 0; margin: 0; counter-reset: q; }
+  ol[start="5"]  { counter-reset: q 4; }
+  ol[start="8"]  { counter-reset: q 7; }
+  ol[start="10"] { counter-reset: q 9; }
+  li {
+    counter-increment: q;
+    display: grid; grid-template-columns: 2rem 1fr; gap: 0.8rem;
+    padding: 0.85rem 0; border-bottom: 1px solid var(--rule-soft);
+    break-inside: avoid; page-break-inside: avoid;
+  }
+  li::before {
+    content: counter(q, decimal-leading-zero);
+    font-family: var(--mono); font-size: 0.72rem; color: var(--accent); padding-top: 0.3em;
+  }
+  li .q { margin: 0 0 0.35rem; }
+  li .why {
+    margin: 0; font-size: 0.85rem; color: var(--muted); font-style: italic;
+  }
+  .answer {
+    margin-top: 0.7rem; border: 1px solid var(--rule-soft);
+    border-radius: 2px; height: 3.1rem; background: var(--surface-2);
+    position: relative;
+  }
+  .answer::before {
+    content: "Response";
+    position: absolute; top: 0.3rem; left: 0.5rem;
+    font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
+  .flag {
+    display: inline-block; font-family: var(--mono); font-size: 0.56rem;
+    letter-spacing: 0.09em; text-transform: uppercase; padding: 0.15em 0.45em;
+    border-radius: 2px; margin-left: 0.4rem; vertical-align: 0.15em;
+  }
+  .flag.first { background: var(--crit-wash); color: var(--critical); }
+  .flag.legal { background: var(--warn-wash); color: var(--warn); }
+
+  footer {
+    margin-top: 2.5rem; padding-top: 0.9rem; border-top: 2px solid var(--ink);
+    font-size: 0.8rem; color: var(--muted);
+  }
+
+  @media print {
+    @page { size: Letter; margin: 15mm 14mm 16mm; }
+    body { font-size: 10.5pt; }
+    .sheet { max-width: none; padding: 0; }
+    h1 { font-size: 24pt; }
+    .answer { height: 2.6rem; }
+  }
+</style>
+
+<div class="sheet">
+
+<header class="head">
+  <p class="eyebrow">Prospective resident enquiry · Written response requested</p>
+  <h1>Due Diligence Questions</h1>
+  <p class="sub">Eleven items we need answered in writing before signing a residence and care agreement. Several are disclosures California law already entitles us to receive.</p>
+</header>
+
+<div class="fields">
+  <div class="field"><span>Community</span></div>
+  <div class="field"><span>Representative</span></div>
+  <div class="field"><span>Date</span></div>
+  <div class="field"><span>Unit / floor plan discussed</span></div>
+</div>
+
+<div class="note">
+  <p>We are comparing two California Life Plan communities for a married couple where one spouse is independent and one is expected to need a higher level of care in the near term. Because of that, the care-cost provisions matter to us more than the price of the apartment. Please answer in writing rather than verbally — we are keeping a written file for both communities.</p>
+</div>
+
+<h2>Eligibility and care structure</h2>
+<ol>
+  <li>
+    <div>
+      <p class="q">Given the specific diagnosis and care profile we have shared, does she qualify for your standard contract in independent living?<span class="flag first">Answer first</span></p>
+      <p class="why">If not: what exactly is offered instead, in which level of care, and at what entrance fee and monthly fee?</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <p class="q">What precisely does the Residence &amp; Care Agreement provide when a resident moves to assisted living, memory care, or skilled nursing?</p>
+      <p class="why">Is there a fee cap, a lifetime benefit, a Type A life-care provision, a Type B modified provision — or a percentage discount off prevailing rates? Please cite the clause.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <p class="q">Is there a licensed skilled nursing facility on this campus?</p>
+      <p class="why">Licence number, licensing agency, bed count, and current CMS star rating. If there is none, what happens when nursing-home-level care is required?</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <p class="q">If one spouse moves permanently into a higher level of care, what happens to the entrance fee and to the second-person fee?</p>
+      <p class="why">Is a second entrance fee charged? Does the second-person monthly fee cease?</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+</ol>
+
+<h2>Entrance fee and repayment</h2>
+<ol start="5">
+  <li>
+    <div>
+      <p class="q">What is the exact repayment percentage, and what triggers repayment — resale of our specific unit, or our position in a queue?<span class="flag legal">SB 939 disclosure</span></p>
+      <p class="why">Please also state the average and the longest time you have taken to repay over the last five calendar years, as Health &amp; Safety Code requires contracts to disclose.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <p class="q">For the specific unit number we are discussing, what is the exact monthly fee?</p>
+      <p class="why">Not the "starting at" figure. Please confirm whether any premium-home uplift applies to this unit.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <p class="q">What have your monthly fee increases been for each of the last ten years, as percentages?</p>
+      <p class="why">Year by year, not an average.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+</ol>
+
+<h2>The residence</h2>
+<ol start="8">
+  <li>
+    <div>
+      <p class="q">What is the exact square footage of each two-bedroom floor plan, and may we have the floor plan for every one you are quoting?</p>
+      <p class="why">We have been quoted on plans for which no drawing was provided.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <p class="q">Parking and storage: how many spaces per residence, garage or surface, assigned or unassigned, included or charged separately?</p>
+      <p class="why">And what separate storage is available, at what monthly cost? We are coming from a home with a two-car garage.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+</ol>
+
+<h2>The organisation</h2>
+<ol start="10">
+  <li>
+    <div>
+      <p class="q">What was caregiver turnover over the last twelve months, and what percentage of shifts is currently filled by agency staff?</p>
+      <p class="why">Independent living, assisted living and memory care separately, if you track them separately.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+  <li>
+    <div>
+      <p class="q">May we have your most recent audited financial statements and your CDSS annual disclosure — and what is your written policy if a resident outlives their assets?</p>
+      <p class="why">Benevolence fund, non-eviction commitment, or neither. For communities still filling: current occupancy and the fill-up schedule.</p>
+      <div class="answer"></div>
+    </div>
+  </li>
+</ol>
+
+<footer>
+  <p>Prepared as part of a family comparison of two California Life Plan communities. Items 5 and 11 reference disclosures required or contemplated under California Health &amp; Safety Code provisions governing continuing care contracts, including SB 939 (2016). We would appreciate a written response before scheduling a further visit.</p>
+</footer>
+
+</div>

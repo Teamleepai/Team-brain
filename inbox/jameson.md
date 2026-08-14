@@ -3,6 +3,25 @@
 Added by Claude session `session_01NYeVaKj98DGejrZgz9KFKL` on 2026-08-07.
 Branch: `claude/prospecting-strategy-framework-nae2oh`
 
+## THE PIPELINE IS BUILT — `pipeline/` — RUN IT MONDAY
+
+Five stages, already written and tested. Read `pipeline/README.md` first.
+
+- [ ] **Run the two offline self-tests before spending a cent:** `python 02_signals.py --selftest`
+      and `python 04_score.py --selftest`. Both pass as committed; if they fail, something in your
+      environment is wrong, not the logic.
+- [ ] **`config.yaml` geography is EMPTY and stage 1 will refuse to run.** Aaron has to fill in the
+      target metros. Chase him for it Monday morning — nothing else can start.
+- [ ] **Verify Outscraper's endpoint and field names against their current docs before the first
+      paid run.** I wrote `01_universe.py` from their published client but could not reach the docs
+      (network egress blocked in the build environment). A wrong field name wastes a batch.
+- [ ] **`02_signals.py` needs no API key and is the highest-value stage.** Pure HTTP + parsing.
+      Run it first and widest.
+- [ ] **Stage 3 prints your real measured mobile rate.** That number replaces every vendor estimate
+      in `prospecting/11` §2. Report it.
+- [ ] **Wire in the DNC scrub before stage 5 output reaches a dialler.** The pipeline does not do it
+      — I had no DNC access. Call sheets ship with an unticked DNC checkbox by design.
+
 ## YOUR TWO-WEEK SPRINT STARTS MONDAY 10 AUGUST
 
 `prospecting/10-gtm-week-by-week.md` §4 has your day-by-day. Headlines:

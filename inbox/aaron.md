@@ -44,6 +44,19 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
 - [ ] **Confirm the git commit identity question** — see the note at the bottom of
   `sessions/claude/2026-08-07.md`. All commits so far are attributed to Claude, not to you.
 
+## BLOCKING MONDAY — one field in one file
+
+- [ ] **`pipeline/config.yaml` → `geography.markets` is empty, and stage 1 refuses to run without
+      it.** Fill in the metros you actually sell into. **This is the single input I cannot guess** —
+      a Denver list is worthless if you sell in Phoenix. Everything in the two-week sprint waits on
+      this one line.
+
+I tried to pull the live list you asked for and **could not — all external network egress is blocked
+in this environment** (Google Maps, Yelp, I-CAR and California BAR all refused at the proxy). I did
+not fabricate one, because a real business name attached to an invented pain signal is the exact
+thing we've spent eleven documents warning against. **What exists instead is `pipeline/` — five
+tested stages that produce the real list in a few hours once the geography is set.**
+
 ## DECIDE BEFORE JAMESON SCRAPES MONDAY
 
 - [ ] **"Auto body" or "mechanical repair" for Division A?** You said body shop; the plan says mechanical.

@@ -7,6 +7,15 @@ Two prompts that work as a closed loop for client site work.
 | `01-auditor-god-mode.md` | Diagnosing an existing site — pitch material, pre-rebuild scoping, post-launch QA | A live URL + the Input Block |
 | `02-builder-god-mode.md` | Building or rebuilding a client site | The Build Brief |
 
+Shareable PDFs of both live in `pdf/`. They are generated from the markdown —
+edit the `.md` files, then run `python3 build-pdfs.py` to regenerate. Never
+edit the PDFs directly, or the two will drift apart.
+
+```
+pip install markdown pygments pypdf reportlab cffi   # one-time
+python3 build-pdfs.py                                 # needs Chrome/Chromium
+```
+
 ## The loop
 
 1. **Audit the current site** with Prompt 1 → gives you a scored deficiency

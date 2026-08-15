@@ -1,0 +1,2284 @@
+<title>Leep AI Site Inspection</title>
+<style>
+  :root{
+    --paper:#F1F4F4; --surface:#FFFFFF; --surface-2:#E7ECED;
+    --ink:#121A20; --ink-2:#3E4F58; --ink-3:#6B7C85;
+    --rule:#CBD6D8; --rule-2:#DFE6E7;
+    --accent:#0F6E7A; --accent-2:#0A5058;
+    --critical:#A32017; --high:#B4600C; --medium:#87680F; --low:#5C6B70; --pass:#2C6A4F;
+    --crit-bg:#F8E8E6; --high-bg:#FAEFE1; --med-bg:#F6F2E0; --low-bg:#EAEEEF; --pass-bg:#E3F0E9;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --surface:#151E23; --surface-2:#1E282E;
+      --ink:#E4EBED; --ink-2:#AAB9BF; --ink-3:#7C8D94;
+      --rule:#2C3940; --rule-2:#222D33;
+      --accent:#57B9C5; --accent-2:#82D2DB;
+      --critical:#F0796C; --high:#E3A25C; --medium:#CFB559; --low:#9AAAB1; --pass:#63BC91;
+      --crit-bg:#2E1613; --high-bg:#2C1F10; --med-bg:#292410; --low-bg:#1D262B; --pass-bg:#12291F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --surface:#151E23; --surface-2:#1E282E;
+    --ink:#E4EBED; --ink-2:#AAB9BF; --ink-3:#7C8D94;
+    --rule:#2C3940; --rule-2:#222D33;
+    --accent:#57B9C5; --accent-2:#82D2DB;
+    --critical:#F0796C; --high:#E3A25C; --medium:#CFB559; --low:#9AAAB1; --pass:#63BC91;
+    --crit-bg:#2E1613; --high-bg:#2C1F10; --med-bg:#292410; --low-bg:#1D262B; --pass-bg:#12291F;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:Charter,"Bitstream Charter","Iowan Old Style","Source Serif 4",Georgia,serif;
+    font-size:17px; line-height:1.62;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 28px 120px}
+  .prose{max-width:68ch}
+
+  h1,h2,h3,h4{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-wrap:balance;margin:0}
+  h1{font-size:clamp(2.1rem,5.2vw,3.4rem);font-weight:800;letter-spacing:-.028em;line-height:1.04}
+  h2{font-size:clamp(1.45rem,2.9vw,2rem);font-weight:750;letter-spacing:-.02em;line-height:1.14}
+  h3{font-size:1.12rem;font-weight:720;letter-spacing:-.01em}
+  h4{font-size:.97rem;font-weight:700;letter-spacing:-.005em}
+  p{margin:0}
+
+  .eyebrow{
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:.685rem;letter-spacing:.17em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;
+  }
+  code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+
+  /* ---------- masthead ---------- */
+  header.mast{border-bottom:2px solid var(--ink);margin-bottom:44px;padding:52px 0 26px}
+  .mast-grid{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end;justify-content:space-between}
+  .mast p.sub{margin-top:14px;color:var(--ink-2);font-size:1.06rem;max-width:60ch}
+  .stamp{
+    border:2px solid var(--critical);color:var(--critical);
+    padding:11px 16px;border-radius:3px;transform:rotate(-1.6deg);
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    text-align:center;flex:0 0 auto;background:var(--crit-bg);
+  }
+  .stamp .big{display:block;font-size:1.32rem;font-weight:700;letter-spacing:.05em}
+  .stamp .small{display:block;font-size:.62rem;letter-spacing:.14em;margin-top:3px}
+
+  .meta-strip{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:34px;
+  }
+  .meta-strip div{background:var(--surface);padding:11px 14px}
+  .meta-strip dt{
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:.62rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;
+  }
+  .meta-strip dd{margin:0;font-size:.9rem;font-weight:600;font-family:system-ui,sans-serif}
+
+  /* ---------- sections ---------- */
+  section{margin-top:66px;scroll-margin-top:20px}
+  .sec-head{border-top:2px solid var(--ink);padding-top:12px;margin-bottom:24px}
+  .sec-head .eyebrow{display:block;margin-bottom:7px}
+  .lede{font-size:1.09rem;color:var(--ink-2);margin-top:14px;max-width:66ch}
+
+  .analogy{
+    border-left:3px solid var(--accent);background:var(--surface);
+    padding:15px 20px;margin:22px 0;font-size:1.03rem;color:var(--ink-2);max-width:68ch;
+  }
+  .analogy strong{color:var(--ink)}
+
+  /* ---------- tables ---------- */
+  .tw{overflow-x:auto;margin:22px 0;border:1px solid var(--rule);background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-family:system-ui,sans-serif;font-size:.855rem}
+  th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--rule-2);vertical-align:top}
+  th{
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--ink-3);background:var(--surface-2);font-weight:600;white-space:nowrap;
+  }
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,monospace}
+  tr:last-child td{border-bottom:none}
+  tbody tr.total td{border-top:2px solid var(--ink);font-weight:700;background:var(--surface-2)}
+
+  /* ---------- findings ---------- */
+  .finding{
+    background:var(--surface);border:1px solid var(--rule);
+    border-left:5px solid var(--low);margin:18px 0;padding:17px 20px;
+  }
+  .finding.critical{border-left-color:var(--critical)}
+  .finding.high{border-left-color:var(--high)}
+  .finding.medium{border-left-color:var(--medium)}
+  .finding.low{border-left-color:var(--low)}
+  .finding.pass{border-left-color:var(--pass)}
+  .f-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:9px}
+  .fid{
+    font-family:ui-monospace,Menlo,monospace;font-size:.76rem;font-weight:700;
+    letter-spacing:.05em;color:var(--ink);background:var(--surface-2);
+    padding:2px 8px;border:1px solid var(--rule);
+  }
+  .pill{
+    font-family:ui-monospace,Menlo,monospace;font-size:.615rem;letter-spacing:.11em;
+    text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:2px;white-space:nowrap;
+  }
+  .p-critical{background:var(--crit-bg);color:var(--critical)}
+  .p-high{background:var(--high-bg);color:var(--high)}
+  .p-medium{background:var(--med-bg);color:var(--medium)}
+  .p-low{background:var(--low-bg);color:var(--low)}
+  .p-pass{background:var(--pass-bg);color:var(--pass)}
+  .p-tag{background:transparent;color:var(--ink-3);border:1px solid var(--rule)}
+  .finding h3{margin-bottom:8px;font-size:1.05rem}
+  .finding dl{margin:11px 0 0;display:grid;grid-template-columns:auto 1fr;gap:5px 15px;font-size:.92rem}
+  .finding dt{
+    font-family:ui-monospace,Menlo,monospace;font-size:.6rem;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--ink-3);padding-top:5px;white-space:nowrap;
+  }
+  .finding dd{margin:0;color:var(--ink-2)}
+  .finding dd strong{color:var(--ink);font-weight:650}
+
+  pre{
+    background:var(--surface-2);border:1px solid var(--rule);color:var(--ink);
+    padding:12px 14px;overflow-x:auto;font-family:ui-monospace,Menlo,monospace;
+    font-size:.775rem;line-height:1.55;margin:10px 0;white-space:pre;
+  }
+  pre.ev{border-left:3px solid var(--accent)}
+  code:not(pre code){
+    background:var(--surface-2);padding:1px 5px;font-size:.86em;
+    border:1px solid var(--rule-2);border-radius:2px;
+  }
+
+  ul,ol{margin:12px 0;padding-left:22px}
+  li{margin:6px 0;color:var(--ink-2)}
+  li strong{color:var(--ink)}
+  li::marker{color:var(--accent)}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:22px 0}
+  .card{background:var(--surface);border:1px solid var(--rule);padding:15px 17px}
+  .card .n{
+    font-family:ui-monospace,Menlo,monospace;font-size:1.75rem;font-weight:700;
+    letter-spacing:-.02em;display:block;font-variant-numeric:tabular-nums;
+  }
+  .card .l{
+    font-family:ui-monospace,Menlo,monospace;font-size:.62rem;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--ink-3);margin-top:5px;display:block;
+  }
+  .card p{font-size:.87rem;color:var(--ink-2);margin-top:8px;font-family:system-ui,sans-serif}
+
+  a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  details{background:var(--surface);border:1px solid var(--rule);margin:14px 0;padding:0}
+  summary{
+    cursor:pointer;padding:12px 16px;font-family:system-ui,sans-serif;
+    font-weight:650;font-size:.93rem;list-style-position:inside;
+  }
+  details[open] summary{border-bottom:1px solid var(--rule)}
+  details .body{padding:14px 16px}
+
+  .verdict{
+    background:var(--crit-bg);border:1px solid var(--critical);
+    border-left:5px solid var(--critical);padding:19px 22px;margin:24px 0;
+  }
+  .verdict h3{color:var(--critical);margin-bottom:9px}
+  .verdict p{color:var(--ink);max-width:66ch}
+
+  .note{
+    background:var(--surface-2);border:1px dashed var(--rule);
+    padding:14px 18px;margin:20px 0;font-size:.93rem;color:var(--ink-2);
+  }
+  .note strong{color:var(--ink)}
+
+  footer.end{margin-top:80px;padding-top:22px;border-top:2px solid var(--ink);
+    font-size:.83rem;color:var(--ink-3);font-family:system-ui,sans-serif}
+
+  ol.src{padding-left:0;list-style:none;counter-reset:s}
+  ol.src li{
+    counter-increment:s;padding-left:38px;position:relative;
+    margin:9px 0;font-size:.86rem;font-family:system-ui,sans-serif;
+  }
+  ol.src li::before{
+    content:"[" counter(s) "]";position:absolute;left:0;top:0;
+    font-family:ui-monospace,Menlo,monospace;font-size:.72rem;color:var(--accent);font-weight:600;
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media (max-width:640px){
+    body{font-size:16px}
+    .wrap{padding:0 18px 80px}
+    .finding dl{grid-template-columns:1fr;gap:2px}
+    .finding dt{padding-top:9px}
+  }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <div class="mast-grid">
+    <div>
+      <span class="eyebrow">Forensic Technical SEO Audit &middot; Structural Report</span>
+      <h1>The house is beautiful.<br>The county can't find it.</h1>
+      <p class="sub">A full structural inspection of <strong>www.leepai.io</strong>, conducted 15 August 2026.
+      Every finding below is reproducible from the evidence quoted in it.</p>
+    </div>
+    <div class="stamp">
+      <span class="big">12 / 85</span>
+      <span class="small">STRUCTURAL SCORE</span>
+    </div>
+  </div>
+
+  <dl class="meta-strip">
+    <div><dt>Property</dt><dd>www.leepai.io</dd></div>
+    <div><dt>Type</dt><dd>SaaS &middot; Local service</dd></div>
+    <div><dt>Pages surveyed</dt><dd>5 of 5</dd></div>
+    <div><dt>Confidence grade</dt><dd>C</dd></div>
+    <div><dt>Protocol executed</dt><dd>~74%</dd></div>
+    <div><dt>Critical defects</dt><dd>4</dd></div>
+  </dl>
+</header>
+
+<!-- ============ §0 ============ -->
+<section id="s0">
+  <div class="sec-head">
+    <span class="eyebrow">§0</span>
+    <h2>Inspection integrity statement</h2>
+  </div>
+
+  <div class="analogy prose">
+    <strong>The honest disclosure first.</strong> I walked the property, pulled the deed, read the plat map,
+    opened every door I could reach, and weighed every piece of furniture that came off the truck.
+    What I could <em>not</em> do is schedule the utility company's own load test — the power company
+    wouldn't take my call. So the wiring section of this report is marked
+    <em>not inspected</em> rather than guessed at.
+  </div>
+
+  <h3>What I actually retrieved</h3>
+  <ul class="prose">
+    <li><strong>Live raw HTML</strong> for all 5 URLs in the sitemap, fetched with a Googlebot user-agent.</li>
+    <li><strong>A real rendered DOM</strong> — headless Chromium 1194 executed the site's JavaScript bundle and I diffed the result against the raw HTML.</li>
+    <li><strong>robots.txt and sitemap.xml</strong> in full, plus HTTP response headers on every variant I could reach.</li>
+    <li><strong>The production JavaScript bundle</strong> (1,156,970 bytes), read directly for event listeners, routing, and head management.</li>
+    <li><strong>Byte weights</strong> for every image and asset, measured against the live origin.</li>
+  </ul>
+
+  <h3>What was blocked, and how it scopes this report</h3>
+  <p class="prose">This session's egress proxy refused outbound connections to every primary documentation host
+  and every Google measurement API. Verified by direct test — all returned connect-level rejections:</p>
+  <pre class="ev">HOST                              RESULT
+web.dev                           blocked by egress proxy
+developers.google.com             blocked by egress proxy
+search.google.com                 blocked by egress proxy  (Rich Results Test)
+validator.schema.org              blocked by egress proxy
+chromeuxreport.googleapis.com     blocked by egress proxy  (CrUX field data)
+www.googleapis.com/pagespeed...   blocked by egress proxy  (PSI lab + field)
+www.rfc-editor.org                blocked by egress proxy  (RFC 9309)
+leepai.io:443  (apex domain)      blocked by egress proxy</pre>
+
+  <p class="prose" style="margin-top:14px">Three consequences you must hold onto while reading:</p>
+  <ol class="prose">
+    <li><strong>Vector 3 (Core Web Vitals) is UNSCORED.</strong> No field data, no lab data. I report the
+    payload and code-level evidence I could observe directly, and I deduct nothing for it. Any auditor who
+    hands you a Lighthouse score without running Lighthouse is inventing it.</li>
+    <li><strong>Every standards citation in §8 is third-party corroboration, not primary retrieval.</strong>
+    I could not open Google's own documentation, so I do not present any threshold or policy as
+    quoted-from-Google. Where I state a threshold, it is labelled as third-party and flagged for
+    primary re-verification.</li>
+    <li><strong>The apex domain <code>leepai.io</code> was unreachable from here.</strong> Its redirect behaviour
+    is genuinely unknown — see V1-06. This is the single most important unchecked item in the report,
+    because your own page links to it.</li>
+  </ol>
+
+  <div class="verdict">
+    <h3>Scope statement</h3>
+    <p>This audit is <strong>PARTIAL</strong> because field and lab performance data, Google's primary
+    documentation, the Rich Results Test, the schema validator, Search Console, and the apex domain were all
+    unreachable from the execution environment. Approximately <strong>74% of the protocol was executed</strong>.
+    <strong>Confidence Grade: C</strong> (live fetch and live render only — no field data, no lab data, no GSC).</p>
+  </div>
+</section>
+
+<!-- ============ §1 ============ -->
+<section id="s1">
+  <div class="sec-head">
+    <span class="eyebrow">§1</span>
+    <h2>Executive deficiency summary</h2>
+  </div>
+
+  <div class="analogy prose">
+    You have built a genuinely impressive custom home. The finishes are good, the floor plan is logical,
+    the copy on the walls is persuasive, and the owner's family photo is hanging in the hall.
+    <strong>The problem is that it arrives at the lot flat-packed in a shipping container</strong>, there is no
+    address recorded on the deed, and every wrong house number on the street opens your front door.
+    The county appraiser drives by, sees a container in a field, and files it as unimproved land.
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <span class="n" style="color:var(--critical)">9</span>
+      <span class="l">Words visible at the curb</span>
+      <p>What Googlebot parses before it runs any JavaScript. Nine words, and they're navigation.</p>
+    </div>
+    <div class="card">
+      <span class="n" style="color:var(--pass)">1,209</span>
+      <span class="l">Words inside, after assembly</span>
+      <p>The real content. Excellent, persuasive, specific — and entirely dependent on a second visit.</p>
+    </div>
+    <div class="card">
+      <span class="n" style="color:var(--critical)">0</span>
+      <span class="l">Canonical tags sitewide</span>
+      <p>No recorded address on any of the five pages, raw or rendered.</p>
+    </div>
+    <div class="card">
+      <span class="n" style="color:var(--critical)">0</span>
+      <span class="l">Structured data blocks</span>
+      <p>No title record, no listing sheet. The property has no machine-readable identity.</p>
+    </div>
+  </div>
+
+  <h3>Score arithmetic</h3>
+  <p class="prose">Deduction scale per finding: CRITICAL &minus;8, HIGH &minus;5, MEDIUM &minus;3, LOW &minus;1.
+  A vector floors at 0 and cannot go negative.</p>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Vector</th><th class="num">Weight</th>
+          <th>Deductions</th><th class="num">Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">1</td><td>Canonical Governance &amp; Indexability</td><td class="num">20</td>
+          <td class="mono" style="font-size:.78rem">8+8+3+3+1 = 23 &rarr; floored</td><td class="num" style="color:var(--critical);font-weight:700">0</td></tr>
+        <tr><td class="num">2</td><td>Rendering Architecture</td><td class="num">15</td>
+          <td class="mono" style="font-size:.78rem">8+5+3+1 = 17 &rarr; floored</td><td class="num" style="color:var(--critical);font-weight:700">0</td></tr>
+        <tr><td class="num">3</td><td>INP &amp; Core Web Vitals</td><td class="num">15</td>
+          <td class="mono" style="font-size:.78rem">no field or lab data retrievable</td><td class="num" style="color:var(--ink-3);font-weight:700">UNSCORED</td></tr>
+        <tr><td class="num">4</td><td>Schema Graph &amp; Entity Architecture</td><td class="num">12</td>
+          <td class="mono" style="font-size:.78rem">8</td><td class="num">4</td></tr>
+        <tr><td class="num">5</td><td>Head, Meta &amp; Document Semantics</td><td class="num">12</td>
+          <td class="mono" style="font-size:.78rem">5+5+3+3+1 = 17 &rarr; floored</td><td class="num" style="color:var(--critical);font-weight:700">0</td></tr>
+        <tr><td class="num">6</td><td>Content Depth, Intent &amp; E-E-A-T</td><td class="num">12</td>
+          <td class="mono" style="font-size:.78rem">3+3+1 = 7</td><td class="num">5</td></tr>
+        <tr><td class="num">7</td><td>Link Graph &amp; IA</td><td class="num">8</td>
+          <td class="mono" style="font-size:.78rem">3+1+1 = 5</td><td class="num">3</td></tr>
+        <tr><td class="num">8</td><td>Security, Accessibility &amp; Delivery</td><td class="num">6</td>
+          <td class="mono" style="font-size:.78rem">5+3+1 = 9 &rarr; floored</td><td class="num" style="color:var(--critical);font-weight:700">0</td></tr>
+        <tr class="total"><td></td><td>TOTAL</td><td class="num">85 possible</td>
+          <td class="mono" style="font-size:.78rem">0+0+4+0+5+3+0</td><td class="num">12</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="prose"><strong>Reported score: 12 / 85 possible (15 points unscored: Vector 3).</strong>
+  This is not renormalised to 100 and must not be quoted as "12/100".</p>
+
+  <div class="note prose">
+    <strong>Hard cap applied.</strong> The protocol caps any property at 39/100 when a CRITICAL indexing
+    blocker exists. Three qualify here: primary content is JavaScript-only (V2-01), no canonical is
+    declared anywhere (V1-01), and unmatched URLs return HTTP 200 (V1-02). The cap is therefore in force,
+    though the arithmetic already lands far below it. <strong>The cap is not the finding — the arithmetic is.</strong>
+  </div>
+
+  <div class="verdict">
+    <h3>Verdict: can this asset rank for its query set as it stands?</h3>
+    <p><strong>Only in a weak SERP.</strong> For a low-competition branded query like "Leep AI", yes —
+    Google will index something. For the commercial queries this business actually needs
+    ("AI receptionist for home service business", "AI answering service HVAC", "missed call text back
+    contractors"), <strong>no</strong>.</p>
+    <p style="margin-top:12px">The single biggest reason: <strong>the page has no stable identity.</strong>
+    Not the JavaScript — Google does render JavaScript, and it would eventually see your content. The deeper
+    problem is that five distinct URLs, plus an unbounded number of nonexistent ones, all present the same
+    title, the same description, no canonical, and the same 200 status. You have not given Google one house
+    to appraise. You have given it an infinite subdivision of identical unaddressed houses, and asked it to
+    pick a favourite.</p>
+  </div>
+
+  <h3>Critical blockers</h3>
+  <ul class="prose">
+    <li><strong>V1-01 — No canonical tag exists anywhere on the site.</strong> Mechanism: every URL variant
+    Google encounters (parameters, double slashes, casing, apex vs www) is a candidate for the index with no
+    declared preference, so ranking signals split across forms instead of consolidating on one.</li>
+    <li><strong>V1-02 — Every nonexistent URL returns HTTP 200 with the homepage's exact bytes.</strong>
+    Mechanism: this creates unbounded duplicate crawl space. Crawl budget is spent on URLs that should not
+    exist, and the pages you care about are re-crawled less often.</li>
+    <li><strong>V2-01 — 99.3% of the page's content exists only after JavaScript execution.</strong>
+    Mechanism: indexing depends entirely on the render pass completing successfully. When it does not, the
+    indexed document is a nine-word shell.</li>
+    <li><strong>V4-01 — Zero structured data on all five URLs.</strong> Mechanism: the page is currently
+    ineligible for every structured-data-dependent search feature, and Google has no machine-readable
+    statement of what entity this business is.</li>
+  </ul>
+
+  <h3>Architectural blindspots (deep-dive modules)</h3>
+  <ul class="prose">
+    <li><strong>M1 — Canonical drift.</strong> The framework emits no canonical on any route. Your own
+    homepage links to the apex domain while your sitemap declares the www form.</li>
+    <li><strong>M2 — Schema nesting.</strong> Rung 0 of 4. There is nothing to nest.</li>
+    <li><strong>M3 — Interaction to Next Paint.</strong> Unmeasurable here, but the code shows four of six
+    scroll listeners registered without a passive flag, and touch/wheel handlers with none.</li>
+    <li><strong>M4 — JavaScript-only rendering.</strong> 1,200 of 1,209 content words, and 34 of 39 links,
+    exist only in the rendered column. Seven FAQ answers exist in <em>neither</em> column.</li>
+  </ul>
+</section>
+
+<!-- ============ §2 ============ -->
+<section id="s2">
+  <div class="sec-head">
+    <span class="eyebrow">§2</span>
+    <h2>Detailed vector audit</h2>
+  </div>
+
+  <h3 style="margin-top:8px">Vector 1 — Canonical governance &amp; indexability <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(0 / 20)</span></h3>
+  <div class="analogy prose">
+    This is the deed and the address. Everything downstream depends on the county knowing which building
+    you mean and where it stands.
+  </div>
+
+  <div class="finding critical">
+    <div class="f-top">
+      <span class="fid">V1-01</span>
+      <span class="pill p-critical">Critical</span>
+      <span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>No <code>rel="canonical"</code> exists on any page, in raw HTML or rendered DOM</h3>
+    <dl>
+      <dt>Location</dt><dd>All 5 sitemap URLs — <code>/</code>, <code>/demo</code>, <code>/privacy</code>, <code>/terms</code>, <code>/sms-terms</code></dd>
+      <dt>Evidence</dt><dd>
+        <pre class="ev">$ curl -sSL https://www.leepai.io/ | grep -Eio '&lt;link[^&gt;]+canonical[^&gt;]*&gt;'
+(no output)
+
+Rendered DOM after JS execution, rel=canonical count:  0
+Raw HTML,                        rel=canonical count:  0
+Checked on / , /demo , /privacy — all zero.</pre>
+      </dd>
+      <dt>Impact</dt><dd>Google must guess the preferred URL for every page. With <code>?utm_source=</code>
+      returning 200 (verified), <code>//</code> returning 200 (verified), and an apex domain of unknown
+      behaviour, the same content is reachable at many addresses with no declared preference. Ranking signals
+      that should consolidate on one URL instead split across forms.</dd>
+      <dt>Standard</dt><dd>Google's duplicate-URL consolidation guidance. <strong>Primary source not
+      retrievable from this environment</strong> — see §6. Third-party corroboration in §8 [5].</dd>
+      <dt>Severity</dt><dd><strong>CRITICAL</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>The site has no head manager at all — <code>document.title</code> appears
+      <strong>0 times</strong> in the bundle. Install one, then emit a canonical per route:
+        <pre>npm i react-helmet-async</pre>
+        <pre>// src/main.jsx
+import { HelmetProvider } from 'react-helmet-async';
+
+createRoot(document.getElementById('root')).render(
+  &lt;HelmetProvider&gt;
+    &lt;App /&gt;
+  &lt;/HelmetProvider&gt;
+);</pre>
+        <pre>// src/components/Seo.jsx
+import { Helmet } from 'react-helmet-async';
+
+const ORIGIN = 'https://www.leepai.io';
+
+export default function Seo({ path, title, description, image = '/leep-ai-og.png' }) {
+  const url = ORIGIN + path;
+  return (
+    &lt;Helmet prioritizeSeoTags&gt;
+      &lt;title&gt;{title}&lt;/title&gt;
+      &lt;meta name="description" content={description} /&gt;
+      &lt;link rel="canonical" href={url} /&gt;
+      &lt;meta property="og:url" content={url} /&gt;
+      &lt;meta property="og:site_name" content="Leep AI" /&gt;
+      &lt;meta property="og:title" content={title} /&gt;
+      &lt;meta property="og:description" content={description} /&gt;
+      &lt;meta property="og:image" content={ORIGIN + image} /&gt;
+      &lt;meta name="twitter:image" content={ORIGIN + image} /&gt;
+    &lt;/Helmet&gt;
+  );
+}</pre>
+        <pre>// src/pages/Demo.jsx — one &lt;Seo/&gt; per route
+&lt;Seo
+  path="/demo"
+  title="Book a Leep AI Demo — See the AI Receptionist Live"
+  description="Watch Leep AI answer a live call, book an appointment, and follow up on a lead. 20-minute walkthrough for home service operators."
+/&gt;</pre>
+        <p style="margin-top:10px;font-size:.9rem">This is a client-side canonical, which Google accepts
+        because it is emitted into <code>&lt;head&gt;</code> during render. The durable fix is V2-01's
+        prerender, which puts it in the raw HTML.</p>
+      </dd>
+      <dt>Effort</dt><dd>M &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/demo | grep -i canonical</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding critical">
+    <div class="f-top">
+      <span class="fid">V1-02</span>
+      <span class="pill p-critical">Critical</span>
+      <span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Soft 404 — every unmatched URL returns HTTP 200 with byte-identical homepage HTML</h3>
+    <dl>
+      <dt>Location</dt><dd>All unmatched paths. Tested <code>/nonexistent-page-test-404</code> and <code>/this-page-does-not-exist-xyz</code></dd>
+      <dt>Evidence</dt><dd>
+        <pre class="ev">$ curl -sSIL -w '%{http_code}' https://www.leepai.io/nonexistent-page-test-404
+200
+
+$ curl -sSL https://www.leepai.io/this-page-does-not-exist-xyz | md5sum
+c304036f5f130a7450d925cb155247c0  -
+$ curl -sSL https://www.leepai.io/ | md5sum
+c304036f5f130a7450d925cb155247c0  -
+                                  ^ identical bytes
+
+Rendered client-side, that URL DOES show a 404 view:
+  h1: ['404']
+  text: "404 Oops! Page not found Return to Home"
+...but the HTTP status on the wire is still 200.</pre>
+      </dd>
+      <dt>Impact</dt><dd>Textbook soft 404. The client-side router paints a "Page not found" screen while the
+      server reports success. Any URL anyone ever invents — a mistyped link, a scraped URL, a spam link
+      pointed at your domain — becomes an indexable 200-status page carrying your homepage content. This is
+      unbounded duplicate crawl space, and it is the mechanism behind index bloat.</dd>
+      <dt>Standard</dt><dd>Google's soft-404 guidance. <strong>Primary source not retrievable</strong> —
+      third-party corroboration in §8 [6][7].</dd>
+      <dt>Severity</dt><dd><strong>CRITICAL</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>The host is Cloudflare. Serve a real 404 status for unmatched routes.
+      If the site is on Cloudflare Pages, add a <code>_routes.json</code> and a Function; the portable fix
+      that works on any Cloudflare zone is a Worker in front of the asset handler:
+        <pre>// functions/_middleware.js  (Cloudflare Pages Functions)
+const KNOWN = new Set(['/', '/demo', '/privacy', '/terms', '/sms-terms']);
+
+export async function onRequest(context) {
+  const { request, next } = context;
+  const url = new URL(request.url);
+  const path = url.pathname.replace(/\/+$/, '') || '/';
+
+  const isAsset = /\.[a-z0-9]+$/i.test(path);
+  if (isAsset || KNOWN.has(path)) return next();
+
+  // Unmatched route: serve the SPA shell but with a real 404 status.
+  const shell = await next(new Request(new URL('/', url), request));
+  return new Response(shell.body, {
+    status: 404,
+    headers: shell.headers,
+  });
+}</pre>
+      <p style="margin-top:10px;font-size:.9rem">Keep the client-side 404 view — it is good UX. This change
+      only corrects the status code on the wire, which is the part Google reads.</p>
+      </dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> infra</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSI -o /dev/null -w '%{http_code}\n' https://www.leepai.io/zzz-should-404
+# expect: 404</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V1-03</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3><code>sitemap.xml</code> carries no <code>&lt;lastmod&gt;</code> on any URL</h3>
+    <dl>
+      <dt>Location</dt><dd><code>https://www.leepai.io/sitemap.xml</code></dd>
+      <dt>Evidence</dt><dd><pre class="ev">&lt;url&gt;
+  &lt;loc&gt;https://www.leepai.io/&lt;/loc&gt;
+  &lt;changefreq&gt;weekly&lt;/changefreq&gt;
+  &lt;priority&gt;1.0&lt;/priority&gt;
+&lt;/url&gt;
+                    ^ no &lt;lastmod&gt; on any of the 5 entries</pre></dd>
+      <dt>Impact</dt><dd>You are shipping the two hints Google is documented as largely ignoring
+      (<code>changefreq</code>, <code>priority</code>) and omitting the one it does use. Nothing tells Google
+      when a page genuinely changed, so re-crawl scheduling has no signal to work from.</dd>
+      <dt>Standard</dt><dd>sitemaps.org protocol 0.9 &middot; Google sitemap guidance. Primary not retrievable — §8 [8].</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Generate the sitemap at build time with a truthful timestamp per route.
+      Do not stamp every URL with today's date on every deploy — that trains Google to ignore the field.
+        <pre>// scripts/sitemap.mjs — run in your build step
+import { writeFileSync, statSync } from 'node:fs';
+
+const ORIGIN = 'https://www.leepai.io';
+const ROUTES = [
+  { path: '/',          src: 'src/pages/Home.jsx' },
+  { path: '/demo',      src: 'src/pages/Demo.jsx' },
+  { path: '/privacy',   src: 'src/pages/Privacy.jsx' },
+  { path: '/terms',     src: 'src/pages/Terms.jsx' },
+  { path: '/sms-terms', src: 'src/pages/SmsTerms.jsx' },
+];
+
+const body = ROUTES.map(({ path, src }) => {
+  const lastmod = statSync(src).mtime.toISOString().slice(0, 10);
+  return `  &lt;url&gt;\n    &lt;loc&gt;${ORIGIN}${path}&lt;/loc&gt;\n    &lt;lastmod&gt;${lastmod}&lt;/lastmod&gt;\n  &lt;/url&gt;`;
+}).join('\n');
+
+writeFileSync('public/sitemap.xml',
+  `&lt;?xml version="1.0" encoding="UTF-8"?&gt;\n` +
+  `&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;\n${body}\n&lt;/urlset&gt;\n`
+);</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/sitemap.xml | grep -c lastmod  # expect: 5</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V1-04</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Double-slash and parameter variants return 200 with no canonical to consolidate them</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">https://www.leepai.io//                  200 hops=0 -&gt; https://www.leepai.io//
+https://www.leepai.io/?utm_source=test   200 hops=0 -&gt; .../?utm_source=test
+https://www.leepai.io/index.html         200 hops=1 -&gt; https://www.leepai.io/   [OK — redirects]
+http://www.leepai.io/                    200 hops=1 -&gt; https://www.leepai.io/   [OK — redirects]</pre></dd>
+      <dt>Impact</dt><dd>Two extra indexable address forms for the same front door. Harmless in isolation;
+      compounding once V1-01 leaves them unconsolidated.</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Fixed automatically once V1-01 ships a self-referencing canonical without
+      parameters. Optionally collapse repeated slashes at the edge:
+        <pre>// add to functions/_middleware.js, before the KNOWN check
+if (/\/{2,}/.test(url.pathname)) {
+  url.pathname = url.pathname.replace(/\/{2,}/g, '/');
+  return Response.redirect(url.toString(), 301);
+}</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> infra</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSIL -o /dev/null -w '%{http_code} %{url_effective}\n' 'https://www.leepai.io//'</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V1-05</span><span class="pill p-low">Low</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3><code>robots.txt</code> declares two separate <code>User-agent: *</code> groups</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev"># BEGIN Cloudflare Managed content
+User-agent: *
+Content-Signal: search=yes,ai-train=no,use=reference
+Allow: /
+...
+# END Cloudflare Managed Content
+
+User-agent: Googlebot
+Allow: /
+...
+User-agent: *          &lt;-- second group for the same token
+Allow: /</pre></dd>
+      <dt>Impact</dt><dd>Both groups say <code>Allow: /</code>, so the current effect is benign. The risk is
+      future: anyone adding a <code>Disallow</code> to one group will get behaviour that depends on merge
+      semantics rather than on what they intended. Cloudflare's managed block is regenerated automatically,
+      so the duplicate will keep reappearing.</dd>
+      <dt>Standard</dt><dd>RFC 9309 (Robots Exclusion Protocol) group merging. Primary not retrievable — §8 [9].</dd>
+      <dt>Severity</dt><dd><strong>LOW</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Delete your hand-written trailing block entirely. The Cloudflare-managed
+      <code>User-agent: *  Allow: /</code> already permits every crawler that isn't explicitly named, so the
+      <code>Googlebot</code> / <code>Bingbot</code> / <code>Twitterbot</code> / <code>facebookexternalhit</code>
+      groups are redundant. Keep only the <code>Sitemap:</code> line:
+        <pre># (Cloudflare managed block stays as-is, untouched)
+
+Sitemap: https://www.leepai.io/sitemap.xml</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> infra</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/robots.txt | grep -c '^User-agent: \*'  # expect: 1</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V1-06</span><span class="pill p-low">Not scored</span><span class="pill p-tag">[REQUIRES LIVE EXECUTION]</span>
+    </div>
+    <h3>Apex domain <code>leepai.io</code> behaviour is unverified — and your own page links to it</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">$ curl -sSIL https://leepai.io/
+curl: (56) CONNECT tunnel failed, response 403
+
+proxy log: {"kind":"connect_rejected","host":"leepai.io:443",
+            "detail":"gateway answered 403 to CONNECT (policy denial)"}
+            ^ this is MY network blocking me, not your server refusing.
+
+Meanwhile, in your own raw HTML &lt;noscript&gt; block:
+  &lt;a href="https://leepai.io"&gt;leepai.io&lt;/a&gt;     &lt;-- apex form
+And in your sitemap:
+  &lt;loc&gt;https://www.leepai.io/&lt;/loc&gt;              &lt;-- www form</pre></dd>
+      <dt>Impact</dt><dd>If the apex serves 200 rather than redirecting to www, you have a full duplicate of
+      the entire site at a second hostname, with no canonical on either side to resolve it. That would
+      escalate to CRITICAL. I could not determine which is the case, so I have not scored it.</dd>
+      <dt>Severity</dt><dd><strong>UNSCORED</strong> &nbsp;·&nbsp; Confidence: n/a — blocked</dd>
+      <dt>Remediation</dt><dd>Run the check from an unrestricted network first (command in §6). If the apex
+      returns 200, add a Cloudflare Bulk Redirect or a Page Rule: <code>leepai.io/*</code> &rarr;
+      <code>https://www.leepai.io/$1</code>, status 301. Then change the noscript link to the www form so
+      your own markup agrees with your sitemap.</dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> infra</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSIL -o /dev/null -w '%{http_code} -> %{url_effective}\n' https://leepai.io/</pre></dd>
+    </dl>
+  </div>
+
+  <!-- ---- VECTOR 2 ---- -->
+  <h3 style="margin-top:44px">Vector 2 — Rendering architecture <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(0 / 15)</span></h3>
+  <div class="analogy prose">
+    <strong>The flat-pack problem.</strong> The county appraiser makes two trips. On the first, they photograph
+    whatever is standing at the curb. Assembly is scheduled for a second visit, whenever a crew is free.
+    Your house is entirely in the box on trip one.
+  </div>
+
+  <div class="finding critical">
+    <div class="f-top">
+      <span class="fid">V2-01</span><span class="pill p-critical">Critical</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>99.3% of content and 87% of links exist only after JavaScript execution</h3>
+    <dl>
+      <dt>Location</dt><dd>Site-wide. Vite SPA shell, <code>&lt;div id="root"&gt;&lt;/div&gt;</code>, single bundle <code>/assets/index-CAptjTRU.js</code></dd>
+      <dt>Evidence</dt><dd>Raw HTML fetched with Googlebot UA; rendered DOM captured from headless Chromium 1194 after JS execution.
+        <div class="tw" style="margin:10px 0">
+          <table>
+            <thead><tr><th>Signal</th><th class="num">Raw HTML</th><th class="num">Rendered DOM</th><th class="num">Delta</th><th>Verdict</th></tr></thead>
+            <tbody>
+              <tr><td>Main-content word count</td><td class="num">9</td><td class="num">1,209</td><td class="num">+1,200</td><td style="color:var(--critical)">At risk</td></tr>
+              <tr><td>&lt;a href&gt; count</td><td class="num">5</td><td class="num">39</td><td class="num">+34</td><td style="color:var(--critical)">At risk</td></tr>
+              <tr><td>Unique href targets</td><td class="num">5</td><td class="num">25</td><td class="num">+20</td><td style="color:var(--critical)">At risk</td></tr>
+              <tr><td>&lt;h2&gt; / &lt;h3&gt; / &lt;h4&gt;</td><td class="num">1 / 0 / 0</td><td class="num">12 / 26 / 10</td><td class="num">+47</td><td style="color:var(--critical)">At risk</td></tr>
+              <tr><td>&lt;title&gt; + meta description</td><td class="num">present</td><td class="num">identical</td><td class="num">0</td><td style="color:var(--pass)">Safe</td></tr>
+              <tr><td>JSON-LD blocks</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td style="color:var(--critical)">Absent</td></tr>
+              <tr><td>Document bytes</td><td class="num">3,755</td><td class="num">106,377</td><td class="num">+102,622</td><td>&mdash;</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre class="ev">Raw HTML body, in full:
+  &lt;div id="root"&gt;&lt;/div&gt;
+  &lt;noscript&gt;...contact block, 5 links...&lt;/noscript&gt;
+  &lt;script id="vtag-ai-js" async src="https://r2.leadsy.ai/tag.js"&gt;
+  &lt;script src="https://widgets.leadconnectorhq.com/loader.js"&gt;
+
+The 9 raw words are the noscript fallback. Not one word of the
+sales page — hero, pricing, testimonial, FAQ — is in the raw HTML.</pre>
+      </dd>
+      <dt>Impact</dt><dd>Google does render JavaScript, so this is not "invisible to Google" — that claim
+      would be wrong and I am not making it. The real mechanism is dependency and latency: indexing your
+      content requires the render pass to run and succeed. Rendering is a deferred, resource-limited second
+      pass. When it is delayed, your content is indexed late; when it fails — a bundle timeout, a CDN blip, a
+      JS exception — the document Google holds is a nine-word shell. You have made every word of your sales
+      copy conditional on a process you do not control. The mitigation is cheap and the exposure is total.</dd>
+      <dt>Standard</dt><dd>Google's JavaScript SEO documentation on the crawl / render / index model.
+      <strong>Primary source not retrievable</strong> — §6, §8 [7].</dd>
+      <dt>Severity</dt><dd><strong>CRITICAL</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Do not rebuild in Next.js — that is a rewrite you do not need. Add prerendering
+      to the existing Vite build. Five static routes is exactly the case this is built for.
+        <pre>npm i -D vite-plugin-prerender-spa puppeteer</pre>
+        <pre>// vite.config.js
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import prerender from 'vite-plugin-prerender-spa';
+import path from 'node:path';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    prerender({
+      staticDir: path.join(process.cwd(), 'dist'),
+      routes: ['/', '/demo', '/privacy', '/terms', '/sms-terms'],
+      postProcess(rendered) {
+        // Strip the chat widget from the prerendered HTML so it does not
+        // double-initialise when the client bundle hydrates.
+        rendered.html = rendered.html.replace(
+          /&lt;script[^&gt;]*widgets\.leadconnectorhq\.com[^&gt;]*&gt;&lt;\/script&gt;/g, ''
+        );
+        return rendered;
+      },
+      renderer: {
+        renderAfterDocumentEvent: 'prerender-ready',
+        headless: true,
+      },
+    }),
+  ],
+});</pre>
+        <pre>// src/App.jsx — fire the event once the app has painted real content
+import { useEffect } from 'react';
+
+export default function App() {
+  useEffect(() => {
+    document.dispatchEvent(new Event('prerender-ready'));
+  }, []);
+
+  return ( /* ...existing tree... */ );
+}</pre>
+        <p style="margin-top:10px;font-size:.9rem">After this, <code>curl</code> on any route returns the full
+        page text, the canonical, the per-route title, and the JSON-LD — with no render pass required. This
+        single change resolves or de-risks V1-01, V2-01, V4-01, V5-01 and V5-02 simultaneously.</p>
+      </dd>
+      <dt>Effort</dt><dd>M &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL -A Googlebot https://www.leepai.io/ | grep -c "Every Text and Call Answered"
+# expect: 1  (currently: 0)</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding high">
+    <div class="f-top">
+      <span class="fid">V2-02</span><span class="pill p-high">High</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Seven FAQ answers exist in the bundle but in neither the raw HTML nor the rendered DOM</h3>
+    <dl>
+      <dt>Location</dt><dd>Homepage, <code>#faq</code> section — Radix accordion</dd>
+      <dt>Evidence</dt><dd>
+        <pre class="ev">Rendered DOM, #faq region — questions present, answers absent:
+
+  |FAQ|Common |Questions|
+  |Will customers know it's AI?|
+  |Is it compliant with regulations?|
+  |What about complex questions?|
+  |Will this replace my staff?|
+  |How fast can we deploy?|
+  |What systems does it integrate with?|
+  |What types of home service businesses do you work with?|
+
+Probe of rendered visible text:
+  "onboarding" -&gt; 0 occurrences
+  "contract"   -&gt; 0 occurrences
+  "typically"  -&gt; 0 occurrences
+
+But the answers DO exist, inside the JS bundle:
+  "Will customers know it's AI?",a:"Leep AI uses advanced natural language
+   processing with human-like voice quality. Most callers cannot distinguish
+   it from a trained receptionist..."
+  "How fast can we deploy?",a:"Typical deployment takes 2-3 weeks depending
+   on integrations. We handle the configuration, integrate with your phone
+   system and CRM, and provide a dedicated onboarding specialist..."</pre>
+      </dd>
+      <dt>Impact</dt><dd>The accordion unmounts its content until clicked. Googlebot does not click. Roughly
+      350 words of your most query-shaped content — the exact questions a buyer types into Google — are
+      present in your codebase and absent from your indexable page. This is a finished basement with no door
+      cut into it.</dd>
+      <dt>Severity</dt><dd><strong>HIGH</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Radix already supports this — the bundle contains <code>forceMount</code>
+      (17 occurrences), it is simply not applied to the accordion content. Mount the answers always and hide
+      them with CSS, so they are in the DOM while staying visually collapsed:
+        <pre>// src/components/Faq.jsx
+&lt;Accordion.Root type="single" collapsible&gt;
+  {FAQS.map(({ q, a }, i) =&gt; (
+    &lt;Accordion.Item key={i} value={`faq-${i}`}&gt;
+      &lt;Accordion.Header&gt;
+        &lt;Accordion.Trigger&gt;{q}&lt;/Accordion.Trigger&gt;
+      &lt;/Accordion.Header&gt;
+
+      {/* forceMount keeps the answer in the DOM at all times.
+          Radix still sets data-state, so CSS handles the collapse. */}
+      &lt;Accordion.Content forceMount className="faq-content"&gt;
+        &lt;p&gt;{a}&lt;/p&gt;
+      &lt;/Accordion.Content&gt;
+    &lt;/Accordion.Item&gt;
+  ))}
+&lt;/Accordion.Root&gt;</pre>
+        <pre>/* src/index.css */
+.faq-content {
+  overflow: hidden;
+}
+.faq-content[data-state="closed"] {
+  height: 0;
+  visibility: hidden;   /* collapsed, but present in the DOM */
+}
+.faq-content[data-state="open"] {
+  height: auto;
+  visibility: visible;
+}</pre>
+        <p style="margin-top:10px;font-size:.9rem"><strong>Do not add FAQPage structured data for this.</strong>
+        FAQ rich results were restricted in August 2023 and have since been fully withdrawn — third-party
+        reporting places the end of FAQ rich results at 7 May 2026, with removal from the Rich Results Test in
+        June 2026 (§8 [3][4]). Marking this up will not produce a SERP feature. Getting the answer text into
+        the DOM is the entire win here, and it is a real one.</p>
+      </dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -c "dedicated onboarding specialist"
+# expect: 1  (after V2-01 prerender ships)</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V2-03</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Your own markup links to the apex domain while your sitemap declares www</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">raw.html, noscript block:
+  &lt;a href="https://leepai.io" style="color:#b8902f;"&gt;leepai.io&lt;/a&gt;
+
+sitemap.xml:
+  &lt;loc&gt;https://www.leepai.io/&lt;/loc&gt;
+
+Rendered DOM also mixes forms for the same page:
+  /demo
+  https://www.leepai.io/demo</pre></dd>
+      <dt>Impact</dt><dd>Your internal link graph, your sitemap, and (once it exists) your canonical must all
+      name one URL form. Right now they disagree. See V1-06 — if the apex does not redirect, this link is
+      actively pointing crawlers at a duplicate hostname.</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Standardise on <code>https://www.leepai.io</code> — it is what your sitemap
+      already declares. In <code>index.html</code>, change the noscript link to
+      <code>https://www.leepai.io</code>, and use root-relative paths (<code>/demo</code>) for every internal
+      link so the form can never drift.</dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -o 'href="https://leepai.io"' | wc -l  # expect: 0</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V2-04</span><span class="pill p-low">Low</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>75 elements render at <code>opacity: 0</code> pending scroll-triggered entrance animations</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">$ grep -oE 'style="opacity: 0[^"]*"' rendered.html | wc -l
+75
+
+Example — the H1 itself:
+&lt;h1 class="font-display font-bold ... hero-heading"
+    style="opacity: 0; transform: translateY(20.0828px);"&gt;</pre></dd>
+      <dt>Impact</dt><dd>The content is in the DOM, so it is indexable — this is not a hiding-content
+      violation. Two real risks remain: entrance transforms are a common source of layout shift, and if any
+      reveal depends on an IntersectionObserver that never fires in a headless viewport, those elements stay
+      at <code>opacity: 0</code> permanently for a crawler that does render.</dd>
+      <dt>Severity</dt><dd><strong>LOW</strong> &nbsp;·&nbsp; Confidence: Medium — the CLS half is
+      [INFERRED] from the transform values, not measured. Falsify it by running a Lighthouse trace and
+      reading the CLS attribution.</dd>
+      <dt>Remediation</dt><dd>Make the animation additive rather than gating: render at full opacity by
+      default and let the animation enhance, and respect reduced-motion.
+        <pre>/* src/index.css */
+.reveal { opacity: 1; }           /* visible by default — never gated */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .reveal.is-visible { opacity: 1; transform: none; }
+}</pre>
+        <p style="margin-top:10px;font-size:.9rem">Reserve space with <code>min-height</code> on animated
+        containers so the entrance transform cannot shift what follows it.</p>
+      </dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>npx -y lighthouse https://www.leepai.io/ --form-factor=mobile \
+  --output=json --output-path=./lh.json
+# then read: audits['cumulative-layout-shift'].numericValue</pre></dd>
+    </dl>
+  </div>
+
+  <!-- ---- VECTOR 3 ---- -->
+  <h3 style="margin-top:44px">Vector 3 — INP &amp; Core Web Vitals <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(UNSCORED)</span></h3>
+  <div class="analogy prose">
+    <strong>The inspection I could not schedule.</strong> Measuring how a house performs under load requires
+    the utility's own meter readings. My calls to that office were refused at the switchboard. So I did the
+    next honest thing: I weighed everything that came off the delivery truck and read the wiring diagram.
+    That tells you where the load will be. It does not tell you what the meter says, and I will not pretend
+    otherwise.
+  </div>
+
+  <div class="note prose">
+    <strong>No score is assigned to this vector, and its 15 points are excluded from the denominator.</strong>
+    CrUX and PageSpeed Insights were both blocked; Lighthouse could not reach the live origin because Chromium
+    could not tunnel through this session's proxy. The findings below are recorded as evidence and carry
+    <strong>zero deduction</strong>.
+    <br><br>
+    <strong>On INP specifically:</strong> Lighthouse does not report INP. INP requires real user interaction;
+    in the lab, Total Blocking Time is the proxy. Any report quoting you a "Lighthouse INP score" is
+    fabricating it.
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V3-01</span><span class="pill p-low">Evidence only</span><span class="pill p-tag">[MEASURED]</span>
+    </div>
+    <h3>Asset payload — measured against the live origin, 15 Aug 2026</h3>
+    <dl>
+      <dt>Evidence</dt><dd>
+        <div class="tw" style="margin:10px 0">
+          <table>
+            <thead><tr><th>Asset</th><th class="num">Bytes on wire</th><th class="num">Uncompressed</th><th>Note</th></tr></thead>
+            <tbody>
+              <tr><td class="mono" style="font-size:.78rem">/assets/index-CAptjTRU.js</td><td class="num">330,581</td><td class="num">1,156,970</td><td>Brotli. Single bundle, no code splitting</td></tr>
+              <tr><td class="mono" style="font-size:.78rem">/assets/index-CBReRmNe.css</td><td class="num">&mdash;</td><td class="num">78,349</td><td>Brotli, render-blocking</td></tr>
+              <tr><td class="mono" style="font-size:.78rem">/leep-ai-og.png</td><td class="num">2,264,100</td><td class="num">2,264,100</td><td style="color:var(--critical)">2.26 MB social image</td></tr>
+              <tr><td class="mono" style="font-size:.78rem">/founder-family.jpg</td><td class="num">1,032,306</td><td class="num">1,032,306</td><td style="color:var(--high)">1.03 MB</td></tr>
+              <tr><td class="mono" style="font-size:.78rem">/danny-thumbnail.jpg</td><td class="num">903,375</td><td class="num">903,375</td><td style="color:var(--high)">903 KB, not lazy-loaded</td></tr>
+              <tr><td class="mono" style="font-size:.78rem">/leep-ai-icon.png</td><td class="num">543,899</td><td class="num">543,899</td><td style="color:var(--high)">544 KB favicon</td></tr>
+              <tr><td class="mono" style="font-size:.78rem">/assets/leepai-logo-*.png</td><td class="num">285,870</td><td class="num">285,870</td><td style="color:var(--high)">286 KB for a 40px-tall logo</td></tr>
+              <tr class="total"><td>Image payload total</td><td class="num">5,029,550</td><td class="num">&asymp; 5.03 MB</td><td>None in WebP or AVIF</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <pre class="ev">$ curl -sSI -H 'Accept: image/avif,image/webp,image/*' \
+    https://www.leepai.io/founder-family.jpg
+content-type: image/jpeg        &lt;-- no format negotiation
+content-length: 1032306
+
+$ grep -oE 'fetchpriority="[a-z]+"|&lt;link[^&gt;]+rel="preload"' rendered.html
+(no output)                     &lt;-- no preload, no fetchpriority anywhere
+
+loading="lazy" count: 1  (of 4 images)</pre>
+      </dd>
+      <dt>Impact</dt><dd>[INFERRED] These weights are the mechanism most likely to be suppressing LCP. The
+      chain of reasoning: a 40px logo shipped as a 286 KB PNG and a 903 KB non-lazy thumbnail both compete
+      for bandwidth during initial load, while no <code>fetchpriority</code> hint tells the browser which
+      element is the LCP candidate. <strong>Falsify this by running the Lighthouse command in §6</strong> and
+      reading the actual LCP element attribution — if LCP resolves to the H1 text node and lands under the
+      threshold, this reasoning is wrong and only the bandwidth waste stands.</dd>
+      <dt>Severity</dt><dd><strong>Not scored</strong> — no metric retrieved &nbsp;·&nbsp; Confidence: High on the byte weights, Medium on the LCP inference</dd>
+      <dt>Remediation</dt><dd>Enable Cloudflare Polish with WebP conversion (Dashboard &rarr; Speed &rarr;
+        Optimization &rarr; Polish: Lossy, "WebP" on), then convert the offenders at build time and mark up
+        the LCP candidate explicitly:
+        <pre># one-time: convert the heavy raster assets
+npx -y sharp-cli -i public/founder-family.jpg  -o public/founder-family.webp  -f webp -q 82
+npx -y sharp-cli -i public/danny-thumbnail.jpg -o public/danny-thumbnail.webp -f webp -q 82
+npx -y sharp-cli -i public/leep-ai-og.png      -o public/leep-ai-og.jpg       -f jpeg -q 85 --width 1200
+npx -y sharp-cli -i src/assets/leepai-logo.png -o src/assets/leepai-logo.webp -f webp -q 90 --width 160
+npx -y sharp-cli -i public/leep-ai-icon.png    -o public/leep-ai-icon.png     -f png --width 180</pre>
+        <pre>&lt;!-- hero / LCP candidate: never lazy, always high priority --&gt;
+&lt;img src="/assets/leepai-logo.webp" alt="Leep AI"
+     width="160" height="40" fetchpriority="high" decoding="async"&gt;
+
+&lt;!-- below the fold: always lazy, always dimensioned --&gt;
+&lt;img src="/danny-thumbnail.webp" alt="Danny Reyes, owner of South Bay Royal Detailing"
+     width="640" height="360" loading="lazy" decoding="async"&gt;
+
+&lt;img src="/founder-family.webp" alt="Aaron Strazicich with his family"
+     width="800" height="600" loading="lazy" decoding="async"&gt;</pre>
+        <p style="margin-top:10px;font-size:.9rem">Every <code>&lt;img&gt;</code> needs explicit
+        <code>width</code> and <code>height</code> — currently none carry them, which is a direct CLS
+        contributor.</p>
+      </dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev / infra</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSI -H 'Accept: image/webp' https://www.leepai.io/founder-family.jpg | grep -i content-type
+# expect: image/webp</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V3-02</span><span class="pill p-low">Evidence only</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Non-passive scroll, touch and wheel listeners in the production bundle</h3>
+    <dl>
+      <dt>Location</dt><dd><code>/assets/index-CAptjTRU.js</code></dd>
+      <dt>Evidence</dt><dd><pre class="ev">EVENT         LISTENERS   WITH passive FLAG
+scroll            6              2      &lt;-- 4 non-passive
+resize            3              0
+touchstart        1              0
+touchmove         1              0
+wheel             1              0
+keyup             1              0
+
+Layout-read APIs present in the same bundle:
+  getBoundingClientRect  14
+  scrollTop              17
+  getComputedStyle       17
+  clientHeight           13
+  offsetHeight            9</pre></dd>
+      <dt>Impact</dt><dd>[INFERRED] Non-passive touch and wheel listeners force the browser to wait for the
+      handler before it can commit a scroll, which is a documented responsiveness cost. Combined with 14
+      <code>getBoundingClientRect</code> reads and 17 <code>getComputedStyle</code> calls in the same bundle,
+      the ingredients for synchronous layout thrashing are present. <strong>I have not proven these run
+      inside an interaction handler</strong> — the bundle is minified and I did not attribute a long task to
+      a specific call site. Falsify or confirm by recording a DevTools Performance trace during a real
+      interaction and reading the long-task attribution.</dd>
+      <dt>Severity</dt><dd><strong>Not scored</strong> — no INP measurement &nbsp;·&nbsp; Confidence: Medium</dd>
+      <dt>Remediation</dt><dd>Audit each registration and add <code>{ passive: true }</code> wherever the
+      handler does not call <code>preventDefault</code>. If any of these come from your own code rather than
+      a dependency:
+        <pre>// Passive by default; batch reads before writes to avoid thrashing.
+let ticking = false;
+
+function onScroll() {
+  if (ticking) return;
+  ticking = true;
+
+  requestAnimationFrame(() =&gt; {
+    // READ phase — all measurements first
+    const y = window.scrollY;
+    const rect = el.getBoundingClientRect();
+
+    // WRITE phase — all mutations after
+    header.classList.toggle('is-stuck', y &gt; 80);
+    el.style.setProperty('--offset', `${rect.top}px`);
+
+    ticking = false;
+  });
+}
+
+window.addEventListener('scroll', onScroll, { passive: true });
+window.addEventListener('touchmove', onTouchMove, { passive: true });
+window.addEventListener('wheel', onWheel, { passive: true });</pre></dd>
+      <dt>Effort</dt><dd>M &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd>Chrome DevTools &rarr; Performance &rarr; record an interaction &rarr; check for
+      "Handler took Nms" warnings and non-passive listener notices in the console.</dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V3-03</span><span class="pill p-low">Evidence only</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Four third-party origins load on the homepage, two of them on every page load</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">In raw HTML, executing on every page load:
+  https://r2.leadsy.ai/tag.js                    (async, visitor-ID tag)
+  https://widgets.leadconnectorhq.com/loader.js  (chat widget, NOT async)
+
+Referenced from the bundle:
+  https://api.leadconnectorhq.com   (booking widget)
+  https://meetings-na2.hubspot.com  (HubSpot meetings)
+  https://api.elevenlabs.io         (voice agent)</pre></dd>
+      <dt>Impact</dt><dd>[INFERRED] The LeadConnector loader carries no <code>async</code> or
+      <code>defer</code> attribute, so it is parser-blocking. Per-origin transferred bytes and main-thread
+      time <strong>were not measured</strong> — that requires a Lighthouse third-party-summary run, which I
+      could not execute. I am not going to put a number on it.</dd>
+      <dt>Severity</dt><dd><strong>Not scored</strong> &nbsp;·&nbsp; Confidence: High on the missing async attribute, none on the cost</dd>
+      <dt>Remediation</dt><dd>Defer the chat widget until the browser is idle — it has no reason to compete
+      with first paint:
+        <pre>&lt;!-- index.html — replace the current LeadConnector script tag --&gt;
+&lt;script&gt;
+  (function () {
+    function loadChat() {
+      var s = document.createElement('script');
+      s.src = 'https://widgets.leadconnectorhq.com/loader.js';
+      s.setAttribute('data-resources-url', 'https://widgets.leadconnectorhq.com/chat-widget/loader.js');
+      s.setAttribute('data-widget-id', '6a0d44a9ce8bed0f821020ca');
+      s.setAttribute('data-source', 'WEB_USER');
+      s.async = true;
+      document.body.appendChild(s);
+    }
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(loadChat, { timeout: 4000 });
+    } else {
+      window.addEventListener('load', function () { setTimeout(loadChat, 2000); });
+    }
+  })();
+&lt;/script&gt;</pre>
+        <pre>&lt;!-- warm the connections you know you will need --&gt;
+&lt;link rel="preconnect" href="https://widgets.leadconnectorhq.com" crossorigin&gt;
+&lt;link rel="dns-prefetch" href="https://r2.leadsy.ai"&gt;</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>npx -y lighthouse https://www.leepai.io/ --form-factor=mobile --output=json \
+  --output-path=./lh.json && node -e "const r=require('./lh.json'); \
+  console.log(JSON.stringify(r.audits['third-party-summary'].details.items,null,1))"</pre></dd>
+    </dl>
+  </div>
+
+  <!-- ---- VECTOR 4 ---- -->
+  <h3 style="margin-top:44px">Vector 4 — Schema graph &amp; entity architecture <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(4 / 12)</span></h3>
+  <div class="analogy prose">
+    <strong>The title record.</strong> A house without a filed title deed still exists — people can walk
+    through it. It just cannot be listed, financed, or looked up by anyone who wasn't already standing on
+    the lawn.
+  </div>
+
+  <div class="finding critical">
+    <div class="f-top">
+      <span class="fid">V4-01</span><span class="pill p-critical">Critical</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Zero structured data on all five URLs — connectivity ladder rung 0 of 4</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">JSON-LD blocks, raw HTML:      0
+JSON-LD blocks, rendered DOM:  0
+Microdata (itemscope):         0
+RDFa (vocab/typeof):           0
+
+Checked on / , /demo , /privacy — all zero.
+Orphan nodes: n/a.  Dangling @id pointers: n/a.  There are no nodes.</pre></dd>
+      <dt>Impact</dt><dd>You have a complete, verifiable business identity sitting in plain text on the page
+      — legal name, street address, phone, email, three social profiles, a named founder, a named customer
+      with a linked business — and none of it is expressed in a form a machine can consume. Google must infer
+      your entity from prose rather than read it from a declaration.</dd>
+      <dt>Standard</dt><dd>schema.org vocabulary &middot; Google structured data general guidelines.
+      <strong>Neither primary source was retrievable</strong> — §6.</dd>
+      <dt>Severity</dt><dd><strong>CRITICAL</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Ship a single connected <code>@graph</code> — rung 4 — rather than scattered
+      blocks. Every node carries an <code>@id</code> and every relationship is a pointer. Paste into
+      <code>index.html</code> <code>&lt;head&gt;</code> (and emit per-route once V2-01's prerender lands):
+        <pre>&lt;script type="application/ld+json"&gt;
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.leepai.io/#organization",
+      "name": "Leep AI",
+      "legalName": "Leepai, Inc.",
+      "url": "https://www.leepai.io/",
+      "email": "support@leepai.io",
+      "telephone": "+1-714-906-6080",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://www.leepai.io/#logo",
+        "url": "https://www.leepai.io/leep-ai-icon.png",
+        "width": 180,
+        "height": 180
+      },
+      "image": { "@id": "https://www.leepai.io/#logo" },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "2409 Huntington Ln #A",
+        "addressLocality": "Redondo Beach",
+        "addressRegion": "CA",
+        "postalCode": "90278",
+        "addressCountry": "US"
+      },
+      "founder": { "@id": "https://www.leepai.io/#aaron-strazicich" },
+      "sameAs": [
+        "https://www.linkedin.com/company/leep-ai/",
+        "https://www.instagram.com/leep_ai/",
+        "https://www.facebook.com/profile.php?id=61590516056846"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://www.leepai.io/#aaron-strazicich",
+      "name": "Aaron Strazicich",
+      "jobTitle": "Founder",
+      "worksFor": { "@id": "https://www.leepai.io/#organization" }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://www.leepai.io/#website",
+      "url": "https://www.leepai.io/",
+      "name": "Leep AI",
+      "publisher": { "@id": "https://www.leepai.io/#organization" },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.leepai.io/#webpage",
+      "url": "https://www.leepai.io/",
+      "name": "Leep AI - AI Workforce for Home Service Businesses",
+      "isPartOf": { "@id": "https://www.leepai.io/#website" },
+      "about": { "@id": "https://www.leepai.io/#organization" },
+      "primaryImageOfPage": { "@id": "https://www.leepai.io/#logo" },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "Service",
+      "@id": "https://www.leepai.io/#service",
+      "name": "AI Workforce for Home Service Businesses",
+      "serviceType": "AI receptionist and lead response automation",
+      "description": "AI voice and messaging agents that answer every call and text, book appointments, and follow up on leads 24/7 for home service businesses.",
+      "provider": { "@id": "https://www.leepai.io/#organization" },
+      "areaServed": { "@type": "Country", "name": "United States" },
+      "audience": {
+        "@type": "BusinessAudience",
+        "name": "Home service businesses"
+      }
+    }
+  ]
+}
+&lt;/script&gt;</pre>
+        <div class="note" style="margin-top:12px">
+          <strong>Deliberately omitted, and why.</strong>
+          <br>&bull; <strong>No <code>AggregateRating</code> and no <code>Review</code>.</strong> You display
+          one testimonial with no star rating anywhere on the page. Marking up a rating you do not visibly
+          show is the single highest-liability thing an agency can ship, and it is a manual-action risk. If
+          you want review markup, first display real, verifiable reviews on the page.
+          <br>&bull; <strong>No <code>priceRange</code> and no <code>Offer</code>.</strong> Your pricing
+          section says "Let's Build Your Custom Plan" — there are no visible prices. Inventing a price range
+          to fill the property would be fabrication.
+          <br>&bull; <strong>No <code>FAQPage</code>.</strong> Deprecated as a rich result — see V2-02.
+          <br>&bull; <strong>No <code>LocalBusiness</code>.</strong> You have a real street address, but you
+          sell nationally rather than serving walk-in customers at that address.
+          <code>Organization</code> with <code>PostalAddress</code> is the honest modelling.
+        </div>
+        <p style="margin-top:12px;font-size:.9rem"><strong>Entity disambiguation:</strong> your
+        <code>sameAs</code> currently reaches three social profiles. There is no Wikidata Q-ID and no
+        Crunchbase entry to point at, and I could not verify whether a Knowledge Panel exists — that check
+        needs a live Google SERP, which was blocked. Do not assume one exists.</p>
+      </dd>
+      <dt>Effort</dt><dd>M &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -c 'application/ld+json'   # expect: 1
+# then, from an unrestricted network — both, they answer different questions:
+#   https://validator.schema.org/          (is it spec-valid?)
+#   https://search.google.com/test/rich-results   (is it Google-eligible?)</pre></dd>
+    </dl>
+  </div>
+
+  <!-- ---- VECTOR 5 ---- -->
+  <h3 style="margin-top:44px">Vector 5 — Head, meta &amp; document semantics <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(0 / 12)</span></h3>
+  <div class="analogy prose">
+    <strong>Five units, one nameplate.</strong> Every mailbox in the building is engraved with the same name,
+    so the postal service has no way to tell the units apart.
+  </div>
+
+  <div class="finding high">
+    <div class="f-top">
+      <span class="fid">V5-01</span><span class="pill p-high">High</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>All five URLs share one identical <code>&lt;title&gt;</code> — in raw HTML <em>and</em> after rendering</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">URL           RAW BYTES   TITLE
+/              3760       "Leep AI - AI Workforce for Home Service Businesses"
+/demo          3760       "Leep AI - AI Workforce for Home Service Businesses"
+/privacy       3760       "Leep AI - AI Workforce for Home Service Businesses"
+/terms         3760       "Leep AI - AI Workforce for Home Service Businesses"
+/sms-terms     3760       "Leep AI - AI Workforce for Home Service Businesses"
+               ^ byte-identical documents
+
+After JS render, /demo still reports:
+  title: 'Leep AI - AI Workforce for Home Service Businesses'
+  h1:    ['See Leep AI Live']        &lt;-- the H1 differs, the title does not
+
+Root cause, from the bundle:
+  $ grep -c 'document.title' index-CAptjTRU.js   -&gt;  0
+  react-helmet: 0 occurrences.  No head manager is installed.</pre></dd>
+      <dt>Impact</dt><dd>The title is the strongest on-page relevance signal you control and the primary
+      SERP link text. Every page claims to be the homepage. <code>/demo</code> — your conversion page — is
+      indistinguishable from your privacy policy at the title level.
+      <br><br>Character count of the current title: <strong>49 characters</strong>. That sits comfortably
+      inside typical SERP truncation. Note that truncation is pixel-driven rather than character-driven;
+      roughly 580px on mobile and 600px on desktop is a working heuristic, and I am stating it as a
+      heuristic, not a rule. Google also rewrites title links frequently, so treat the title as a strong
+      input rather than a guarantee.</dd>
+      <dt>Severity</dt><dd><strong>HIGH</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Install the head manager from V1-01, then set a distinct title per route:
+        <pre>// src/routes.js — one source of truth for per-route metadata
+export const SEO = {
+  '/': {
+    title: 'Leep AI — AI Receptionist for Home Service Businesses',
+    description:
+      'Leep AI answers every call and text, books appointments, and follows up on every lead 24/7 for HVAC, plumbing, electrical and home service teams.',
+  },
+  '/demo': {
+    title: 'Book a Leep AI Demo — See the AI Receptionist Live',
+    description:
+      'Watch Leep AI answer a live call, book an appointment, and follow up on a lead. 20-minute walkthrough for home service operators.',
+  },
+  '/privacy': {
+    title: 'Privacy Policy — Leep AI',
+    description: 'How Leepai, Inc. collects, uses, and protects customer and caller data.',
+  },
+  '/terms': {
+    title: 'Terms of Service — Leep AI',
+    description: 'The terms governing use of Leep AI products and services.',
+  },
+  '/sms-terms': {
+    title: 'SMS Terms &amp; Conditions — Leep AI',
+    description: 'Messaging terms, opt-in and opt-out instructions, and carrier disclosures for Leep AI SMS.',
+  },
+};</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> content / dev</dd>
+      <dt>Verify by</dt><dd><pre>for p in "" demo privacy terms sms-terms; do
+  printf '%-12s ' "/$p"
+  curl -sSL "https://www.leepai.io/$p" | grep -oE '&lt;title&gt;[^&lt;]*'
+done
+# expect: 5 distinct titles</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding high">
+    <div class="f-top">
+      <span class="fid">V5-02</span><span class="pill p-high">High</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>All five URLs share one identical <code>meta description</code></h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">Identical on all 5 URLs, raw and rendered, 173 characters:
+"Leep AI deploys and manages an AI workforce that answers every text and
+ call, books every appointment, and follows up on every lead 24/7 for
+ home service businesses."</pre></dd>
+      <dt>Impact</dt><dd>To be precise about the mechanism: the meta description is <strong>not a ranking
+      factor</strong>. It affects click-through, because Google often uses it as the snippet. A privacy
+      policy currently advertises itself in the SERP as a sales pitch, which is a CTR and trust problem
+      rather than a ranking one. At 173 characters it also risks snippet truncation.</dd>
+      <dt>Severity</dt><dd><strong>HIGH</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Per-route descriptions, shipped in the same <code>SEO</code> map as V5-01.
+      Target roughly 150 characters.</dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> content</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/privacy | grep -o 'name="description" content="[^"]*"'</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V5-03</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3><code>og:image</code> is a relative URL and weighs 2.26 MB</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">&lt;meta property="og:image" content="/leep-ai-og.png"&gt;
+&lt;meta name="twitter:image" content="/leep-ai-og.png"&gt;
+                                    ^ relative — the Open Graph protocol
+                                      requires an absolute URL
+
+$ curl -sSI https://www.leepai.io/leep-ai-og.png
+content-length: 2264100        &lt;-- 2.26 MB
+content-type: image/png</pre></dd>
+      <dt>Impact</dt><dd>Every link to your site shared on LinkedIn, Facebook, Slack or iMessage is at risk of
+      rendering with no preview image — the two places you are most likely to be shared by a prospect. The
+      2.26 MB weight compounds it: several platforms cap the image size they will fetch.</dd>
+      <dt>Standard</dt><dd>Open Graph protocol — <code>og:image</code> must be an absolute URL. §8 [10].</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Absolute URL, and re-encode to JPEG at the 1200&times;630 standard:
+        <pre>npx -y sharp-cli -i public/leep-ai-og.png -o public/leep-ai-og.jpg \
+  -f jpeg -q 85 --width 1200 --height 630 --fit cover</pre>
+        <pre>&lt;meta property="og:image" content="https://www.leepai.io/leep-ai-og.jpg"&gt;
+&lt;meta property="og:image:width" content="1200"&gt;
+&lt;meta property="og:image:height" content="630"&gt;
+&lt;meta property="og:image:alt" content="Leep AI — AI workforce for home service businesses"&gt;
+&lt;meta name="twitter:image" content="https://www.leepai.io/leep-ai-og.jpg"&gt;</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSI https://www.leepai.io/leep-ai-og.jpg | grep -Ei 'content-length|content-type'
+# expect: image/jpeg, well under 1 MB</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V5-04</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3><code>og:url</code> and <code>og:site_name</code> are absent</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">Searched raw HTML and rendered DOM:
+  og:url        -&gt; NONE FOUND
+  og:site_name  -&gt; NONE FOUND
+
+Present: og:type, og:image, og:title, og:description,
+         twitter:card, twitter:site, twitter:title,
+         twitter:description, twitter:image</pre></dd>
+      <dt>Impact</dt><dd>Social platforms use <code>og:url</code> as the canonical identity for share
+      deduplication. Without it, shares of <code>/</code> and <code>/?utm_source=linkedin</code> can
+      accumulate as separate objects instead of consolidating.</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Both tags are already in the <code>&lt;Seo&gt;</code> component in V1-01.</dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/demo | grep -E 'og:url|og:site_name'</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V5-05</span><span class="pill p-low">Low</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>No <code>theme-color</code> declared</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">&lt;meta name="theme-color"&gt;  -&gt; NONE FOUND</pre></dd>
+      <dt>Impact</dt><dd>Cosmetic only — mobile browser chrome does not pick up your brand colour. Not a
+      ranking factor, and I am not presenting it as one.</dd>
+      <dt>Severity</dt><dd><strong>LOW</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd><pre>&lt;meta name="theme-color" content="#d4a84c" media="(prefers-color-scheme: light)"&gt;
+&lt;meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)"&gt;</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep theme-color</pre></dd>
+    </dl>
+  </div>
+
+  <!-- ---- VECTOR 6 ---- -->
+  <h3 style="margin-top:44px">Vector 6 — Content depth, intent &amp; E-E-A-T <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(5 / 12)</span></h3>
+  <div class="analogy prose">
+    <strong>The interior is genuinely good.</strong> This is the part of the property that needs the least
+    work. One well-finished building on a large empty lot — and the lot is the problem, not the building.
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V6-01</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Five URLs total, four of which are legal boilerplate — no informational content surface</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">Complete site inventory (from sitemap.xml, confirmed by crawl):
+  /            1,209 words   commercial landing page
+  /demo          ~90 words   booking page
+  /privacy         legal
+  /terms           legal
+  /sms-terms       legal
+
+Indexable pages targeting informational queries: 0
+Blog / resources / case studies / comparison pages: 0</pre></dd>
+      <dt>Impact</dt><dd>Intent classification: your homepage is correctly formatted for
+      <strong>commercial-investigation and transactional</strong> intent, and it does that job well. But home
+      service operators searching "why do I keep missing calls", "how much is a missed call worth",
+      "AI receptionist vs answering service" are issuing <strong>informational</strong> queries, and you have
+      no page shaped to answer them. A service page cannot win an informational SERP; that is a structural
+      mismatch no on-page tuning fixes.
+      <br><br>Your ROI calculator is a genuine information-gain asset — original, interactive, specific to the
+      vertical. It is currently buried as an anchor on the homepage rather than living at a URL that could
+      rank on its own.</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High on the inventory,
+      Medium on the intent classification — I could not retrieve live SERPs to confirm dominant intent per
+      query. See §6.</dd>
+      <dt>Remediation</dt><dd>Highest-leverage first move: promote the ROI calculator to its own indexable
+      URL at <code>/missed-call-revenue-calculator</code>, with its own title, description, canonical and
+      surrounding explanatory copy. It is the one asset you already own that a competitor cannot trivially
+      copy. Then build informational pages around the questions your FAQ already answers well.</dd>
+      <dt>Effort</dt><dd>L &nbsp;·&nbsp; <strong>Owner:</strong> content</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSI -o /dev/null -w '%{http_code}\n' https://www.leepai.io/missed-call-revenue-calculator</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V6-02</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Strong E-E-A-T signals present on the page but expressed in none of the machine-readable surfaces</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">Present in rendered text — genuinely good first-hand signals:
+  Founder named and pictured:  "Aaron Strazicich", /founder-family.jpg
+  Named customer + business:   "Danny Reyes", "Owner, South Bay Royal Detailing"
+                               linked to https://southbayroyaldetailing.com/
+  Full NAP:  Leepai, Inc.  |  2409 Huntington Ln #A, Redondo Beach, CA 90278
+             (714) 906-6080  |  support@leepai.io
+
+Absent:
+  Person schema for the founder      -&gt; 0
+  Author entity page                 -&gt; none
+  Publish / last-updated dates       -&gt; none anywhere on the site
+  Review or testimonial markup       -&gt; 0  (correctly so — see V4-01)</pre></dd>
+      <dt>Impact</dt><dd>A real named founder with a real photograph, and a real named customer with a
+      verifiable linked business, are exactly the first-hand experience signals that are hard to fake and
+      valuable to have. They are currently expressed only as prose.
+      <br><br>To be accurate about the standard: E-E-A-T is described in Google's Search Quality Rater
+      Guidelines, which govern <strong>human evaluation</strong> of search quality. It is not a direct
+      algorithmic score, and I am not presenting it as one.</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>The <code>Person</code> node in V4-01's graph covers the founder. Add a short
+      founder bio section with credentials and years in the vertical, and give the legal pages honest
+      <code>dateModified</code> values.</dd>
+      <dt>Effort</dt><dd>M &nbsp;·&nbsp; <strong>Owner:</strong> content</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -o '"@type": "Person"'</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V6-03</span><span class="pill p-low">Low</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>No publish or last-updated date anywhere, including on the legal pages</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">Searched all 5 rendered routes for &lt;time datetime&gt; and date strings:
+  &lt;time&gt; elements: 0
+  "Last updated" / "Effective" strings: 0
+
+This matters most on /privacy, /terms and /sms-terms, where an effective
+date is a normal legal expectation — and where SMS carrier compliance
+review typically looks for one.</pre></dd>
+      <dt>Impact</dt><dd>Low SEO impact. Flagged mainly because your SMS terms page exists to satisfy carrier
+      compliance review, and an undated policy is a weak artifact for that purpose.</dd>
+      <dt>Severity</dt><dd><strong>LOW</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd><pre>&lt;p class="policy-date"&gt;
+  Last updated: &lt;time datetime="2026-08-15"&gt;15 August 2026&lt;/time&gt;
+&lt;/p&gt;</pre>
+      <p style="margin-top:10px;font-size:.9rem">Use the date the document actually changed. Do not
+      auto-stamp it on every deploy — fraudulent date-refreshing is a real risk and it is trivially
+      detectable.</p></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> content</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/privacy | grep -o '&lt;time datetime[^&gt;]*&gt;'</pre></dd>
+    </dl>
+  </div>
+
+  <!-- ---- VECTOR 7 ---- -->
+  <h3 style="margin-top:44px">Vector 7 — Link graph &amp; information architecture <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(3 / 8)</span></h3>
+  <div class="analogy prose">
+    <strong>A one-storey house needs no staircase.</strong> Most IA findings do not apply at five pages —
+    click depth is 1, and there are no orphans because everything is in the footer. What is missing only
+    starts to matter once you build the second storey.
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V7-01</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>No breadcrumbs — neither visible navigation nor <code>BreadcrumbList</code> markup</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">Visible breadcrumb navigation: none on any route
+BreadcrumbList structured data: 0 (consistent with V4-01 — zero schema)
+&lt;nav&gt; elements: 1 (primary nav only)</pre></dd>
+      <dt>Impact</dt><dd>Low impact today at five pages and click-depth 1. It becomes a real gap the moment
+      V6-01's content build lands, because that is when hierarchy starts carrying information.</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Add <code>BreadcrumbList</code> to the graph when the site gains depth. For
+      <code>/demo</code> today:
+        <pre>{
+  "@type": "BreadcrumbList",
+  "@id": "https://www.leepai.io/demo#breadcrumb",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home",
+      "item": "https://www.leepai.io/" },
+    { "@type": "ListItem", "position": 2, "name": "Book a Demo",
+      "item": "https://www.leepai.io/demo" }
+  ]
+}</pre>
+        <p style="margin-top:10px;font-size:.9rem">Reference it from the <code>WebPage</code> node with
+        <code>"breadcrumb": { "@id": "https://www.leepai.io/demo#breadcrumb" }</code> so it is not an orphan
+        node in the graph.</p></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/demo | grep -o 'BreadcrumbList'</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V7-02</span><span class="pill p-low">Low</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Two anchors point at <code>href="#"</code> with no destination</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">$ grep -oE '&lt;a[^&gt;]*href="#"[^&gt;]*&gt;' rendered.html | wc -l
+2</pre></dd>
+      <dt>Impact</dt><dd>Minor. Anchors with no destination are keyboard-focusable and announced as links by
+      screen readers while going nowhere. Crawlers may follow them back to the same URL.</dd>
+      <dt>Severity</dt><dd><strong>LOW</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>If the element performs an action, it is a button, not a link:
+        <pre>&lt;!-- before --&gt;
+&lt;a href="#" onClick={openCalculator}&gt;Calculate my lost revenue&lt;/a&gt;
+
+&lt;!-- after --&gt;
+&lt;button type="button" onClick={openCalculator}&gt;Calculate my lost revenue&lt;/button&gt;</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -c 'href="#"'   # expect: 0</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V7-03</span><span class="pill p-low">Low</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3><code>/demo</code> is linked in two different URL forms from the same page</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">Both forms appear in the rendered anchor set:
+  /demo
+  https://www.leepai.io/demo</pre></dd>
+      <dt>Impact</dt><dd>Harmless while both resolve to the same place, but it is the same class of drift as
+      V2-03: your internal link graph should name one form consistently.</dd>
+      <dt>Severity</dt><dd><strong>LOW</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Use root-relative <code>/demo</code> for every internal link. Reserve absolute
+      URLs for canonical tags, Open Graph tags, the sitemap, and structured data.</dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -o 'href="https://www.leepai.io/demo"' | wc -l  # expect: 0</pre></dd>
+    </dl>
+  </div>
+
+  <!-- ---- VECTOR 8 ---- -->
+  <h3 style="margin-top:44px">Vector 8 — Security, accessibility &amp; delivery <span class="mono" style="font-weight:400;color:var(--ink-3);font-size:.8rem">(0 / 6)</span></h3>
+  <div class="analogy prose">
+    <strong>Good locks on the front door, none on the windows.</strong> HTTPS is enforced and the redirect
+    works. The supporting hardware — the headers that tell a browser how to treat your site — is largely
+    absent.
+  </div>
+
+  <div class="finding high">
+    <div class="f-top">
+      <span class="fid">V8-01</span><span class="pill p-high">High</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>No HSTS, no CSP, no X-Frame-Options, no Permissions-Policy</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">$ curl -sSI https://www.leepai.io/ | grep -Ei 'strict-transport|content-security|x-frame|x-content-type|referrer-policy|permissions-policy'
+x-content-type-options: nosniff                        [present]
+referrer-policy: strict-origin-when-cross-origin       [present]
+
+MISSING:
+  strict-transport-security   -- no HSTS
+  content-security-policy     -- no CSP
+  x-frame-options             -- clickjacking / framing not restricted
+  permissions-policy          -- camera / mic / geolocation not restricted
+
+Also observed:
+  access-control-allow-origin: *     on the HTML document</pre></dd>
+      <dt>Impact</dt><dd>Without HSTS, the first request over <code>http://</code> is downgradeable before the
+      301 fires. Without <code>X-Frame-Options</code> or a <code>frame-ancestors</code> directive, your pages
+      can be framed by anyone. These are not ranking factors and I am not claiming they are — HTTPS itself is
+      a documented lightweight signal, and you already have HTTPS. This is a security finding on a site that
+      collects phone numbers and runs an SMS programme.</dd>
+      <dt>Severity</dt><dd><strong>HIGH</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd>Add via Cloudflare Transform Rules (Rules &rarr; Transform Rules &rarr; Modify
+      Response Header), or in <code>public/_headers</code> if you are on Cloudflare Pages:
+        <pre># public/_headers
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://widgets.leadconnectorhq.com https://r2.leadsy.ai; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.leadconnectorhq.com https://api.elevenlabs.io https://r2.leadsy.ai; frame-src https://api.leadconnectorhq.com https://meetings-na2.hubspot.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.leadconnectorhq.com
+
+# hashed build assets are immutable — cache them for a year
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable</pre>
+        <p style="margin-top:10px;font-size:.9rem">Ship the CSP in
+        <code>Content-Security-Policy-Report-Only</code> mode first and watch the console for a week — the
+        chat widget and voice agent will surface any origins missing from the list before you enforce it.
+        <br><br>The <code>/assets/*</code> rule is a second, separate win: those files carry content hashes in
+        their names, so they are immutable, yet they currently ship
+        <code>max-age=14400, must-revalidate</code> — four hours, with a revalidation round-trip after
+        that.</p></dd>
+      <dt>Effort</dt><dd>M &nbsp;·&nbsp; <strong>Owner:</strong> infra</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSI https://www.leepai.io/ | grep -Ei 'strict-transport|content-security|x-frame|permissions-policy'</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding medium">
+    <div class="f-top">
+      <span class="fid">V8-02</span><span class="pill p-medium">Medium</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>~5 MB of unoptimised imagery with no modern format negotiation</h3>
+    <dl>
+      <dt>Evidence</dt><dd>See the payload table in V3-01. No WebP or AVIF is served under any
+      <code>Accept</code> header; a 544 KB PNG is used as a favicon.</dd>
+      <dt>Impact</dt><dd>Delivery inefficiency, verified by byte count. The Core Web Vitals consequence is
+      [INFERRED] and unmeasured — see V3-01.</dd>
+      <dt>Severity</dt><dd><strong>MEDIUM</strong> &nbsp;·&nbsp; Confidence: High on the bytes</dd>
+      <dt>Remediation</dt><dd>Commands in V3-01. Enable Cloudflare Polish, which fixes most of this at the
+      edge with no code change.</dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> infra</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSI -H 'Accept: image/webp' https://www.leepai.io/danny-thumbnail.jpg | grep -i content-type</pre></dd>
+    </dl>
+  </div>
+
+  <div class="finding low">
+    <div class="f-top">
+      <span class="fid">V8-03</span><span class="pill p-low">Low</span><span class="pill p-tag">[OBSERVED]</span>
+    </div>
+    <h3>Testimonial thumbnail carries <code>alt=""</code> though it is content, not decoration</h3>
+    <dl>
+      <dt>Evidence</dt><dd><pre class="ev">&lt;img src="/danny-thumbnail.jpg" alt=""
+     class="absolute inset-0 w-full h-full object-cover"&gt;
+
+The other three images are correct:
+  alt="Leep AI"                              (logo, x2)
+  alt="Aaron Strazicich with his family"     (founder photo)</pre></dd>
+      <dt>Impact</dt><dd>Empty <code>alt</code> is the correct marking for decorative images, but this one
+      carries meaning — it is the face of your only testimonial. A screen reader user gets nothing.</dd>
+      <dt>Standard</dt><dd>WCAG 2.2 AA, 1.1.1 Non-text Content. Primary spec not retrievable from here.</dd>
+      <dt>Severity</dt><dd><strong>LOW</strong> &nbsp;·&nbsp; Confidence: High</dd>
+      <dt>Remediation</dt><dd><pre>&lt;img src="/danny-thumbnail.webp"
+     alt="Danny Reyes, owner of South Bay Royal Detailing"
+     width="640" height="360" loading="lazy" decoding="async"
+     class="absolute inset-0 w-full h-full object-cover"&gt;</pre></dd>
+      <dt>Effort</dt><dd>S &nbsp;·&nbsp; <strong>Owner:</strong> dev</dd>
+      <dt>Verify by</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -o 'danny-thumbnail[^>]*alt="[^"]*"'</pre></dd>
+    </dl>
+  </div>
+
+  <div class="note prose">
+    <strong>Accessibility scope, stated honestly.</strong> Automated tooling detects roughly a third of WCAG
+    issues; the rest requires manual testing. I checked alt attributes, heading order, landmark structure,
+    <code>lang</code>, and link semantics from the rendered DOM. I did <strong>not</strong> test colour
+    contrast ratios, keyboard traps, visible focus states, form label associations, or screen-reader
+    navigation — those need a live browser session with assistive technology, which this environment could
+    not reach. Do not read the absence of findings there as a pass.
+  </div>
+</section>
+
+<!-- ============ §3 ============ -->
+<section id="s3">
+  <div class="sec-head">
+    <span class="eyebrow">§3</span>
+    <h2>Deep-dive modules</h2>
+  </div>
+
+  <div class="cards">
+    <div class="card" style="border-left:4px solid var(--critical)">
+      <h4>M1 — Canonical drift</h4>
+      <p style="margin-top:8px"><strong>Verdict: FAILED.</strong> The framework emits no canonical on any
+      route, dynamic or static. The sitemap says <code>www</code>; your own noscript block links to the apex;
+      <code>/demo</code> is linked in two forms. Nothing agrees with anything.</p>
+      <p><strong>Standardise on <code>https://www.leepai.io</code></strong> — sitemap, canonical, internal
+      links, Open Graph and schema <code>@id</code> URIs, all on that one form.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--critical)">
+      <h4>M2 — Schema nesting</h4>
+      <p style="margin-top:8px"><strong>Verdict: RUNG 0 of 4.</strong> No structured data of any kind.
+      No orphan nodes and no dangling pointers, because there are no nodes.</p>
+      <p>The complete rung-4 <code>@graph</code> — Organization &larr; WebSite &larr; WebPage, plus Person
+      and Service, every relationship an <code>@id</code> pointer — is written out in full in V4-01.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--ink-3)">
+      <h4>M3 — Interaction to Next Paint</h4>
+      <p style="margin-top:8px"><strong>Verdict: NOT MEASURED.</strong> CrUX blocked, PSI blocked, Lighthouse
+      could not reach the origin. No field INP, no lab TBT, no long-task attribution.</p>
+      <p>Code-level evidence only: 4 of 6 scroll listeners non-passive, touch and wheel handlers non-passive,
+      1.13 MB uncompressed single bundle. Commands to measure it properly are in §6.</p>
+    </div>
+    <div class="card" style="border-left:4px solid var(--critical)">
+      <h4>M4 — JavaScript-only rendering</h4>
+      <p style="margin-top:8px"><strong>Verdict: FAILED.</strong> Full parity table in V2-01.</p>
+      <p>Exists <em>only</em> in the rendered column: 1,200 of 1,209 content words, 34 of 39 links, 47 of 48
+      subheadings, all 4 images, all 13 sections. Exists in <strong>neither</strong> column: 7 FAQ answers,
+      every canonical tag, every byte of structured data.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ §4 ============ -->
+<section id="s4">
+  <div class="sec-head">
+    <span class="eyebrow">§4</span>
+    <h2>What is actually correct</h2>
+  </div>
+
+  <div class="analogy prose">
+    An inspection that finds only faults is not an inspection, it is a sales pitch. Here is what is sound,
+    and what you should be careful not to break while fixing everything above.
+  </div>
+
+  <div class="finding pass">
+    <div class="f-top"><span class="pill p-pass">Pass</span><span class="pill p-tag">[OBSERVED]</span></div>
+    <h3>Heading hierarchy is genuinely well-built</h3>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:8px">Exactly one <code>&lt;h1&gt;</code> per
+    route. No skipped levels across 12 H2s, 26 H3s and 10 H4s. The outline reads as a coherent document
+    standalone: Problem &rarr; How It Works &rarr; Infrastructure &rarr; ROI &rarr; Pricing &rarr; FAQ &rarr;
+    Next Steps &rarr; Founder. Many sites this size get this wrong; you did not.</p>
+  </div>
+
+  <div class="finding pass">
+    <div class="f-top"><span class="pill p-pass">Pass</span><span class="pill p-tag">[OBSERVED]</span></div>
+    <h3>Semantic HTML5 landmarks are properly used</h3>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:8px">Exactly one <code>&lt;main&gt;</code>, one
+    <code>&lt;nav&gt;</code>, one <code>&lt;footer&gt;</code>, 13 <code>&lt;section&gt;</code> elements.
+    <code>&lt;html lang="en"&gt;</code> present. Charset declared in the first 1024 bytes. Viewport correct.
+    The div-to-landmark ratio (331 to 16) is normal for React and not div-soup by the standard that matters.</p>
+  </div>
+
+  <div class="finding pass">
+    <div class="f-top"><span class="pill p-pass">Pass</span><span class="pill p-tag">[OBSERVED]</span></div>
+    <h3>External link hygiene is perfect</h3>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:8px">All 7 <code>target="_blank"</code> links
+    carry <code>rel="noopener noreferrer"</code> — 7 of 7. Zero <code>nofollow</code> on internal links,
+    which is correct. Social icon links carry <code>aria-label</code> attributes.</p>
+  </div>
+
+  <div class="finding pass">
+    <div class="f-top"><span class="pill p-pass">Pass</span><span class="pill p-tag">[OBSERVED]</span></div>
+    <h3>HTTPS, redirects and compression are correctly configured</h3>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:8px"><code>http://www</code> &rarr;
+    <code>https://www</code> in a single hop, no chains, no loops. <code>/index.html</code> &rarr;
+    <code>/</code> in one hop. Brotli active on HTML, JS and CSS. HTTP/2 negotiated, HTTP/3 advertised via
+    <code>alt-svc</code>. Cloudflare CDN in front. No mixed content. <code>x-content-type-options: nosniff</code>
+    and <code>referrer-policy</code> both present.</p>
+  </div>
+
+  <div class="finding pass">
+    <div class="f-top"><span class="pill p-pass">Pass</span><span class="pill p-tag">[OBSERVED]</span></div>
+    <h3>The <code>&lt;noscript&gt;</code> fallback is a thoughtful piece of engineering</h3>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:8px">Complete NAP, the four key links, and a
+    real H1 — all present without JavaScript. It is the reason your raw HTML is not literally empty, and it
+    is more than most SPAs bother with. It does not substitute for prerendering, but it was the right
+    instinct.</p>
+  </div>
+
+  <div class="finding pass">
+    <div class="f-top"><span class="pill p-pass">Pass</span><span class="pill p-tag">[OBSERVED]</span></div>
+    <h3>No fabricated ratings, no invented prices, no doorway pages</h3>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:8px">This is the highest-liability category in
+    the whole protocol, and you are clean. No <code>AggregateRating</code> without visible reviews. No
+    invented <code>priceRange</code>. No near-duplicate city pages spun from one template. Your one
+    testimonial names a real person at a real business with a working link to it. Your pricing section
+    honestly says the plan is custom rather than inventing a number. Nothing here exposes you to a manual
+    action — <strong>keep it that way when you add the schema in V4-01</strong>.</p>
+  </div>
+
+  <div class="finding pass">
+    <div class="f-top"><span class="pill p-pass">Pass</span><span class="pill p-tag">[OBSERVED]</span></div>
+    <h3>robots.txt does not block anything that matters</h3>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:8px">Googlebot and Bingbot are explicitly
+    allowed. <code>/assets/</code> is not disallowed, so the renderer is not starved of CSS or JS — a common
+    and catastrophic mistake you avoided. A valid absolute <code>Sitemap:</code> line is present. No
+    <code>noindex:</code> or <code>crawl-delay</code> lines that Google does not support. No URL is both
+    disallowed and noindexed.</p>
+    <p style="color:var(--ink-2);font-size:.94rem;margin-top:10px"><strong>One thing to be deliberate
+    about:</strong> the Cloudflare-managed block disallows <code>GPTBot</code>, <code>ClaudeBot</code>,
+    <code>Google-Extended</code>, <code>CCBot</code>, <code>Bytespider</code>,
+    <code>meta-externalagent</code> and others, and sets <code>Content-Signal: ai-train=no</code>. This does
+    <strong>not</strong> affect Google Search ranking — <code>Google-Extended</code> is separate from
+    Googlebot. It does mean you are opting out of AI assistant surfaces. For a company selling AI to
+    contractors, whose buyers increasingly ask an assistant for vendor recommendations, that is a business
+    decision worth making on purpose rather than inheriting from a Cloudflare default.</p>
+  </div>
+</section>
+
+<!-- ============ §5 ============ -->
+<section id="s5">
+  <div class="sec-head">
+    <span class="eyebrow">§5</span>
+    <h2>Prioritised remediation backlog</h2>
+  </div>
+
+  <div class="analogy prose">
+    Ordered by impact divided by effort. <strong>P1 is foundation and address work</strong> — until it is
+    done, everything else is decorating a house the county cannot find.
+  </div>
+
+  <h3 style="color:var(--critical)">P1 — Urgent (24&ndash;48 hours)</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>#</th><th>Action</th><th>Findings</th><th>Owner</th><th>Effort</th><th>Acceptance test</th></tr></thead>
+      <tbody>
+        <tr><td class="num">1</td><td>Add prerendering to the Vite build for all 5 routes</td>
+          <td class="mono" style="font-size:.75rem">V2-01</td><td>dev</td><td>M</td>
+          <td class="mono" style="font-size:.72rem">curl -A Googlebot / | grep -c "Every Text and Call" → 1</td></tr>
+        <tr><td class="num">2</td><td>Install head manager; per-route canonical, title, description</td>
+          <td class="mono" style="font-size:.75rem">V1-01, V5-01, V5-02, V5-04</td><td>dev</td><td>M</td>
+          <td class="mono" style="font-size:.72rem">5 distinct titles + 5 canonicals across the 5 URLs</td></tr>
+        <tr><td class="num">3</td><td>Return HTTP 404 for unmatched routes</td>
+          <td class="mono" style="font-size:.75rem">V1-02</td><td>infra</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">curl -I /zzz-should-404 → 404</td></tr>
+        <tr><td class="num">4</td><td>Verify apex redirect from an unrestricted network; fix if 200</td>
+          <td class="mono" style="font-size:.75rem">V1-06, V2-03</td><td>infra</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">https://leepai.io/ → 301 → https://www.leepai.io/</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="color:var(--high);margin-top:32px">P2 — High impact (7 days)</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>#</th><th>Action</th><th>Findings</th><th>Owner</th><th>Effort</th><th>Acceptance test</th></tr></thead>
+      <tbody>
+        <tr><td class="num">5</td><td>Ship the connected <code>@graph</code> structured data</td>
+          <td class="mono" style="font-size:.75rem">V4-01</td><td>dev</td><td>M</td>
+          <td class="mono" style="font-size:.72rem">Rich Results Test + schema.org validator both clean</td></tr>
+        <tr><td class="num">6</td><td><code>forceMount</code> the FAQ answers into the DOM</td>
+          <td class="mono" style="font-size:.75rem">V2-02</td><td>dev</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">curl / | grep -c "onboarding specialist" → 1</td></tr>
+        <tr><td class="num">7</td><td>Security headers + immutable asset caching</td>
+          <td class="mono" style="font-size:.75rem">V8-01</td><td>infra</td><td>M</td>
+          <td class="mono" style="font-size:.72rem">HSTS, CSP, X-Frame-Options all present in response</td></tr>
+        <tr><td class="num">8</td><td>Convert images to WebP; fix og:image to absolute 1200×630</td>
+          <td class="mono" style="font-size:.75rem">V3-01, V5-03, V8-02</td><td>dev/infra</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">image payload &lt; 600 KB; og:image absolute, &lt; 1 MB</td></tr>
+        <tr><td class="num">9</td><td>Add <code>&lt;lastmod&gt;</code> to sitemap; remove duplicate robots group</td>
+          <td class="mono" style="font-size:.75rem">V1-03, V1-05</td><td>dev/infra</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">grep -c lastmod → 5; grep -c "User-agent: \*" → 1</td></tr>
+        <tr><td class="num">10</td><td>Establish Search Console + submit sitemap</td>
+          <td class="mono" style="font-size:.75rem">§6</td><td>infra</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">Property verified; sitemap read without errors</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="color:var(--medium);margin-top:32px">P3 — Optimisation (30 days)</h3>
+  <div class="tw">
+    <table>
+      <thead><tr><th>#</th><th>Action</th><th>Findings</th><th>Owner</th><th>Effort</th><th>Acceptance test</th></tr></thead>
+      <tbody>
+        <tr><td class="num">11</td><td>Promote the ROI calculator to its own indexable URL</td>
+          <td class="mono" style="font-size:.75rem">V6-01</td><td>content</td><td>M</td>
+          <td class="mono" style="font-size:.72rem">/missed-call-revenue-calculator → 200, own title + canonical</td></tr>
+        <tr><td class="num">12</td><td>Build the informational content surface</td>
+          <td class="mono" style="font-size:.75rem">V6-01</td><td>content</td><td>L</td>
+          <td class="mono" style="font-size:.72rem">≥ 5 indexable pages targeting informational intent</td></tr>
+        <tr><td class="num">13</td><td>Passive listeners; defer chat widget to idle</td>
+          <td class="mono" style="font-size:.75rem">V3-02, V3-03</td><td>dev</td><td>M</td>
+          <td class="mono" style="font-size:.72rem">No non-passive listener warnings in DevTools console</td></tr>
+        <tr><td class="num">14</td><td>Founder <code>Person</code> node; policy dates; alt text fix</td>
+          <td class="mono" style="font-size:.75rem">V6-02, V6-03, V8-03</td><td>content</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">Person node in graph; &lt;time datetime&gt; on legal pages</td></tr>
+        <tr><td class="num">15</td><td>Breadcrumbs once site depth exists; remove href="#"</td>
+          <td class="mono" style="font-size:.75rem">V7-01, V7-02, V7-03</td><td>dev</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">BreadcrumbList present; grep -c 'href="#"' → 0</td></tr>
+        <tr><td class="num">16</td><td>Decide AI-crawler policy deliberately</td>
+          <td class="mono" style="font-size:.75rem">§4</td><td>business</td><td>S</td>
+          <td class="mono" style="font-size:.72rem">A documented, intentional decision either way</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ §6 ============ -->
+<section id="s6">
+  <div class="sec-head">
+    <span class="eyebrow">§6</span>
+    <h2>What I could not check</h2>
+  </div>
+
+  <div class="analogy prose">
+    Every inspector has a list of things behind walls they could not open. Here is mine, with the exact tool
+    and access needed for each. <strong>This section is not empty, and it should not be — I had neither
+    crawl-scale access, field data, nor Search Console.</strong>
+  </div>
+
+  <details open>
+    <summary>Core Web Vitals — field data (CrUX)</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)"><strong>Blocked:</strong>
+      <code>chromeuxreport.googleapis.com</code> unreachable. <strong>Needed:</strong> a CrUX API key and
+      unrestricted egress. This is the data Google's page-experience signal actually uses.</p>
+      <pre>curl -s "https://chromeuxreport.googleapis.com/v1/records:queryRecord?key=$CRUX_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"url":"https://www.leepai.io/","formFactor":"PHONE"}'
+
+# If the URL has insufficient traffic, fall back to origin level and label it:
+curl -s "https://chromeuxreport.googleapis.com/v1/records:queryRecord?key=$CRUX_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"origin":"https://www.leepai.io","formFactor":"PHONE"}'</pre>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Core Web Vitals — lab data (PSI / Lighthouse)</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)"><strong>Blocked:</strong>
+      <code>www.googleapis.com</code> unreachable; Chromium could not tunnel to the live origin.
+      <strong>Needed:</strong> any machine with normal internet access.</p>
+      <pre>npx -y lighthouse "https://www.leepai.io/" --form-factor=mobile \
+  --throttling-method=simulate --output=json --output-path=./lh-mobile.json
+
+npx -y lighthouse "https://www.leepai.io/" --preset=desktop \
+  --output=json --output-path=./lh-desktop.json
+
+# Then read the numbers that matter (NOT the overall score):
+node -e "const r=require('./lh-mobile.json'); const a=r.audits;
+  console.log('LCP  ', a['largest-contentful-paint'].displayValue);
+  console.log('TBT  ', a['total-blocking-time'].displayValue, '(INP lab proxy)');
+  console.log('CLS  ', a['cumulative-layout-shift'].displayValue);
+  console.log('LCP element:', JSON.stringify(a['largest-contentful-paint-element']?.details?.items?.[0]));"</pre>
+      <p style="font-size:.9rem;color:var(--ink-2);margin-top:10px">Remember: <strong>the Lighthouse score is
+      not the ranking signal</strong> — field Core Web Vitals are. Read LCP, TBT and CLS, not the number in
+      the circle. And Lighthouse still does not report INP.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>INP — real per-interaction measurement</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)"><strong>Needed:</strong> a real browser session with
+      real interactions. INP cannot be measured in a headless dump.</p>
+      <pre># 1. Install the Web Vitals extension in Chrome, open the site,
+#    and click the FAQ items, the pricing tabs, and the ROI calculator.
+# 2. Or record a DevTools Performance trace during those interactions
+#    and read the long-task attribution.
+# 3. Or add field collection to the site itself:
+
+npm i web-vitals</pre>
+      <pre>import { onINP, onLCP, onCLS } from 'web-vitals';
+
+function send(metric) {
+  navigator.sendBeacon('/api/vitals', JSON.stringify({
+    name: metric.name,
+    value: metric.value,
+    rating: metric.rating,
+    id: metric.id,
+    path: location.pathname,
+  }));
+}
+
+onINP(send);
+onLCP(send);
+onCLS(send);</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>Apex domain behaviour — the highest-value unchecked item</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)"><strong>Blocked by my proxy, not by your server.</strong>
+      Run this first; it takes ten seconds and determines whether V1-06 is a non-issue or a CRITICAL.</p>
+      <pre>for u in "http://leepai.io/" "https://leepai.io/" "https://leepai.io/demo"; do
+  printf '%-32s ' "$u"
+  curl -sSIL -o /dev/null -w '%{http_code} hops=%{num_redirects} -> %{url_effective}\n' "$u"
+done
+# expect every line: 301 -> https://www.leepai.io/...</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>Rich Results Test and schema.org validator</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)"><strong>Blocked:</strong>
+      <code>search.google.com</code> and <code>validator.schema.org</code> unreachable. Run both after
+      shipping V4-01 — they answer two different questions, and conflating them is a common audit error.</p>
+      <pre># Is it spec-valid?          https://validator.schema.org/
+# Is it Google-eligible?     https://search.google.com/test/rich-results</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>Search Console — the data no external audit can substitute for</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)">Not available to this audit. Once verified, the four
+      reports that will immediately confirm or refute findings in this document:</p>
+      <ul style="font-size:.93rem">
+        <li><strong>Pages &rarr; Not indexed</strong> — will show "Duplicate without user-selected canonical" if V1-01 is biting, and "Soft 404" for V1-02.</li>
+        <li><strong>URL Inspection &rarr; View crawled page</strong> — shows the exact HTML Google holds. This is the direct test of V2-01.</li>
+        <li><strong>Core Web Vitals report</strong> — the field data blocked above.</li>
+        <li><strong>Sitemaps</strong> — submit <code>https://www.leepai.io/sitemap.xml</code>; confirm discovered vs indexed counts.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>Competitor gap analysis and SERP intent classification</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)"><strong>Not performed.</strong> No competitor URLs were
+      supplied in the input block and live SERPs were unreachable, so the intent classification in V6-01 is
+      reasoned from the page's own signals rather than from observed SERPs. It could be wrong.</p>
+      <p style="font-size:.93rem;color:var(--ink-2);margin-top:10px"><strong>Also note the query set is
+      inferred.</strong> No PRIMARY QUERY SET was supplied, so I derived it from your <code>&lt;title&gt;</code>,
+      H1, nav anchors and dominant entities: <em>AI receptionist for home service businesses, AI answering
+      service for contractors, missed call text back, AI voice agent for HVAC/plumbing, speed to lead
+      automation</em>. <strong>If that is the wrong query set, the content findings in Vector 6 are audited
+      against the wrong target.</strong> Send me the real list and I will redo Vector 6.</p>
+    </div>
+  </details>
+
+  <details>
+    <summary>TLS certificate chain</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)"><strong>Not verifiable from here.</strong> This session's
+      proxy re-terminates TLS, so the certificate I observed was the proxy's, not your origin's. Cloudflare is
+      confirmed in front of the site, which makes a valid chain very likely — but I did not verify it and will
+      not claim I did.</p>
+      <pre>echo | openssl s_client -servername www.leepai.io -connect www.leepai.io:443 2&gt;/dev/null \
+  | openssl x509 -noout -dates -issuer -subject</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>Manual accessibility testing</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)">Contrast ratios, keyboard traps, visible focus states,
+      form label associations, ARIA correctness and screen-reader navigation were <strong>not</strong> tested.
+      Automated tooling catches roughly a third of WCAG issues; the rest is manual.</p>
+      <pre>npx -y @axe-core/cli https://www.leepai.io/ --exit
+npx -y pa11y https://www.leepai.io/ --standard WCAG2AA</pre>
+    </div>
+  </details>
+
+  <details>
+    <summary>Primary documentation retrieval</summary>
+    <div class="body">
+      <p style="font-size:.93rem;color:var(--ink-2)">Every standards citation in this report is third-party
+      corroboration. <code>developers.google.com</code>, <code>web.dev</code>, <code>schema.org</code> and
+      <code>rfc-editor.org</code> were all unreachable. Before acting on any threshold quoted here, confirm it
+      against the primary source. The findings themselves rest on quoted evidence from your own site, not on
+      these citations — but the <em>standards framing</em> around them deserves a primary check.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ============ §7 ============ -->
+<section id="s7">
+  <div class="sec-head">
+    <span class="eyebrow">§7</span>
+    <h2>Re-audit checklist</h2>
+  </div>
+  <p class="prose">Paste this after remediation. Every line re-verifies a P1 or P2 item and prints
+  <code>PASS</code> or <code>FAIL</code>.</p>
+
+  <pre>#!/usr/bin/env bash
+# Leep AI — post-remediation verification
+# Re-verifies every P1 and P2 finding.
+
+SITE="https://www.leepai.io"
+pass=0; fail=0
+chk() { # chk "label" "expected" "actual"
+  if [ "$2" = "$3" ]; then printf '  PASS  %-52s %s\n' "$1" "$3"; pass=$((pass+1))
+  else printf '  FAIL  %-52s got=%s want=%s\n' "$1" "$3" "$2"; fail=$((fail+1)); fi
+}
+
+echo "== P1-1  V2-01  content in raw HTML =="
+chk "hero copy present pre-JS" "1" \
+  "$(curl -sSL -A Googlebot "$SITE/" | grep -c 'Every Text and Call Answered')"
+
+echo "== P1-2  V1-01 / V5-01 / V5-02  per-route head =="
+for p in "" demo privacy terms sms-terms; do
+  printf '  /%-10s title: %s\n' "$p" \
+    "$(curl -sSL "$SITE/$p" | grep -oE '&lt;title&gt;[^&lt;]*' | sed 's/&lt;title&gt;//')"
+done
+chk "canonical on /demo" "1" "$(curl -sSL "$SITE/demo" | grep -ci 'rel="canonical"')"
+chk "unique titles across 5 routes" "5" \
+  "$(for p in "" demo privacy terms sms-terms; do curl -sSL "$SITE/$p" | grep -oE '&lt;title&gt;[^&lt;]*'; done | sort -u | wc -l | tr -d ' ')"
+
+echo "== P1-3  V1-02  real 404 status =="
+chk "unmatched route returns 404" "404" \
+  "$(curl -sSI -o /dev/null -w '%{http_code}' "$SITE/zzz-should-404")"
+
+echo "== P1-4  V1-06  apex redirects to www =="
+chk "apex 301s to www" "https://www.leepai.io/" \
+  "$(curl -sSIL -o /dev/null -w '%{url_effective}' 'https://leepai.io/')"
+
+echo "== P2-5  V4-01  structured data =="
+chk "JSON-LD block present" "1" "$(curl -sSL "$SITE/" | grep -c 'application/ld+json')"
+chk "Organization node present" "1" "$(curl -sSL "$SITE/" | grep -c '"@type": "Organization"')"
+chk "no fabricated AggregateRating" "0" "$(curl -sSL "$SITE/" | grep -c 'AggregateRating')"
+
+echo "== P2-6  V2-02  FAQ answers in DOM =="
+chk "FAQ answer text in raw HTML" "1" \
+  "$(curl -sSL "$SITE/" | grep -c 'dedicated onboarding specialist')"
+
+echo "== P2-7  V8-01  security headers =="
+H=$(curl -sSI "$SITE/")
+for h in strict-transport-security content-security-policy x-frame-options permissions-policy; do
+  chk "$h present" "1" "$(echo "$H" | grep -ci "^$h")"
+done
+chk "assets immutable cache" "1" \
+  "$(curl -sSI "$SITE/assets/index-CAptjTRU.js" | grep -ci 'immutable')"
+
+echo "== P2-8  V3-01 / V5-03  images =="
+chk "og:image absolute" "1" "$(curl -sSL "$SITE/" | grep -c 'og:image" content="https://')"
+chk "webp negotiated" "image/webp" \
+  "$(curl -sSI -H 'Accept: image/webp' "$SITE/founder-family.jpg" | grep -i '^content-type' | awk '{print $2}' | tr -d '\r')"
+
+echo "== P2-9  V1-03 / V1-05  sitemap + robots =="
+chk "lastmod on all 5 URLs" "5" "$(curl -sSL "$SITE/sitemap.xml" | grep -c lastmod)"
+chk "single User-agent:* group" "1" "$(curl -sSL "$SITE/robots.txt" | grep -c '^User-agent: \*')"
+
+echo
+echo "  ---- $pass passed, $fail failed ----"
+[ "$fail" -eq 0 ] || exit 1</pre>
+
+  <p class="prose" style="margin-top:18px">Then, separately, run the measurements this audit could not:</p>
+  <pre>npx -y lighthouse "https://www.leepai.io/" --form-factor=mobile \
+  --throttling-method=simulate --output=json --output-path=./lh-mobile.json
+
+npx -y @axe-core/cli https://www.leepai.io/ --exit
+
+# and in Search Console: URL Inspection -> View crawled page -> confirm the
+# HTML Google holds now contains your content, canonical and JSON-LD.</pre>
+</section>
+
+<!-- ============ §8 ============ -->
+<section id="s8">
+  <div class="sec-head">
+    <span class="eyebrow">§8</span>
+    <h2>Sources</h2>
+  </div>
+
+  <div class="note prose">
+    <strong>Read this before citing anything below.</strong> Every primary source in the protocol's authority
+    hierarchy — Google Search Central, web.dev, schema.org, the IETF — was unreachable from this environment.
+    Sources [3]&ndash;[10] are therefore <strong>third-party reporting and correlation, not Google policy</strong>,
+    and are labelled as such. Nothing in this report presents a third-party claim as a Google requirement.
+    <br><br>
+    The load-bearing evidence in this audit is sources [1] and [2]: bytes I fetched from your own server and a
+    DOM I rendered myself. Every finding is reproducible from those alone.
+  </div>
+
+  <ol class="src">
+    <li><strong>Primary evidence — live fetches of www.leepai.io</strong>, 15 August 2026, 15:24&ndash;15:32 UTC.
+      Raw HTML for 5 URLs (Googlebot UA), <code>robots.txt</code>, <code>sitemap.xml</code>, HTTP response
+      headers, asset byte weights, production JS bundle <code>index-CAptjTRU.js</code>. <em>[OBSERVED / MEASURED]</em></li>
+    <li><strong>Primary evidence — rendered DOM</strong>, headless Chromium 1194 (Playwright build), executed
+      against a local mirror of the production bundle, 15 August 2026. Routes rendered: <code>/</code>,
+      <code>/demo</code>, <code>/privacy</code>, and an unmatched path. <em>[OBSERVED]</em></li>
+    <li>Search Engine Journal — <a href="https://www.searchenginejournal.com/google-drops-faq-rich-results-from-search/574429/">Google Drops FAQ Rich Results From Search</a>. <em>Third-party reporting on FAQ rich-result withdrawal. Not retrieved from Google directly.</em></li>
+    <li>Search Engine Land — <a href="https://searchengineland.com/faq-schema-rise-fall-seo-today-463993">The rise and fall of FAQ schema</a>. <em>Third-party reporting: August 2023 restriction to government/health sites; full withdrawal reported as 7 May 2026.</em></li>
+    <li>corewebvitals.io — <a href="https://www.corewebvitals.io/core-web-vitals">What Are the Core Web Vitals? LCP, INP &amp; CLS Explained (2026)</a>. <em>Third-party. Reports LCP &lt; 2.5s, INP &lt; 200ms, CLS &lt; 0.1 at the 75th percentile of field data. <strong>Not verified against web.dev — retrieve the primary source before relying on these figures.</strong></em></li>
+    <li>Conductor — <a href="https://www.conductor.com/academy/index-coverage/faq/submitted-soft-404/">Submitted URL seems to be a Soft 404</a>. <em>Third-party explanation of soft-404 mechanics and SPA router causes.</em></li>
+    <li>Search Engine Land — <a href="https://searchengineland.com/google-says-mobile-first-indexing-is-complete-after-almost-7-years-434011">Google says mobile-first indexing is complete</a>. <em>Third-party reporting: rollout completed 5 July 2024; all sites crawled with Googlebot Smartphone.</em></li>
+    <li>sitemaps.org — <a href="https://www.sitemaps.org/protocol.html">Sitemap protocol 0.9</a>. <em>Referenced for <code>lastmod</code>/<code>changefreq</code>/<code>priority</code> semantics. Not retrieved in this session.</em></li>
+    <li>IETF — <a href="https://www.rfc-editor.org/rfc/rfc9309.html">RFC 9309, Robots Exclusion Protocol</a> (September 2022). <em>Referenced for group-merging semantics. <strong>Host blocked; not retrieved in this session.</strong></em></li>
+    <li>Open Graph protocol — <a href="https://ogp.me/">ogp.me</a>. <em>Referenced for the absolute-URL requirement on <code>og:image</code>. Not retrieved in this session.</em></li>
+  </ol>
+
+  <h3 style="margin-top:34px">Myth firewall — claims deliberately not made</h3>
+  <p class="prose">For the record, and because these appear in most audits of this kind:</p>
+  <ul class="prose">
+    <li><strong>No Lighthouse or PageSpeed score is reported</strong>, because none was retrieved. The
+    documented page-experience signal is field Core Web Vitals, not the lab score — the score is a diagnostic
+    aid, not a ranking factor.</li>
+    <li><strong>No Domain Authority, Domain Rating, Trust Flow, backlink count or traffic estimate appears
+    anywhere in this report.</strong> Those are third-party vendor metrics, not Google signals, and I
+    retrieved none of them.</li>
+    <li><strong>No keyword density, LSI keyword, or TF-IDF recommendation is made.</strong> Google has
+    publicly denied using LSI; it is not a real technique. Vector 6 is framed as intent coverage and
+    information gain instead.</li>
+    <li><strong>No word-count minimum is prescribed.</strong> Your 1,209 words are reported as a measurement,
+    never as a target.</li>
+    <li><strong>The <code>meta keywords</code> tag is not recommended</strong> — Google does not use it.</li>
+    <li><strong>Bounce rate and Google Analytics data are not treated as ranking factors</strong>, because
+    they are not documented as such.</li>
+    <li><strong>FAQPage markup is explicitly not recommended</strong> for rich results — see V2-02 and
+    source [4]. This is the trap most audits of a page with an FAQ section fall into.</li>
+    <li><strong>No percentage traffic lift is projected for any fix.</strong> Every impact statement in this
+    report is written as a mechanism, not a forecast.</li>
+  </ul>
+</section>
+
+<footer class="end">
+  <p><strong>Leep AI Site Inspection</strong> &middot; Forensic Technical SEO Audit &middot;
+  Target: www.leepai.io &middot; Conducted 15 August 2026</p>
+  <p style="margin-top:8px">Score 12/85 possible (15 points unscored: Vector 3) &middot;
+  Confidence Grade C &middot; ~74% of protocol executed &middot; Status: PARTIAL</p>
+  <p style="margin-top:8px">Findings tagged [OBSERVED] and [MEASURED] are reproducible from the commands and
+  quoted evidence in each entry. Findings tagged [INFERRED] state their reasoning chain and the test that
+  would falsify them. Findings tagged [REQUIRES LIVE EXECUTION] were not checked and carry no deduction.</p>
+</footer>
+
+</div>

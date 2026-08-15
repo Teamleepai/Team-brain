@@ -1,0 +1,1342 @@
+<title>Pain Signal Matrix &amp; ICP — Leep AI Prospecting</title>
+<style>
+  :root {
+    --ground: #F6F7F9;
+    --panel: #FFFFFF;
+    --panel-2: #EFF1F4;
+    --ink: #161B22;
+    --ink-2: #414C59;
+    --muted: #6B7684;
+    --rule: #DBDFE5;
+    --rule-2: #C9CFD7;
+    --accent: #0E5A68;
+    --accent-soft: #E2EFF1;
+    --drowning: #A8481A;
+    --drowning-soft: #F7E9E1;
+    --starving: #2B5E8C;
+    --starving-soft: #E4ECF4;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #101418;
+      --panel: #171C22;
+      --panel-2: #1E242B;
+      --ink: #DFE4EA;
+      --ink-2: #AEB8C4;
+      --muted: #7E8996;
+      --rule: #262D35;
+      --rule-2: #333C46;
+      --accent: #45AABB;
+      --accent-soft: #16333A;
+      --drowning: #D2814F;
+      --drowning-soft: #33221A;
+      --starving: #6E9FCB;
+      --starving-soft: #1A2632;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #101418;
+    --panel: #171C22;
+    --panel-2: #1E242B;
+    --ink: #DFE4EA;
+    --ink-2: #AEB8C4;
+    --muted: #7E8996;
+    --rule: #262D35;
+    --rule-2: #333C46;
+    --accent: #45AABB;
+    --accent-soft: #16333A;
+    --drowning: #D2814F;
+    --drowning-soft: #33221A;
+    --starving: #6E9FCB;
+    --starving-soft: #1A2632;
+  }
+  :root[data-theme="light"] {
+    --ground: #F6F7F9;
+    --panel: #FFFFFF;
+    --panel-2: #EFF1F4;
+    --ink: #161B22;
+    --ink-2: #414C59;
+    --muted: #6B7684;
+    --rule: #DBDFE5;
+    --rule-2: #C9CFD7;
+    --accent: #0E5A68;
+    --accent-soft: #E2EFF1;
+    --drowning: #A8481A;
+    --drowning-soft: #F7E9E1;
+    --starving: #2B5E8C;
+    --starving-soft: #E4ECF4;
+  }
+
+  * { box-sizing: border-box; }
+
+  .page {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 20px 80px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* ---------- utility type ---------- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 54px 0 30px;
+    border-bottom: 2px solid var(--ink);
+  }
+  .masthead h1 {
+    margin: 0;
+    font-size: clamp(30px, 5vw, 46px);
+    font-weight: 800;
+    letter-spacing: -0.032em;
+    line-height: 1.04;
+    text-wrap: balance;
+  }
+  .masthead .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  .thesis {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 32px 0 0;
+    padding: 26px 28px;
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+  }
+  .thesis .lede {
+    margin: 0;
+    font-size: clamp(19px, 2.6vw, 25px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.28;
+    text-wrap: balance;
+  }
+  .thesis p.sub { margin: 0; color: var(--ink-2); max-width: 66ch; }
+
+  /* ---------- nav ---------- */
+  .nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 30px 0 0;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-2);
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid var(--rule-2);
+  }
+  .nav a:hover { color: var(--accent); border-color: var(--accent); }
+  .nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- sections ---------- */
+  .band { padding: 56px 0 0; }
+  .band-head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+  .band-head h2 {
+    margin: 0;
+    font-size: clamp(21px, 3vw, 28px);
+    font-weight: 800;
+    letter-spacing: -0.024em;
+    line-height: 1.14;
+    text-wrap: balance;
+  }
+  .band-head p { margin: 0; color: var(--ink-2); max-width: 68ch; }
+
+  /* ---------- key findings ---------- */
+  .findings { display: grid; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); gap: 14px; }
+  .finding {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 22px;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+  }
+  .finding h3 {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    line-height: 1.3;
+  }
+  .finding p { margin: 0; font-size: 13.6px; color: var(--ink-2); }
+  .finding .figure {
+    font-family: var(--mono);
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- price ladder ---------- */
+  .ladder {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 22px 0 0;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+  }
+  .rung {
+    display: grid;
+    grid-template-columns: 108px 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 11px 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .rung:last-child { border-bottom: 0; }
+  .rung .price {
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--drowning);
+    font-variant-numeric: tabular-nums;
+  }
+  .rung .who { font-size: 13.6px; color: var(--ink-2); }
+  .rung.ours { background: var(--accent-soft); }
+  .rung.ours .price { color: var(--accent); }
+  .rung.ours .who { color: var(--ink); font-weight: 600; }
+
+  /* ---------- product panels ---------- */
+  .products { display: flex; flex-direction: column; gap: 16px; }
+  .product { background: var(--panel); border: 1px solid var(--rule); }
+  .product > header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px 14px;
+    padding: 17px 20px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--panel-2);
+  }
+  .product > header h3 {
+    margin: 0;
+    font-size: 16.5px;
+    font-weight: 800;
+    letter-spacing: -0.018em;
+  }
+  .count {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scroller { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; }
+  thead th {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-weight: 500;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule-2);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 12px 14px;
+    font-size: 13.7px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr.hot td { background: var(--accent-soft); }
+  td.sig { font-weight: 600; color: var(--ink); min-width: 200px; }
+  td.tells { color: var(--ink-2); min-width: 240px; }
+  td.mid { white-space: nowrap; }
+
+  /* ---------- chips ---------- */
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 7px;
+    white-space: nowrap;
+  }
+  .b1 { background: var(--drowning-soft); color: var(--drowning); }
+  .b2 { background: var(--starving-soft); color: var(--starving); }
+  .b12 {
+    background: linear-gradient(100deg, var(--drowning-soft) 50%, var(--starving-soft) 50%);
+    color: var(--ink-2);
+  }
+  .d-easy { color: var(--accent); font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; }
+  .d-med { color: var(--ink-2); font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; }
+  .d-hard { color: var(--drowning); font-family: var(--mono); font-size: 11px; letter-spacing: 0.05em; }
+
+  .dots { display: inline-flex; gap: 3px; }
+  .dots i {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    display: block;
+  }
+  .dots i.off { background: transparent; box-shadow: inset 0 0 0 1px var(--rule-2); }
+
+  /* ---------- notes ---------- */
+  .note {
+    display: flex;
+    gap: 11px;
+    padding: 13px 20px;
+    font-size: 13px;
+    color: var(--ink-2);
+    border-top: 1px solid var(--rule);
+    background: var(--panel-2);
+  }
+  .note b { color: var(--ink); }
+  .note .tag {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--drowning);
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  /* ---------- axes ---------- */
+  .axes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .formula {
+    font-family: var(--mono);
+    font-size: clamp(12px, 1.8vw, 15px);
+    text-align: center;
+    padding: 20px;
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    margin-bottom: 18px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .formula b { color: var(--accent); }
+  .plainlist { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+  .plainlist li {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 9px 20px;
+    font-size: 13.4px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-2);
+  }
+  .plainlist li:last-child { border-bottom: 0; }
+  .plainlist li span.k { color: var(--ink); }
+  .plainlist li.key { background: var(--accent-soft); }
+  .plainlist li.key span.k { font-weight: 700; }
+
+  /* ---------- threshold ---------- */
+  .threshold { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--rule); }
+  .zone {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 18px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--panel);
+  }
+  .zone:last-child { border-bottom: 0; }
+  .zone .label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+  .zone .body { font-size: 13.7px; color: var(--ink-2); }
+  .zone .body b { color: var(--ink); }
+  .zone.go { border-left: 3px solid var(--accent); }
+  .zone.go .label { color: var(--accent); }
+  .zone.edge { border-left: 3px solid var(--muted); }
+  .zone.edge .label { color: var(--muted); }
+  .zone.stop { border-left: 3px solid var(--drowning); }
+  .zone.stop .label { color: var(--drowning); }
+
+  /* ---------- scorecard ---------- */
+  .scorecard table { min-width: 780px; }
+  .scorecard tbody td { border-bottom: 1px solid var(--rule); }
+  td.seg { font-weight: 600; min-width: 230px; }
+  td.num {
+    font-family: var(--mono);
+    font-size: 13px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    width: 68px;
+  }
+  .s5 { background: var(--accent); color: #fff; }
+  .s4 { background: color-mix(in srgb, var(--accent) 62%, transparent); color: var(--ink); }
+  .s3 { background: color-mix(in srgb, var(--accent) 32%, transparent); color: var(--ink); }
+  .s2 { background: color-mix(in srgb, var(--drowning) 26%, transparent); color: var(--ink); }
+  .s1 { background: color-mix(in srgb, var(--drowning) 52%, transparent); color: var(--ink); }
+  td.verdict {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    white-space: nowrap;
+  }
+  .v-go { color: var(--accent); font-weight: 700; }
+  .v-mid { color: var(--ink-2); }
+  .v-no { color: var(--drowning); font-weight: 600; }
+
+  /* ---------- blocked ---------- */
+  .blocked { display: flex; flex-direction: column; border: 1px solid var(--rule); background: var(--panel); }
+  .blocked .row {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--rule);
+    font-size: 13.7px;
+    color: var(--ink-2);
+  }
+  .blocked .row:last-child { border-bottom: 0; }
+  .blocked .row b { color: var(--ink); }
+  .blocked .row .n {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  footer.foot {
+    margin-top: 64px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-size: 12.5px;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  footer.foot a { color: var(--accent); }
+
+  /* roster */
+  .roster table { min-width: 700px; }
+  td.who { font-weight: 700; min-width: 90px; }
+  .bar { display: block; height: 8px; background: var(--accent); border-radius: 1px; }
+  .bar.lo { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+  /* week timeline */
+  .weeks { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .wk {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 18px; background: var(--panel); border: 1px solid var(--rule);
+    border-top: 3px solid var(--accent);
+  }
+  .wk.freeze { border-top-color: var(--drowning); }
+  .wk .num {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.11em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .wk h4 {
+    margin: 0; font-size: 15px; font-weight: 800; letter-spacing: -0.015em;
+  }
+  .wk p { margin: 0; font-size: 12.8px; color: var(--ink-2); }
+  .wk ul { margin: 0; padding-left: 15px; font-size: 12.5px; color: var(--ink-2); }
+  .wk ul li { margin-bottom: 3px; }
+
+  @media (max-width: 620px) {
+    .zone, .rung { grid-template-columns: 1fr; gap: 7px; }
+    .count { margin-left: 0; }
+  }
+</style>
+
+<div class="page">
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="meta">
+      <p class="eyebrow">Leep AI &middot; Prospecting</p>
+      <p class="eyebrow">Phase 1 partial</p>
+      <p class="eyebrow">5 August 2026</p>
+    </div>
+    <h1>Pain signal matrix &amp; ICP recommendation</h1>
+  </header>
+
+  <div class="thesis">
+    <p class="lede">Sell where self-serve fails.</p>
+    <p class="sub">The moment a buyer's environment requires configuration they cannot do themselves,
+    price stops being the deciding factor and capability starts. That is the only place where a
+    top-1% sales motion and the implementation blueprint both get paid — and it is a complexity
+    threshold, not a company-size band.</p>
+  </div>
+
+  <nav class="nav">
+    <a href="#finding">The finding</a>
+    <a href="#matrix">Signal matrix</a>
+    <a href="#axes">Pay &amp; reach</a>
+    <a href="#ceiling">The ceiling</a>
+    <a href="#icp">ICP scorecard</a>
+    <a href="#industries">By industry</a>
+    <a href="#sourcing">Where to scrape</a>
+    <a href="#capacity">Team capacity</a>
+    <a href="#gtm">16-week plan</a>
+    <a href="#blocked">Blocked</a>
+  </nav>
+
+  <!-- ============ FINDING ============ -->
+  <section class="band" id="finding">
+    <div class="band-head">
+      <p class="eyebrow">What changes the small-vs-mid question</p>
+      <h2>The flagship is already commoditized at the low end</h2>
+      <p>Two elite closers whose muscle is $200K&ndash;$1.9M complex deals cannot be deployed against a
+      $49/month self-serve product &mdash; and the usual fix, making it up on volume, is closed off by the
+      domain-protection rule. Low deal value <em>and</em> low outreach volume is a revenue ceiling, not a
+      strategy.</p>
+    </div>
+
+    <div class="ladder">
+      <div class="rung"><span class="price">$24.95/mo</span><span class="who">AIRA</span></div>
+      <div class="rung"><span class="price">$29/mo</span><span class="who">Dialzara</span></div>
+      <div class="rung"><span class="price">$49/mo</span><span class="who">Rosie &middot; Voksha &middot; Trillet &mdash; marketed with five-minute setup</span></div>
+      <div class="rung"><span class="price">$59/mo</span><span class="who">Goodcall</span></div>
+      <div class="rung"><span class="price">$95/mo</span><span class="who">Smith.ai, hybrid</span></div>
+      <div class="rung ours"><span class="price">Above this</span><span class="who">Requires implementation &mdash; multi-location routing, mandated CRM, multi-provider scheduling, membership logic, database integration. Self-serve cannot reach it.</span></div>
+    </div>
+
+    <div class="findings" style="margin-top:16px">
+      <div class="finding">
+        <p class="eyebrow">Segment structure</p>
+        <span class="figure">81%</span>
+        <h3>of med spas are still single-location</h3>
+        <p>Only 3&ndash;4% are PE-consolidated while 30+ PE platforms actively compete for quality
+        independents. Groups averaged nine locations in 2024, up from six in 2022.</p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">Consolidation pressure</p>
+        <span class="figure">~800</span>
+        <h3>HVAC, plumbing and electrical companies bought by PE since 2022</h3>
+        <p>Now roughly half of all HVAC services deals. Add-on volume rose ~88% year over year through
+        mid-2025.</p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">Why the frame flips</p>
+        <span class="figure">3&ndash;7&times;</span>
+        <h3>Every $1 of added EBITDA becomes $3&ndash;7 of enterprise value</h3>
+        <p>For an owner grooming for sale, our fee stops being an operating expense and becomes a
+        capital event. That is a CFO-grade sale no $49/mo vendor can run.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MATRIX ============ -->
+  <section class="band" id="matrix">
+    <div class="band-head">
+      <p class="eyebrow">Part one &middot; the lowest-hanging fruit</p>
+      <h2>Pain signals, by product</h2>
+      <p>Every row is something we can actually go hunting for. If it can't be detected at scale it
+      isn't a row &mdash; it's a talking point. <span class="chip b1">B1 drowning</span>
+      <span class="chip b2">B2 starving</span> &nbsp;Strength scores how much the signal predicts a real,
+      budgeted, winnable deal.</p>
+    </div>
+
+    <div class="products">
+
+      <!-- VOICE -->
+      <article class="product">
+        <header>
+          <h3>Voice AI receptionist</h3>
+          <span class="chip b1">B1 drowning</span>
+          <span class="count">10 signals</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Main line rings to a mobile number</td><td class="tells">The owner <em>is</em> the receptionist. In pain <strong>and</strong> reachable &mdash; the best combined signal in the matrix</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Active job posting: receptionist, front desk, CSR</td><td class="tells">They've quantified the pain and budgeted a salary. That salary is our price anchor</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Posting reposted, or live 30+ days</td><td class="tells">They can't fill it. Hiring has failed and urgency is real</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Reviews citing &ldquo;never called back&rdquo;, &ldquo;no answer&rdquo;</td><td class="tells">Third-party-verified revenue loss. Quotable in the first line of outreach</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Rings to voicemail during posted hours</td><td class="tells">Greenfield. No incumbent, no switching cost, fastest close</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Claims 24/7 on site, but off-hours call fails</td><td class="tells">A promise they are publicly breaking</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">IVR or phone tree on the main line</td><td class="tells"><strong>Displacement, not greenfield.</strong> They own the problem but chose a bad fix. Longer cycle, bigger deal &mdash; segment separately</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Review volume rising while rating falls</td><td class="tells">Growing faster than they can serve. Textbook drowning</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Third-party answering service in use</td><td class="tells">Paying for a worse solution. Price anchor already set</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Regional storm or seasonal demand spike</td><td class="tells">Time-boxed volume crisis &mdash; the AFC pattern</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Commercial</span><span>Do not lead with this product into single-location small business. That market is priced at $25&ndash;95/mo self-serve. Lead with it only where implementation is required.</span></p>
+      </article>
+
+      <!-- WEB CHAT -->
+      <article class="product">
+        <header>
+          <h3>Website chat agent</h3>
+          <span class="chip b1">B1 drowning</span>
+          <span class="count">6 signals</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Paid ads running to a form page</td><td class="tells">They are buying traffic and leaking it. Proven budget plus proven waste &mdash; highest urgency in this column</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Intake or quote form present, no chat widget</td><td class="tells">The AFC and JJ Jardina pattern. Form fills die in an inbox</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Form present <em>plus</em> reviews citing slow response</td><td class="tells">Confirms the form is a leak, not a channel. Two cheap scrapes, one strong conclusion</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Measured form-to-callback latency over 1 hour</td><td class="tells">Direct measurement &mdash; the strongest possible version of this signal</td><td class="mid"><span class="d-hard">hard</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">&ldquo;Request a quote&rdquo; as the primary CTA</td><td class="tells">Their entire funnel depends on response speed</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Chat widget present but unstaffed</td><td class="tells">Worse than nothing, and they already believe in the channel</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Limit</span><span>Latency measurement means submitting real forms. Viable for a hand-picked target list; not at scrape scale, and it wastes a real person's time at volume. Reserve for accounts already scored in.</span></p>
+      </article>
+
+      <!-- REACTIVATION -->
+      <article class="product">
+        <header>
+          <h3>SMS reactivation campaign</h3>
+          <span class="chip b2">B2 starving</span>
+          <span class="count">8 signals</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">On Boulevard</td><td class="tells"><strong>Sourced wedge.</strong> Boulevard's reporting is documented as weaker than competitors on marketing attribution and customer lifetime value &mdash; they literally cannot see which campaigns drove revenue. Not a DQ. A wedge</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Site claims a large base &mdash; &ldquo;500+ customers&rdquo;</td><td class="tells">Self-reported database size <em>is</em> the revenue math input</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Review count far exceeds recent review velocity</td><td class="tells">Large historical base, dormant now. That gap <em>is</em> the reactivation list</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">High-repeat industry: med spa, salon, pest, lawn</td><td class="tells">Repeat revenue is the dominant economic engine. Reactivation math is largest here</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">No visible email or SMS marketing footprint</td><td class="tells">Nobody is touching the base at all</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Loyalty or membership program advertised</td><td class="tells">They already believe in retention. We operationalize it</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">On Jobber, HouseCall Pro, GoHighLevel</td><td class="tells">Database exists and is accessible. Platform decides wedge vs. DQ</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">On Zenoti</td><td class="tells"><strong>Deprioritize.</strong> Zenoti is documented to win on reporting and loyalty at scale. Less gap to sell into</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i class="off"></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <!-- CRM -->
+      <article class="product">
+        <header>
+          <h3>CRM hygiene &amp; optimization retainer</h3>
+          <span class="chip b12">B1 / B2</span>
+          <span class="count">6 signals</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Grooming for sale, or recently PE-acquired</td><td class="tells">A <strong>diligence deadline.</strong> Clean data becomes mandatory and EBITDA becomes the currency. Strongest signal in the entire matrix</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Recent acquisition or merger</td><td class="tells">Two datasets just collided. Acute, dated, undeniable</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Hiring an ops, marketing coordinator or data role</td><td class="tells">Trying to solve it internally. Their salary is our anchor</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Platform with documented reporting gaps</td><td class="tells">A sourced capability gap, not an assumption</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Multiple locations on one platform</td><td class="tells">Data fragmentation at multi-site is near-certain</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Overlapping tools: booking + separate CRM + marketing</td><td class="tells">Integration debt, guaranteed duplicate records</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Why it matters</span><span>This is the highest-trust entry point we have. Prove we won't break their most sensitive asset and every other product becomes easy &mdash; <b>land and expand.</b></span></p>
+      </article>
+
+      <!-- SEO -->
+      <article class="product">
+        <header>
+          <h3>SEO</h3>
+          <span class="chip b2">B2 starving</span>
+          <span class="count">9 signals</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Buying Google Ads for terms they rank #4&ndash;10 organically</td><td class="tells">Paying for traffic they could earn. Sharpest quantifiable pitch in this column</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Ranks #4&ndash;10 for the primary local commercial term</td><td class="tells">On page one, off the money. Smallest gap to visible ROI</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">No agency footprint &mdash; no vendor, no SEO tool tags</td><td class="tells">No incumbent to displace</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Google Business Profile unclaimed or thin</td><td class="tells">Free wins available in week one</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig"><code>noindex</code> or robots blocking, or not indexed</td><td class="tells">Self-inflicted invisibility. Dramatic reveal on a call</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Referring domains far below top-3 local competitors</td><td class="tells">A quantified competitive gap &mdash; becomes one chart in the pitch</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">No service-area or location pages</td><td class="tells">The biggest structural lever in local SEO, entirely absent</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">No <code>LocalBusiness</code> schema</td><td class="tells">Cheap technical win, visible in the HTML</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Failing Core Web Vitals, no SSL, mixed content</td><td class="tells">Visible technical debt, free to detect via PageSpeed API</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Blocked</span><span>Aaron's SEO research must arbitrate which of these are cheap-at-scale vs. audit-grade. Per instruction: highlight key triggers, <b>do not run a full audit per site.</b></span></p>
+      </article>
+
+      <!-- YELP -->
+      <article class="product">
+        <header>
+          <h3>Yelp agent</h3>
+          <span class="chip b1">B1 drowning</span>
+          <span class="count">5 signals</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Yelp response time over 1 hour</td><td class="tells">Yelp publishes this publicly. Free, verified latency data on a silver platter</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">&ldquo;Request a Quote&rdquo; enabled with slow or no response</td><td class="tells">Leads arriving and dying in the open</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Running Yelp Ads <em>and</em> responding slowly</td><td class="tells">Proven budget plus proven leak</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Unanswered reviews, especially negative</td><td class="tells">Reputation decay, cheap to fix, easy to demo</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Same pattern on Angi, Thumbtack, HomeAdvisor, Google LSA</td><td class="tells">Multiplies the product surface across one buyer</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Open</span><span>Which industries beyond auto detailing, HVAC and plumbing use Yelp meaningfully &mdash; and the API and terms-of-service reality for Angi and the rest.</span></p>
+      </article>
+
+      <!-- SMS AGENT -->
+      <article class="product">
+        <header>
+          <h3>SMS chat agent</h3>
+          <span class="chip b1">B1 drowning</span>
+          <span class="count">4 signals &middot; inferred</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr><td class="sig">&ldquo;Text us&rdquo; CTA on site with no automation behind it</td><td class="tells">Already committed to the channel and staffing it manually</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Meta page showing a slow response-time badge</td><td class="tells">Meta publishes this. Free, verified latency data</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Reviews citing slow text or message replies</td><td class="tells">Verified and quotable</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">High-consideration service, long booking window</td><td class="tells">Needs nurture between inquiry and close</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Blocked</span><span>These rows are <b>inferred, not derived from our own wins.</b> The real trigger profile has to be reverse-engineered from Armand and Aisha &mdash; and we still need to establish whether this has ever been sold standalone.</span></p>
+      </article>
+
+      <!-- WEBSITE -->
+      <article class="product">
+        <header>
+          <h3>Website hosting, maintenance &amp; design</h3>
+          <span class="chip b2">B2 starving</span>
+          <span class="count">6 signals</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">DIY builder <em>plus</em> strong revenue proof</td><td class="tells">They outgrew the site and can afford better. <strong>The pairing is the signal</strong></td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Not mobile-responsive</td><td class="tells">Most local search is mobile. Actively costing them today</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">No SSL or expired certificate</td><td class="tells">A browser warning is costing them traffic right now</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Copyright year 2+ years stale</td><td class="tells">Nobody is maintaining it</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">End-of-life platform or outdated CMS</td><td class="tells">Genuine security and maintenance exposure</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Broken links, 404s, missing images</td><td class="tells">Visible neglect. Easy to demo on a call</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Rule</span><span>This column <b>requires the ability-to-pay pairing.</b> Need alone isn't a signal here; need plus capacity to prioritize is. Never score it standalone. <b>No website at all</b> is a disqualifier only when revenue proof is also absent &mdash; otherwise it's the JJ Jardina profile.</span></p>
+      </article>
+
+      <!-- LEADGEN -->
+      <article class="product">
+        <header>
+          <h3>Lead generation</h3>
+          <span class="chip b2">B2 starving</span>
+          <span class="count">4 signals &middot; time-boxed</span>
+        </header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Strong revenue proof <em>plus</em> weak or absent digital presence</td><td class="tells"><strong>The JJ Jardina profile.</strong> The whole segment in one row &mdash; and the reason the no-website rule needs a revenue gate rather than a blanket DQ</td><td class="mid"><span class="d-hard">hard</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Low review velocity vs. local peers</td><td class="tells">A demand problem, not a capacity problem</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">No paid advertising anywhere</td><td class="tells">No demand generation at all</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+              <tr><td class="sig">Newly opened location</td><td class="tells">Ramp-up need, naturally time-boxed</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ AXES ============ -->
+  <section class="band" id="axes">
+    <div class="band-head">
+      <p class="eyebrow">Part two &middot; the correction to &ldquo;count the boxes&rdquo;</p>
+      <h2>Two more axes, multiplied &mdash; not added</h2>
+      <p>Summing pain signals floats the worst-run, least-solvent businesses to the top: a company with
+      no website, no SEO, an IVR and bad reviews may simply be badly run and broke. Any axis near zero
+      must zero the prospect.</p>
+    </div>
+
+    <p class="formula">PROSPECT SCORE = <b>Pain</b> &times; <b>Ability to Pay</b> &times; <b>Reachability</b></p>
+
+    <div class="axes">
+      <div class="product">
+        <header><h3>Ability to pay</h3><span class="count">non-Google by design</span></header>
+        <ul class="plainlist">
+          <li class="key"><span class="k">Active paid advertising</span><span>best single proxy</span></li>
+          <li><span class="k">Job postings with salary ranges</span><span>payroll capacity</span></li>
+          <li><span class="k">Permit volume, public records</span><span>trades only</span></li>
+          <li><span class="k">Fleet size &mdash; wraps, DOT numbers</span><span>unfakeable</span></li>
+          <li><span class="k">Contractor license class &amp; bond</span><span>scales with contract size</span></li>
+          <li><span class="k">Equipment financing UCC filings</span><span>capital access</span></li>
+          <li class="key"><span class="k">FDD Item 19 unit revenue</span><span>franchisees &mdash; published, free</span></li>
+          <li><span class="k">Recent PE deal or banker listing</span><span>definitive</span></li>
+          <li><span class="k">Location count</span><span>crude but reliable</span></li>
+        </ul>
+        <p class="note"><span class="tag">Note</span><span>Deliberately independent of Google &mdash; which is what also makes it the <b>solution to the JJ Jardina problem.</b> You cannot find a company by querying Google for its absence.</span></p>
+      </div>
+
+      <div class="product">
+        <header><h3>Reachability</h3><span class="count">replaces the headcount question</span></header>
+        <ul class="plainlist">
+          <li class="key"><span class="k">Owner's surname in the business name</span><span>easy</span></li>
+          <li><span class="k">No parent or holding company registered</span><span>med</span></li>
+          <li><span class="k">Owner personally responds to reviews</span><span>easy</span></li>
+          <li><span class="k">Owner named on licenses or permits</span><span>med</span></li>
+          <li><span class="k">Generic email, not <code>first.last@</code></span><span>easy</span></li>
+          <li><span class="k">No formal careers page or HR function</span><span>easy</span></li>
+          <li><span class="k">Owner active on the business's socials</span><span>easy</span></li>
+          <li class="key"><span class="k">Under ~100 employees / ~$50M revenue</span><span>the committee line</span></li>
+          <li class="key"><span class="k">Not a PE platform HQ</span><span>procurement by design</span></li>
+        </ul>
+        <p class="note"><span class="tag">Reframe</span><span>Owner reachability tracks <b>owner-operator status, not headcount.</b> A 40-person owner-run shop is more reachable than a 12-person one rolled into a PE platform last year.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CEILING ============ -->
+  <section class="band" id="ceiling">
+    <div class="band-head">
+      <p class="eyebrow">Part three &middot; sourced</p>
+      <h2>The wall isn't location count. It's the arrival of procurement</h2>
+      <p>Mid-market &mdash; 100&ndash;1,000 employees, $10M&ndash;$250M revenue &mdash; is where committees form:
+      5&ndash;8 stakeholders across finance, IT, legal and the business unit, and 3&ndash;4 months on a
+      $25K&ndash;$100K deal. Below that line, half of all buying groups are just 2&ndash;4 people.</p>
+    </div>
+
+    <div class="threshold">
+      <div class="zone go">
+        <span class="label">Target</span>
+        <span class="body">Under <b>~100 employees</b>, under <b>~$50M revenue</b>, under <b>~10 locations</b>
+        &mdash; and one owner or one executive decides. No security review, no procurement veto, no committee
+        to out-resource.</span>
+      </div>
+      <div class="zone edge">
+        <span class="label">Edge of viable</span>
+        <span class="body"><b>100&ndash;150 employees.</b> Expect 4&ndash;7 stakeholders and a 3&ndash;4 month
+        cycle. Winnable, slowly. Procurement often arrives late and renegotiates price long after the
+        business unit is already sold.</span>
+      </div>
+      <div class="zone stop">
+        <span class="label">Do not enter</span>
+        <span class="body"><b>PE platform HQ, 20+ locations, any formal vendor-management function.</b>
+        Centralized procurement is a <em>designed</em> value-creation lever in the roll-up thesis &mdash;
+        &ldquo;add 200 basis points of margin from centralized procurement and the IRR thesis closes
+        itself.&rdquo; That is an institution built to grind vendors, not a big prospect.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ICP ============ -->
+  <section class="band" id="icp">
+    <div class="band-head">
+      <p class="eyebrow">Part four &middot; the recommendation</p>
+      <h2>Where to start</h2>
+      <p>Scored 1&ndash;5, best is 5. The winning axis combination is <strong>large revenue with a small
+      delivery footprint and a single decision maker</strong> &mdash; which is not the same thing as a
+      company-size band.</p>
+    </div>
+
+    <div class="product scorecard">
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr>
+              <th>Segment</th><th>Deal value</th><th>Delivery simplicity</th><th>Single-threaded</th>
+              <th>Our proof</th><th>Low competition</th><th>Can pay</th><th>Verdict</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="hot">
+              <td class="seg">Med spa group, 3&ndash;8 locations, owner-operated, Boulevard-class</td>
+              <td class="num s4">4</td><td class="num s4">4</td><td class="num s4">4</td><td class="num s4">4</td><td class="num s4">4</td><td class="num s5">5</td>
+              <td class="verdict v-go">Spearhead</td>
+            </tr>
+            <tr>
+              <td class="seg">HVAC / plumbing, 1&ndash;5 locations, owner-operated, high volume</td>
+              <td class="num s4">4</td><td class="num s3">3</td><td class="num s4">4</td><td class="num s4">4</td><td class="num s2">2</td><td class="num s4">4</td>
+              <td class="verdict v-mid">Second front</td>
+            </tr>
+            <tr>
+              <td class="seg">Multi-unit franchisee, home services</td>
+              <td class="num s5">5</td><td class="num s3">3</td><td class="num s4">4</td><td class="num s1">1</td><td class="num s3">3</td><td class="num s5">5</td>
+              <td class="verdict v-mid">Research first</td>
+            </tr>
+            <tr>
+              <td class="seg">Med spa, single location, high revenue</td>
+              <td class="num s3">3</td><td class="num s5">5</td><td class="num s5">5</td><td class="num s4">4</td><td class="num s3">3</td><td class="num s3">3</td>
+              <td class="verdict v-mid">Fill / second wave</td>
+            </tr>
+            <tr>
+              <td class="seg">Auto detailing, single location</td>
+              <td class="num s1">1</td><td class="num s5">5</td><td class="num s5">5</td><td class="num s3">3</td><td class="num s2">2</td><td class="num s1">1</td>
+              <td class="verdict v-mid">Keep products, don't lead</td>
+            </tr>
+            <tr>
+              <td class="seg">HVAC / plumbing, single location, small</td>
+              <td class="num s1">1</td><td class="num s5">5</td><td class="num s5">5</td><td class="num s3">3</td><td class="num s1">1</td><td class="num s2">2</td>
+              <td class="verdict v-no">Avoid as primary</td>
+            </tr>
+            <tr>
+              <td class="seg">PE platform HQ, 20+ locations</td>
+              <td class="num s5">5</td><td class="num s1">1</td><td class="num s1">1</td><td class="num s1">1</td><td class="num s1">1</td><td class="num s5">5</td>
+              <td class="verdict v-no">Avoid</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note"><span class="tag">The arbitrage</span><span>Six locations on one Boulevard instance is <b>one</b> integration and <b>one</b> configuration &mdash; not six. Deal value scales with patient count; delivery cost does not scale with locations. That is how you get a deal worth a complex sale that Hamza and Javi can still execute.</span></p>
+    </div>
+
+    <div class="findings" style="margin-top:16px">
+      <div class="finding">
+        <p class="eyebrow">On looking smaller</p>
+        <h3>Don't compete on parity &mdash; in a parity comparison, smaller always loses</h3>
+        <p>Make principals-on-every-call the actual differentiator: &ldquo;you get the two people who
+        built this, for the life of the contract, not a team you meet once at kickoff.&rdquo; That only
+        lands on buyers already burned by a large vendor &mdash; which makes
+        <strong>&ldquo;previously burned&rdquo; a targeting signal</strong>, visible in review complaints and
+        recent vendor changes.</p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">Challenge to the call</p>
+        <h3>Industry-agnostic discovery, industry-concentrated selling</h3>
+        <p>A startup closes a brand gap with reference density, not by appearing bigger. Scraping wide
+        is right. Selling wide is not &mdash; it maximizes the conversations where you have no proof. In one
+        narrow vertical you can name six customers who look exactly like the prospect. That is how five
+        people out-credential two hundred.</p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">One honest caveat</p>
+        <h3>The skill transfers. The air cover does not</h3>
+        <p>Selling $1.9M deals inside a large company is not the same as selling $200K as five people.
+        There, procurement had pre-approved the vendor and the buyer's downside was near zero. Now that
+        risk is yours to carry &mdash; another argument for staying below the committee line, where one owner
+        can absorb it personally.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INDUSTRIES ============ -->
+  <section class="band" id="industries">
+    <div class="band-head">
+      <p class="eyebrow">Part five &middot; five verticals, cross-verified</p>
+      <h2>Lead with the industry's dominant wound, not our flagship</h2>
+      <p>For each vertical, the documented missed-demand loss was weighed against the documented
+      dormant-base opportunity. Whichever is larger in dollars decides the lead product &mdash; which is
+      why the answer differs by industry. <strong>Dental and veterinary were withdrawn from scope on
+      7 August 2026</strong> &mdash; the cost of that decision is recorded in the audit.</p>
+    </div>
+
+    <div class="product scorecard" style="margin-bottom:16px">
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr><th>Vertical</th><th>Missed-demand loss</th><th>Dormant-base value</th><th>Lead product</th></tr>
+          </thead>
+          <tbody>
+            <tr class="hot"><td class="seg">Independent auto repair</td><td><strong>$75K/month ceiling</strong></td><td>not documented</td><td class="verdict v-go">Voice AI</td></tr>
+            <tr><td class="seg">Med spa</td><td>not primary</td><td><strong>$36&ndash;104K per 20 patients</strong></td><td class="verdict v-go">SMS reactivation</td></tr>
+            <tr><td class="seg">Collision / body</td><td>not the wound</td><td>losing DRP, no acquisition muscle</td><td class="verdict v-go">SEO + lead gen</td></tr>
+            <tr><td class="seg">HVAC</td><td><strong>$350/call &middot; $91K/yr</strong></td><td>not documented</td><td class="verdict v-go">Voice AI</td></tr>
+            <tr><td class="seg">Plumbing</td><td>emergency surcharge $150&ndash;250</td><td>not documented</td><td class="verdict v-mid">Voice AI &mdash; leaders only</td></tr>
+            <tr><td class="seg">Auto detailing &middot; quick lube</td><td>&mdash;</td><td>&mdash;</td><td class="verdict v-no">Cannot afford</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="products">
+
+      <article class="product">
+        <header><h3>Independent auto repair &mdash; mechanical</h3><span class="chip b1">B1 drowning</span><span class="count">rank 1 &middot; best voice AI pain available</span></header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Off-hours call goes to voicemail</td><td class="tells"><strong>85% of voicemail callers never call back.</strong> 25&ndash;45 calls a day, 20&ndash;30% missed &mdash; roughly 190 lost calls a month</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Main line rings to a mobile</td><td class="tells">The owner is also the service writer. In pain and reachable</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Reviews citing &ldquo;couldn't get through&rdquo; or &ldquo;never called back&rdquo;</td><td class="tells">Third-party verified and quotable in the opener</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Service advisor posting live 30+ days</td><td class="tells">Budgeted the pain and can't fill it. That salary is the price anchor</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">4+ bays but no online booking</td><td class="tells">High capacity, entirely phone-dependent intake</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Qualify on</span><span>Bays and technicians, <b>not</b> revenue estimates &mdash; sources conflict at $450K versus $500K&ndash;1.2M, and that gap decides whether they can pay. Target 4+ bays, 3+ techs, 25+ calls/day.</span></p>
+      </article>
+
+      <article class="product">
+        <header><h3>Collision / body repair</h3><span class="chip b2">B2 starving &mdash; newly</span><span class="count">rank 3 &middot; the sleeper, least competitive</span></header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">Reduced or exited DRP participation</td><td class="tells"><strong>Just lost their pipeline and they know it.</strong> Highest-intent signal in the vertical. No database exists &mdash; ask on the call</td><td class="mid"><span class="d-hard">manual</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">I-CAR Gold Class certified but ranks below top 3 locally</td><td class="tells">Real quality, invisible online. Cross-join the free Gold Class directory against rank data</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">No agency footprint &mdash; no vendor, no SEO tags</td><td class="tells">No incumbent to displace. For 30 years insurance sent the work, so they never built the habit</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">No estimate-request form, or a form with slow follow-up</td><td class="tells">Cannot convert the demand they do generate</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">1&ndash;3 locations, $1M+ revenue, not a consolidator brand</td><td class="tells">Can pay and still owner-decided. Consolidators are ~30% of revenue and 0% of winnable market</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Why now</span><span>Claims are declining and <b>more than one in four drivers carry $1,000+ deductibles</b>, shifting work from insurance-paid to customer-pay. An entire industry of $1.2M businesses is being forced off a referral pipeline onto direct acquisition it has no capability for &mdash; and the agency world hasn't noticed yet.</span></p>
+      </article>
+
+      <article class="product">
+        <header><h3>HVAC &amp; Plumbing</h3><span class="chip b1">B1 drowning</span><span class="count">plumbing: leaders only</span></header>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Signal</th><th>What it tells us</th><th>Detect</th><th>Strength</th></tr></thead>
+            <tbody>
+              <tr class="hot"><td class="sig">HVAC &mdash; reviews citing &ldquo;never called back&rdquo;</td><td class="tells"><strong>$350 per missed call, $91,000/yr at five a week</strong> &mdash; published in their own trade press, so you quantify rather than persuade</td><td class="mid"><span class="d-easy">easy</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Plumbing &mdash; advertises 24/7 but the off-hours call fails</td><td class="tells">A promise they're publicly breaking. Emergency work carries $150&ndash;250 surcharges</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i></i></span></td></tr>
+              <tr><td class="sig">Answering service in use</td><td class="tells">Paying for a worse solution. The price anchor already exists</td><td class="mid"><span class="d-med">med</span></td><td class="mid"><span class="dots"><i></i><i></i><i class="off"></i></span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note"><span class="tag">Critical filter</span><span><b>Plumbing is bimodal.</b> Median operators run 2&ndash;8% net on $1.28M and cannot pay $2,000/mo; leaders run 20&ndash;35% and easily can. Same revenue, four times the capacity, and identical from the outside. Ability-to-pay screening is mandatory here, not optional.</span></p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ SOURCING ============ -->
+  <section class="band" id="sourcing">
+    <div class="band-head">
+      <p class="eyebrow">Part six &middot; where the data actually comes from</p>
+      <h2>Two tracks, and Track B's real work is exclusion</h2>
+      <p>Finding a six-location med spa group is easy. Knowing whether it's independently owned or a PE
+      platform's roll-up decides whether you have a 30-day sale or no sale at all.</p>
+    </div>
+
+    <div class="product scorecard">
+      <div class="scroller">
+        <table>
+          <thead>
+            <tr><th>Vertical</th><th>Primary source</th><th>Cost</th><th>Pre-filter / credential</th><th>Effort</th></tr>
+          </thead>
+          <tbody>
+            <tr class="hot">
+              <td class="seg">Auto repair</td>
+              <td>Google Maps + Orbital / 6sense software-install data</td>
+              <td class="num s4">Low</td>
+              <td>ASE &middot; NAPA AutoCare &middot; TechNet badges</td>
+              <td class="verdict v-go">Low</td>
+            </tr>
+            <tr>
+              <td class="seg">Collision</td>
+              <td>Google Maps + <strong>I-CAR Gold Class directory</strong></td>
+              <td class="num s5">FREE</td>
+              <td>Gold Class requires every production role trained &mdash; a pre-qualified quality list</td>
+              <td class="verdict v-go">Low&ndash;med</td>
+            </tr>
+            <tr>
+              <td class="seg">Med spa</td>
+              <td>Google Maps + Boulevard / Zenoti widget detection</td>
+              <td class="num s4">Low</td>
+              <td>State medical boards &mdash; often a physician PC or DBA</td>
+              <td class="verdict v-mid">Medium</td>
+            </tr>
+            <tr>
+              <td class="seg">HVAC / plumbing</td>
+              <td>Google Maps + state contractor boards. <strong>Texas publishes a free daily CSV</strong></td>
+              <td class="num s4">Low</td>
+              <td>License class and bond amount &mdash; also an ability-to-pay proxy</td>
+              <td class="verdict v-mid">Medium</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note"><span class="tag">Build 1 &amp; 2 first</span><span>Auto repair and med spa cover both lead products, both buckets, and neither is healthcare. <b>Note the cost of dropping dental:</b> its free monthly federal CSV had no equivalent in any remaining vertical, so cost-per-qualified-prospect should be re-tested rather than inherited.</span></p>
+    </div>
+
+    <div class="findings" style="margin-top:16px">
+      <div class="finding">
+        <p class="eyebrow">The clustering method</p>
+        <h3>There is no database of independent 3&ndash;8 location groups. You build it</h3>
+        <p>Scrape the Maps universe &rarr; cluster on identical brand name, shared root domain and shared
+        main phone &rarr; count distinct addresses &rarr; keep clusters of 3&ndash;8 &rarr; <strong>exclude any
+        brand on the consolidator lists</strong> &rarr; verify ownership on what remains.</p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">Exclusion is the asset</p>
+        <span class="figure">~30%</span>
+        <h3>of collision revenue sits with consolidators &mdash; and 0% of it is winnable</h3>
+        <p>~800 home services companies acquired since 2022. Maintain the brand lists as a file with an
+        owner and a refresh cadence &mdash; <strong>a stale exclusion list is worse than none, because
+        you'll trust it.</strong></p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">The cost nobody priced</p>
+        <h3>Raw data for ~5,000 entities is under $200. Labour is the real line item</h3>
+        <p>The $50-per-qualified-prospect kill criterion will be breached by <strong>manual verification
+        hours, not data fees</strong> &mdash; and it'll be breached quietly. Watch the collision DRP signal,
+        which is manual by nature and has no database behind it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CAPACITY ============ -->
+  <section class="band" id="capacity">
+    <div class="band-head">
+      <p class="eyebrow">Part seven &middot; the finding that inverts the plan</p>
+      <h2>Lead flow is not the constraint. Delivery is</h2>
+      <p>Every earlier estimate assumed two callers at 40 dials/day. The real roster has four people at
+      <strong>175 dials/day</strong> &mdash; roughly three times the pipeline needed. That reverses the
+      central assumption and changes the right move.</p>
+    </div>
+
+    <div class="product roster">
+      <div class="scroller">
+        <table>
+          <thead><tr><th>Who</th><th>Dials/day</th><th>Dials/mo</th><th>Set rate</th><th>Meetings/mo</th><th>Role</th></tr></thead>
+          <tbody>
+            <tr class="hot"><td class="who">Grace</td><td class="num">90</td><td class="num">1,800</td><td class="num">9%</td><td class="num s5">32.4</td><td>Dedicated setter &mdash; <strong>covers 1.5&times; the whole requirement alone</strong></td></tr>
+            <tr><td class="who">Javid</td><td class="num">45</td><td class="num">900</td><td class="num">8%</td><td class="num s4">14.4</td><td>Setter, partial &mdash; has other work. <strong>Plan on 30, treat 75 as upside</strong></td></tr>
+            <tr><td class="who">Aaron</td><td class="num">20</td><td class="num">400</td><td class="num">20%</td><td class="num s4">16.0</td><td>Closer + Division B dials</td></tr>
+            <tr><td class="who">Alec</td><td class="num">20</td><td class="num">400</td><td class="num">20%</td><td class="num s4">16.0</td><td>Closer + Division B dials</td></tr>
+            <tr><td class="who">TOTAL</td><td class="num">175</td><td class="num">3,500</td><td class="num">&mdash;</td><td class="num s5">78.8</td><td><strong>~47 qualified opps/month</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note"><span class="tag">Estimates</span><span>Set rates are <b>my estimates from your descriptions, not measurements.</b> Gong's benchmark across 300M+ calls is 4.6% average, 16.7% top quartile. <b>Week 4 replaces all four with measured numbers</b> &mdash; and the "3&times; capacity" conclusion rests entirely on them.</span></p>
+    </div>
+
+    <div class="thesis" style="margin-top:18px">
+      <p class="lede">Surplus dial capacity is permission to raise price.</p>
+      <p class="sub">When you can afford to lose more deals, you can quote higher &mdash; and the same
+      delivery load produces more revenue. You are not short of conversations. You are short of hours to
+      implement what you sell. <strong>Don't run at max capacity: run at a third, aim it higher, and spend
+      the surplus on research depth and delivery.</strong></p>
+    </div>
+
+    <div class="findings" style="margin-top:16px">
+      <div class="finding">
+        <p class="eyebrow">Revised target</p>
+        <span class="figure">14</span>
+        <h3>customers, not 17 &mdash; at $3,343 blended instead of $2,735</h3>
+        <p>6 Group @ $5,000 + 8 Fast @ $2,100 = <strong>$46,800</strong>. Same revenue,
+        <strong>18% less delivery load</strong> &mdash; which is the whole win from the surplus, because
+        delivery is what breaks.</p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">The cadence</p>
+        <span class="figure">1/wk</span>
+        <h3>One close per week for fourteen weeks</h3>
+        <p>That's the entire plan in one line. It needs 5.6 meetings/week against a capacity of ~18 &mdash;
+        <strong>31% utilisation.</strong> Even at benchmark close rates you'd produce ~36 customers.</p>
+      </div>
+      <div class="finding">
+        <p class="eyebrow">The unblock</p>
+        <h3>Cold calling does not need the legal review</h3>
+        <p>Human-dialed B2B calls are legal without prior consent. <strong>Only the SMS and email legs need
+        Gate 1.</strong> Dialing starts week 3 regardless of where the attorney sits &mdash; the review
+        gates channels, not the plan.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GTM ============ -->
+  <section class="band" id="gtm">
+    <div class="band-head">
+      <p class="eyebrow">Part eight &middot; deployable</p>
+      <h2>Two divisions, sixteen weeks, one close per week</h2>
+      <p>Two weeks building lists, fourteen weeks selling. The senior voice goes where it changes the
+      outcome; volume goes where volume works.</p>
+    </div>
+
+    <div class="axes" style="margin-bottom:18px">
+      <div class="product">
+        <header><h3>Division A &mdash; small market</h3><span class="chip b1">B1 drowning</span><span class="count">8 customers</span></header>
+        <ul class="plainlist">
+          <li class="key"><span class="k">Independent auto repair</span><span>1&ndash;3 locations</span></li>
+          <li><span class="k">Qualifier</span><span>4+ bays, 3+ techs, 25+ calls/day</span></li>
+          <li class="key"><span class="k">Price</span><span>$2,100/mo &middot; Fast tier</span></li>
+          <li><span class="k">Cycle</span><span>14&ndash;45 days</span></li>
+          <li class="key"><span class="k">Lead product</span><span>Voice AI receptionist</span></li>
+          <li><span class="k">Dials</span><span>Grace (primary) + Javid</span></li>
+          <li><span class="k">Volume</span><span>~2,700/month</span></li>
+        </ul>
+        <p class="note"><span class="tag">Opener</span><span>The missed-call arithmetic, computed live from <b>their</b> call volume and average repair order &mdash; never the $75K headline.</span></p>
+      </div>
+      <div class="product">
+        <header><h3>Division B &mdash; multi-location</h3><span class="chip b2">B2 starving</span><span class="count">6 customers</span></header>
+        <ul class="plainlist">
+          <li class="key"><span class="k">Med spa groups</span><span>3&ndash;8 locations</span></li>
+          <li><span class="k">Qualifier</span><span>Owner/exec decides, not PE-owned</span></li>
+          <li class="key"><span class="k">Price</span><span>$5,000/mo &middot; Group tier</span></li>
+          <li><span class="k">Cycle</span><span>30&ndash;90 days &mdash; <b>the deadline risk</b></span></li>
+          <li class="key"><span class="k">Lead product</span><span>SMS reactivation</span></li>
+          <li><span class="k">Dials</span><span>Aaron + Alec &mdash; peer voice</span></li>
+          <li><span class="k">Volume</span><span>~800/month</span></li>
+        </ul>
+        <p class="note"><span class="tag">Front-load</span><span>A 90-day cycle from <b>1 October</b> only just reaches 30 November. After that, new Division B prospects are Q1 pipeline &mdash; not Q4 revenue.</span></p>
+      </div>
+    </div>
+
+    <div class="weeks">
+      <div class="wk">
+        <span class="num">Week 1 &middot; Aug 10&ndash;14</span>
+        <h4>Data sprint</h4>
+        <p>No dialing.</p>
+        <ul>
+          <li><strong>Buy the domain Monday</strong> &mdash; 4&ndash;8 week warmup is the critical path</li>
+          <li>Both universe scrapes</li>
+          <li>Mobile line-type filter &mdash; drop non-mobiles</li>
+          <li>Review + job-posting mining</li>
+          <li>Score, rank, <strong>measure false positives</strong></li>
+          <li>Aaron/Alec review the top 50 each</li>
+        </ul>
+      </div>
+      <div class="wk">
+        <span class="num">Week 2 &middot; Aug 17&ndash;21</span>
+        <h4>Openers &amp; pilot</h4>
+        <p>~250 real dials, testing only.</p>
+        <ul>
+          <li>Verify top 200 / top 100, build call sheets</li>
+          <li>Alec writes both openers</li>
+          <li>Train Grace + Javid</li>
+          <li><strong>Pilot 50 dials each</strong>, debrief, rewrite, pilot 75 more</li>
+          <li>Start recording every call</li>
+          <li>Referral list assigned and started</li>
+        </ul>
+      </div>
+      <div class="wk">
+        <span class="num">Weeks 3&ndash;4 &middot; Aug 24&ndash;Sep 4</span>
+        <h4>Ramp</h4>
+        <p>First closes land here.</p>
+        <ul>
+          <li>Grace to 90/day</li>
+          <li>Javid from 30/day</li>
+          <li><strong>Front-load Division B</strong></li>
+          <li><strong>Measure all four rates</strong> and re-run the model</li>
+          <li>6&ndash;8 meetings/week by week 4</li>
+        </ul>
+      </div>
+      <div class="wk freeze">
+        <span class="num">Weeks 5&ndash;8 &middot; Sep 7&ndash;Oct 2</span>
+        <h4>Full volume</h4>
+        <p>~875 dials/week.</p>
+        <ul>
+          <li>Target 1 close/week &mdash; 4 by week 8</li>
+          <li>SMS + email live once Gate 1 clears and the domain is warm</li>
+          <li>Price calibration begins</li>
+          <li><strong>BUILD FREEZES 1 OCTOBER</strong></li>
+        </ul>
+      </div>
+      <div class="wk">
+        <span class="num">Weeks 9&ndash;12 &middot; Oct 5&ndash;30</span>
+        <h4>Peak</h4>
+        <p>Where the number is made.</p>
+        <ul>
+          <li>8 cumulative closes by week 12</li>
+          <li><strong>Last Division B start ~1 Oct</strong></li>
+          <li>Division A keeps producing on short cycles</li>
+          <li>Aaron/Alec dials drop as calendars fill &mdash; correct, let it happen</li>
+        </ul>
+      </div>
+      <div class="wk">
+        <span class="num">Weeks 13&ndash;16 &middot; Nov 2&ndash;27</span>
+        <h4>Close</h4>
+        <p>Pure execution.</p>
+        <ul>
+          <li>Division A only for new starts</li>
+          <li><strong>Every deal signs by Mon 30 Nov</strong></li>
+          <li>Billing configured for 1 Dec as each closes</li>
+          <li>Month-to-month closes faster and collects the same</li>
+          <li><strong>Delivery is now the constraint</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="product scorecard" style="margin-top:18px">
+      <header><h3>The Friday scorecard &mdash; 15 minutes</h3><span class="count">per person, not team totals</span></header>
+      <div class="scroller">
+        <table>
+          <thead><tr><th>Metric</th><th>Target</th><th>How to read it</th></tr></thead>
+          <tbody>
+            <tr><td class="seg">Dials &mdash; Grace / Javid / Aaron / Alec</td><td>450 / 225 / 100 / 100</td><td>Per person. Team totals hide the problem</td></tr>
+            <tr><td class="seg">Connect rate</td><td>20%</td><td>Below 15% means the mobile filter is leaking</td></tr>
+            <tr class="hot"><td class="seg">Set rate, per caller</td><td>Grace 9% · Javid 8% · A/A 20%</td><td><strong>The number the whole plan rests on</strong></td></tr>
+            <tr><td class="seg">Meetings booked</td><td>6/week</td><td>Above 10 you're over-filling the closers</td></tr>
+            <tr class="hot"><td class="seg">Closes</td><td><strong>1/week</strong></td><td>The only number that matters</td></tr>
+            <tr><td class="seg">Close rate</td><td>30&ndash;40%</td><td><strong>Above 40% = underpriced. Raise it</strong></td></tr>
+            <tr><td class="seg">Loss reasons, categorised</td><td>&mdash;</td><td>Price objection and no-decision are opposite fixes</td></tr>
+            <tr><td class="seg">Delivery hours consumed</td><td>&mdash;</td><td><strong>The real ceiling. Track from close #1</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note"><span class="tag">One rule</span><span>If closes lag but meetings hit target, the problem is the <b>closers' calendar or the qualification bar</b> &mdash; not the dialers. <b>Never add dials to fix a closing problem.</b></span></p>
+    </div>
+  </section>
+
+  <!-- ============ BLOCKED ============ -->
+  <section class="band" id="blocked">
+    <div class="band-head">
+      <p class="eyebrow">Part five</p>
+      <h2>External research is done. Internal sources are the constraint</h2>
+      <p>Everything above that carries a number is sourced and cited. These are the gaps that no amount
+      of public research can close &mdash; and the reason parts of the matrix are still marked inferred.</p>
+    </div>
+    <div class="blocked">
+      <div class="row"><span class="n">1</span><span><b>Josh Astone account.</b> &ldquo;Josh &times; 3&rdquo; is the definition of the target and is still undefined.</span></div>
+      <div class="row"><span class="n">2</span><span><b>JJ Jardina.</b> The reverse-engineering formula, and now also the model for the strongest lead-gen row.</span></div>
+      <div class="row"><span class="n">3</span><span><b>Aaron's SEO research.</b> Arbitrates which SEO signals are cheap-at-scale vs. audit-grade.</span></div>
+      <div class="row"><span class="n">4</span><span><b>Armand + Aisha.</b> Without them the SMS chat agent column stays inferred rather than derived.</span></div>
+      <div class="row"><span class="n">5</span><span><b>Alec's GTM research + Avoca.</b> Competitive framing for the commoditization finding.</span></div>
+      <div class="row"><span class="n">6</span><span><b>The blueprint / kit.</b> The entire differentiation claim rests on it.</span></div>
+      <div class="row"><span class="n">7</span><span><b>Delivery hours per implementation.</b> Now the <b>#1 risk</b> &mdash; 14 implementations landing in Q4 against a ceiling nobody has measured. Track from close #1.</span></div>
+      <div class="row"><span class="n">8</span><span><b>The four set rates.</b> My estimates from description, not measurement. The entire capacity surplus rests on them. <b>Week 4 replaces them.</b></span></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p class="eyebrow">Sources</p>
+    <p>Med spa market and consolidation: American Med Spa Association, CT Acquisitions, Olympic M&amp;A,
+    Ankura, DC Advisory &middot; Home services PE roll-up: DealSeam, Pipeline On, CT Acquisitions, TradeBridge
+    &middot; AI receptionist pricing: CloudTalk, Voksha, Trillet, AIRA &middot; Med spa software: The Salon
+    Business, Portrait, Zenoti, Pabau &middot; Buying committees: Instantly, Belkins, The Starr Conspiracy,
+    Rework &middot; Franchise unit economics: BizBuySell, CT Acquisitions, FranChoice.</p>
+    <p>Full citations with links in <code>prospecting/01-pain-signal-matrix-and-icp.md</code>. Figures
+    attributed to the transcript rather than to a public source are tagged in
+    <code>prospecting/00-readback-and-research-backlog.md</code> and remain unverified.</p>
+  </footer>
+
+</div>
+</div>

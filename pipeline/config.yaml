@@ -1,0 +1,162 @@
+# Prospect pipeline configuration
+# Edit GEOGRAPHY first — it is the one input that cannot be guessed.
+
+geography:
+  # SET 2026-08-07 per Aaron. Anchoring = HQ/PRIMARY LOCATION ONLY: a multi-location
+  # group is kept only if its primary site (highest review count in the cluster) falls
+  # inside the radius. Tighter than "any location", and it is what was chosen.
+  anchors:
+    - name: "South Bay LA"
+      query_area: "Redondo Beach, CA, USA"
+      lat: 33.8492
+      lon: -118.3884
+      radius_miles: 25          # Redondo -> covers South Bay, Torrance, LAX, Long Beach,
+                                # west LA. Raise to 35 to reach downtown/Pasadena.
+    - name: "Atlanta"
+      query_area: "Atlanta, GA, USA"
+      lat: 33.7490
+      lon: -84.3880
+      radius_miles: 30          # covers the perimeter + inner suburbs
+
+  limit_per_query: 400          # Outscraper places per query
+
+output:
+  # 25 per vertical TOTAL across both metros combined (not per metro).
+  top_n_per_vertical: 25
+
+verticals:
+
+  auto_repair:
+    label: "Independent mechanical auto repair"
+    division: A
+    lead_product: "Voice AI receptionist"
+    queries: ["auto repair shop", "car repair", "mechanic shop", "brake and transmission repair"]
+    exclude_name_contains:      # franchise / chain — corporate procurement, unwinnable
+      - midas
+      - meineke
+      - "precision tune"
+      - "jiffy lube"
+      - valvoline
+      - "take 5"
+      - firestone
+      - "pep boys"
+      - goodyear
+      - "big o tires"
+      - "discount tire"
+      - "aamco"
+      - "christian brothers"
+    min_reviews: 25             # crude volume proxy — a shop with 4 reviews has no call volume
+    target_locations: [1, 3]    # OWNER-OPERATOR band. 3-8 independent auto repair groups
+                                # barely exist and the ones that do are MSOs — the exact
+                                # corporate profile we exclude. Confirmed with Aaron 2026-08-07.
+
+  collision:
+    label: "Independent collision / body repair"
+    division: A-alt
+    lead_product: "SEO + lead gen"
+    queries: ["auto body shop", "collision repair", "auto body and paint"]
+    exclude_name_contains:
+      - caliber
+      - gerber
+      - "crash champions"
+      - carstar
+      - "classic collision"
+      - "abra auto"
+      - "service king"
+      - maaco
+      - "driven brands"
+    min_reviews: 20
+    target_locations: [1, 3]    # same reasoning as auto_repair — see above
+
+  med_spa:
+    label: "Med spa"
+    division: B
+    lead_product: "SMS reactivation"
+    queries: ["med spa", "medical spa", "aesthetics clinic", "botox and filler clinic"]
+    exclude_name_contains:
+      - "ideal image"
+      - "sono bello"
+      - "laseraway"
+      - "skinspirit"
+      - "ever/body"
+      - "sculpt spa"
+    min_reviews: 30
+    target_locations: [3, 8]     # Division B = the multi-location group play
+
+  plumbing:
+    label: "Multi-location plumbing"
+    division: B
+    lead_product: "Voice AI receptionist"
+    queries: ["plumber", "plumbing company", "emergency plumber"]
+    exclude_name_contains:
+      - "roto-rooter"
+      - "roto rooter"
+      - "mr. rooter"
+      - "benjamin franklin"
+      - "ars/rescue"
+      - "rescue rooter"
+      - "apex service"
+      - "wrench group"
+      - "sila services"
+      - turnpoint
+      - "comfort systems"
+    min_reviews: 40
+    target_locations: [2, 8]
+
+  hvac:
+    label: "Multi-location HVAC"
+    division: B
+    lead_product: "Voice AI receptionist"
+    queries: ["hvac contractor", "air conditioning repair", "heating and cooling company"]
+    exclude_name_contains:
+      - "one hour heating"
+      - "aire serv"
+      - "service experts"
+      - "ars/rescue"
+      - "apex service"
+      - "wrench group"
+      - "sila services"
+      - turnpoint
+      - "comfort systems"
+      - "horizon services"
+    min_reviews: 40
+    target_locations: [2, 8]
+
+# ---------------------------------------------------------------------------
+# REVENUE — read this before trusting any "$300k+" filter
+# ---------------------------------------------------------------------------
+# Revenue for private SMBs is NOT publicly available. It cannot be scraped.
+# What follows are PROXIES, and the honest note on each:
+#
+#   auto repair  : industry average is $450K-1.2M (sources conflict, see doc 07 §2.1),
+#                  so a >$300K filter is nearly non-binding. Real qualifier is bays+techs.
+#   collision    : average revenue per facility ~$1.2M — also non-binding at $300K.
+#   plumbing     : average business ~$1.28M. A 2+ location plumber is far above $300K.
+#   hvac         : ~$750K-1.5M for a 5-employee shop. Also non-binding.
+#
+# CONCLUSION: at $300K the revenue floor excludes almost nobody in these verticals.
+# The filters that actually matter are review volume, location count, bay count,
+# and paid-ads presence (the best single ability-to-pay proxy).
+revenue_proxies:
+  min_reviews_as_volume_proxy: true
+  require_website: true          # no website = no signals to detect, and likely no budget
+  paid_ads_presence_bonus: true  # check Meta Ad Library manually on the shortlist
+
+scoring:
+  # Multiplicative: Pain x Pay x Reach. Any factor near zero zeroes the prospect.
+  # See doc 01 §2 for why additive box-counting floats the worst businesses to the top.
+  weights:
+    pain: 1.0
+    pay: 1.0
+    reach: 1.0
+  drop_if_pay_below: 0.15
+  drop_if_reach_below: 0.15
+  require_mobile_line: true      # doc 03 §3.5 — doubles connect rate 8-12% -> 18-22%
+
+compliance:
+  # doc 11 §1 — NON-NEGOTIABLE
+  dnc_scrub_required: true       # national + state. The B2B exemption is NOT reliable
+                                 # when the number is a sole proprietor's personal cell.
+  manual_dial_only: true         # TCPA applies to mobiles even in B2B. No power dialer
+                                 # on cell numbers without express consent.
+  block_output_until_scrubbed: true

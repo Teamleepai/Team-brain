@@ -1,0 +1,947 @@
+<title>Reverse God Mode</title>
+<style>
+  :root{
+    --paper:#F1F4F3; --surface:#FFFFFF; --surface-2:#E7ECEA;
+    --ink:#121A18; --ink-2:#3E524C; --ink-3:#6B7F78;
+    --rule:#CBD8D3; --rule-2:#DFE7E4;
+    --accent:#1F6B4A; --accent-2:#145036;
+    --stop:#A32017; --warn:#B4600C; --note:#87680F; --info:#4A6B85; --go:#1F6B4A;
+    --stop-bg:#F8E8E6; --warn-bg:#FAEFE1; --note-bg:#F6F2E0; --info-bg:#E8EEF3; --go-bg:#E2EFE8;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#0C1412; --surface:#141E1B; --surface-2:#1D2825;
+      --ink:#E3EBE8; --ink-2:#A8BAB4; --ink-3:#7B8E88;
+      --rule:#2B3A35; --rule-2:#212D29;
+      --accent:#5CBF90; --accent-2:#84D5AE;
+      --stop:#F0796C; --warn:#E3A25C; --note:#CFB559; --info:#8FB4CE; --go:#5CBF90;
+      --stop-bg:#2E1613; --warn-bg:#2C1F10; --note-bg:#292410; --info-bg:#16242E; --go-bg:#112720;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0C1412; --surface:#141E1B; --surface-2:#1D2825;
+    --ink:#E3EBE8; --ink-2:#A8BAB4; --ink-3:#7B8E88;
+    --rule:#2B3A35; --rule-2:#212D29;
+    --accent:#5CBF90; --accent-2:#84D5AE;
+    --stop:#F0796C; --warn:#E3A25C; --note:#CFB559; --info:#8FB4CE; --go:#5CBF90;
+    --stop-bg:#2E1613; --warn-bg:#2C1F10; --note-bg:#292410; --info-bg:#16242E; --go-bg:#112720;
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:Charter,"Bitstream Charter","Iowan Old Style","Source Serif 4",Georgia,serif;
+    font-size:17px;line-height:1.62;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:0 28px 110px}
+  .prose{max-width:68ch}
+  h1,h2,h3,h4{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;text-wrap:balance;margin:0}
+  h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.028em;line-height:1.05}
+  h2{font-size:clamp(1.4rem,2.8vw,1.95rem);font-weight:750;letter-spacing:-.02em}
+  h3{font-size:1.1rem;font-weight:720;letter-spacing:-.01em}
+  h4{font-size:.96rem;font-weight:700}
+  p{margin:0}
+  .eyebrow{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.68rem;
+    letter-spacing:.17em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+
+  header.mast{border-bottom:2px solid var(--ink);margin-bottom:42px;padding:52px 0 26px}
+  .mast p.sub{margin-top:14px;color:var(--ink-2);font-size:1.05rem;max-width:62ch}
+  .meta-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:32px}
+  .meta-strip div{background:var(--surface);padding:11px 14px}
+  .meta-strip dt{font-family:ui-monospace,Menlo,monospace;font-size:.62rem;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-3);margin-bottom:3px}
+  .meta-strip dd{margin:0;font-size:.88rem;font-weight:600;font-family:system-ui,sans-serif}
+
+  section{margin-top:60px;scroll-margin-top:20px}
+  .sec-head{border-top:2px solid var(--ink);padding-top:12px;margin-bottom:22px}
+  .sec-head .eyebrow{display:block;margin-bottom:7px}
+  .lede{font-size:1.07rem;color:var(--ink-2);margin-top:12px;max-width:66ch}
+
+  .gate{background:var(--accent);color:var(--paper);padding:13px 20px;margin:34px 0 22px;
+    font-family:ui-monospace,Menlo,monospace;font-size:.76rem;letter-spacing:.13em;
+    text-transform:uppercase;font-weight:700;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .gate span.n{background:var(--paper);color:var(--accent);padding:2px 9px;border-radius:2px}
+
+  .rule-card{background:var(--surface);border:1px solid var(--rule);border-left:4px solid var(--accent);
+    padding:14px 18px;margin:12px 0}
+  .rule-card.stop{border-left-color:var(--stop)}
+  .rule-card h4{margin-bottom:6px}
+  .rule-card h4 .rid{font-family:ui-monospace,Menlo,monospace;font-size:.74rem;color:var(--accent);margin-right:8px}
+  .rule-card.stop h4 .rid{color:var(--stop)}
+  .rule-card p{font-size:.93rem;color:var(--ink-2);margin-top:5px}
+
+  .fix{background:var(--surface);border:1px solid var(--rule);border-left:5px solid var(--accent);
+    margin:18px 0;padding:17px 20px}
+  .fix.measure{border-left-color:var(--info)}
+  .f-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:9px}
+  .fid{font-family:ui-monospace,Menlo,monospace;font-size:.76rem;font-weight:700;letter-spacing:.05em;
+    color:var(--ink);background:var(--surface-2);padding:2px 8px;border:1px solid var(--rule)}
+  .pill{font-family:ui-monospace,Menlo,monospace;font-size:.615rem;letter-spacing:.11em;
+    text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:2px;white-space:nowrap}
+  .p-stop{background:var(--stop-bg);color:var(--stop)}
+  .p-warn{background:var(--warn-bg);color:var(--warn)}
+  .p-note{background:var(--note-bg);color:var(--note)}
+  .p-info{background:var(--info-bg);color:var(--info)}
+  .p-go{background:var(--go-bg);color:var(--go)}
+  .fix h3{margin-bottom:8px;font-size:1.04rem}
+  .fix dl{margin:11px 0 0;display:grid;grid-template-columns:auto 1fr;gap:5px 15px;font-size:.92rem}
+  .fix dt{font-family:ui-monospace,Menlo,monospace;font-size:.6rem;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--ink-3);padding-top:5px;white-space:nowrap}
+  .fix dd{margin:0;color:var(--ink-2)}
+  .fix dd strong{color:var(--ink);font-weight:650}
+
+  pre{background:var(--surface-2);border:1px solid var(--rule);color:var(--ink);padding:12px 14px;
+    overflow-x:auto;font-family:ui-monospace,Menlo,monospace;font-size:.775rem;line-height:1.55;
+    margin:10px 0;white-space:pre}
+  code:not(pre code){background:var(--surface-2);padding:1px 5px;font-size:.86em;
+    border:1px solid var(--rule-2);border-radius:2px}
+
+  .tw{overflow-x:auto;margin:20px 0;border:1px solid var(--rule);background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-family:system-ui,sans-serif;font-size:.85rem}
+  th,td{padding:9px 13px;text-align:left;border-bottom:1px solid var(--rule-2);vertical-align:top}
+  th{font-family:ui-monospace,Menlo,monospace;font-size:.63rem;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--ink-3);background:var(--surface-2);font-weight:600;white-space:nowrap}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;font-family:ui-monospace,Menlo,monospace}
+  tr:last-child td{border-bottom:none}
+
+  ul,ol{margin:12px 0;padding-left:22px}
+  li{margin:6px 0;color:var(--ink-2)}
+  li strong{color:var(--ink)}
+  li::marker{color:var(--accent)}
+
+  .warn-box{background:var(--stop-bg);border:1px solid var(--stop);border-left:5px solid var(--stop);
+    padding:18px 22px;margin:22px 0}
+  .warn-box h3{color:var(--stop);margin-bottom:9px}
+  .warn-box p,.warn-box li{color:var(--ink)}
+  .note-box{background:var(--surface-2);border:1px dashed var(--rule);padding:14px 18px;margin:18px 0;
+    font-size:.93rem;color:var(--ink-2)}
+  .note-box strong{color:var(--ink)}
+  .info-box{background:var(--info-bg);border:1px solid var(--info);border-left:5px solid var(--info);
+    padding:16px 20px;margin:20px 0}
+  .info-box h3{color:var(--info);margin-bottom:8px}
+  .info-box p,.info-box li{color:var(--ink)}
+
+  a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  details{background:var(--surface);border:1px solid var(--rule);margin:13px 0}
+  summary{cursor:pointer;padding:12px 16px;font-family:system-ui,sans-serif;font-weight:650;font-size:.92rem;
+    list-style-position:inside}
+  details[open] summary{border-bottom:1px solid var(--rule)}
+  details .body{padding:14px 16px}
+
+  footer.end{margin-top:70px;padding-top:22px;border-top:2px solid var(--ink);
+    font-size:.83rem;color:var(--ink-3);font-family:system-ui,sans-serif}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media (max-width:640px){
+    body{font-size:16px}.wrap{padding:0 18px 70px}
+    .fix dl{grid-template-columns:1fr;gap:2px}.fix dt{padding-top:9px}
+  }
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <span class="eyebrow">Reverse God Mode · 1 · Forensic SEO Remediation Engineer</span>
+  <h1>The audit finds defects.<br>This one closes them.</h1>
+  <p class="sub">A remediation prompt scoped to the <strong>Leep AI Site Inspection</strong> of
+  2026-08-15. Every fix traces to a finding ID. Every inferred finding gets measured before it gets
+  touched. Nothing here promises you a number it cannot produce.</p>
+
+  <dl class="meta-strip">
+    <div><dt>Closes</dt><dd>16 findings</dd></div>
+    <div><dt>Critical</dt><dd>4</dd></div>
+    <div><dt>Measure-first</dt><dd>3 inferred</dd></div>
+    <div><dt>Phases</dt><dd>5, dependency-ordered</dd></div>
+    <div><dt>Stack</dt><dd>React 18.3.1 · Vite</dd></div>
+    <div><dt>Guarantees 100/100</dt><dd style="color:var(--stop)">No — see Part 6</dd></div>
+  </dl>
+</header>
+
+<div class="warn-box">
+  <h3>Read this before anything else — two corrections</h3>
+  <p><strong>1. The source audit contained an error, and this prompt fixes it.</strong> The audit's
+  V1-01 remediation said a client-side canonical "is accepted because it is emitted into
+  <code>&lt;head&gt;</code> during render." That is wrong. Google stated at I/O 2018 (Tom Greenaway,
+  subsequently confirmed by John Mueller) that it does <strong>not</strong> read canonical tags from
+  rendered HTML. The canonical must be in the raw server response. That makes prerendering a hard
+  prerequisite, not an optional improvement — which reorders the entire fix sequence.</p>
+  <p style="margin-top:12px"><strong>2. This prompt was written without access to primary
+  documentation or the npm registry.</strong> <code>developers.google.com</code>, <code>web.dev</code>,
+  <code>schema.org</code>, <code>rfc-editor.org</code> and <code>registry.npmjs.org</code> were all
+  blocked by network policy in the authoring environment. Every package name and every standards claim
+  below is a <strong>candidate to verify, not a verified fact</strong>. That is precisely why rules R2
+  and R4 are mandatory pre-flight gates rather than polite suggestions.</p>
+</div>
+
+<!-- PART 0 -->
+<section>
+  <div class="sec-head"><span class="eyebrow">Part 0</span><h2>Integrity protocol</h2></div>
+  <p class="lede">Overrides everything below. You are shipping working code against an evidenced
+  defect list, and every change must survive adversarial review by the auditor who produced it.</p>
+
+  <div class="rule-card"><h4><span class="rid">R1</span>No blind fixes</h4>
+    <p>Every change traces to a FINDING ID. To change something not on the list, first produce evidence
+    that a defect exists, tagged the way the audit tags evidence. Unrequested refactors are defects.</p></div>
+
+  <div class="rule-card"><h4><span class="rid">R2</span>No unverified dependencies</h4>
+    <p>Before installing any package, verify against the live registry that it exists, its latest
+    version, its last publish date, and whether it is maintained. A prompt naming a package that was
+    renamed or abandoned is worse than no prompt.</p>
+    <pre>npm view &lt;package&gt; version time.modified deprecated repository.url</pre></div>
+
+  <div class="rule-card"><h4><span class="rid">R3</span>Measure before fixing anything <code>[INFERRED]</code></h4>
+    <p>The audit tagged findings <code>[OBSERVED]</code> (proven from fetched bytes) or
+    <code>[INFERRED]</code> (reasoned, with a stated falsification test). Fix observed findings
+    directly. For inferred findings, run the falsification test <em>first</em>. If it falsifies the
+    finding, do not fix it — report that it was wrong.</p></div>
+
+  <div class="rule-card"><h4><span class="rid">R4</span>Cite the standard, and retrieve it live</h4>
+    <p>Every architectural decision cites a primary source with publisher, full URL, and date.
+    Retrieve during execution; never answer from memory — especially on CWV thresholds, whether Google
+    reads rendered canonicals, which structured data still produces rich results, mobile-first
+    indexing status, and robots.txt directive support.</p></div>
+
+  <div class="rule-card stop"><h4><span class="rid">R5</span>Manual action firewall — the one that gets clients penalised</h4>
+    <p>You may not emit a single structured-data property a user cannot see on the rendered page.
+    Forbidden here unless the content becomes visible first: <code>AggregateRating</code> and
+    <code>ratingValue</code> (no star ratings exist on this site), <code>Review</code> (one testimonial,
+    no rating), <code>priceRange</code> and <code>Offer</code> price (pricing says "custom plan"),
+    <code>openingHoursSpecification</code>, and any <code>sameAs</code> you have not confirmed returns
+    200. If a property would help but the content is absent, the output is
+    <em>"add this content first"</em> — never <em>"add the markup anyway."</em></p></div>
+
+  <div class="rule-card stop"><h4><span class="rid">R6</span>Myth firewall — do not "fix" non-problems</h4>
+    <p>Not documented Google ranking factors; effort spent here is stolen from the real list:
+    keyword density · LSI keywords (Google has publicly denied using LSI) · TF-IDF as a ranking lever ·
+    <code>meta keywords</code> · bounce rate · Domain Authority / Domain Rating / Trust Flow
+    (third-party vendor metrics) · Lighthouse score as a direct ranking factor (the documented signal
+    is <em>field</em> Core Web Vitals) · <code>rel="next"/"prev"</code> · word-count minimums ·
+    "Analytics data is a ranking factor".</p>
+    <p style="margin-top:8px"><strong>Specifically: do not add <code>FAQPage</code> markup.</strong> FAQ
+    rich results were restricted in August 2023 and subsequently withdrawn. Verify current status
+    before writing any FAQ markup. The fix for the FAQ defect is getting answer text into the DOM.</p></div>
+
+  <div class="rule-card"><h4><span class="rid">R7</span>Every fix ships with its verification</h4>
+    <p>No fix is complete until a command proves it landed and you have pasted the actual output.
+    "I updated the config" is not evidence. The output is the evidence.</p></div>
+
+  <div class="rule-card"><h4><span class="rid">R8</span>Declare what you could not do</h4>
+    <p>If a fix needs access you lack — DNS, Cloudflare dashboard, Search Console, registrar — do not
+    silently skip it. Produce exact steps and values, and mark it BLOCKED — AWAITING ACCESS.</p></div>
+
+  <div class="rule-card stop"><h4><span class="rid">R9</span>No fabricated outcomes</h4>
+    <p>You may not predict a ranking improvement, a traffic percentage, or a timeline to page one.
+    State fixes in mechanism terms only: <em>"this page is currently ineligible for X; this change
+    makes it eligible."</em></p></div>
+</section>
+
+<!-- PART 1 -->
+<section>
+  <div class="sec-head"><span class="eyebrow">Part 1</span><h2>Established facts — do not re-derive</h2></div>
+  <p class="lede">Confirmed by direct inspection of the production bundle
+  <code>/assets/index-CAptjTRU.js</code> on 2026-08-15. Treat as <code>[OBSERVED]</code>.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Fact</th><th>Value</th><th>How established</th></tr></thead>
+    <tbody>
+      <tr><td>React version</td><td><strong>18.3.1</strong></td><td class="mono" style="font-size:.76rem">version:"18.3.1" in bundle</td></tr>
+      <tr><td>Build tool</td><td>Vite</td><td class="mono" style="font-size:.76rem">module script + hashed /assets/ output</td></tr>
+      <tr><td>Router</td><td>React Router <em>(inferred)</em></td><td class="mono" style="font-size:.76rem">useNavigate ×2, Navigate ×6; name minified</td></tr>
+      <tr><td>UI primitives</td><td>Radix UI</td><td class="mono" style="font-size:.76rem">43 refs; forceMount available (17 refs)</td></tr>
+      <tr><td>Head manager</td><td style="color:var(--stop)"><strong>NONE</strong></td><td class="mono" style="font-size:.76rem">document.title appears 0 times</td></tr>
+      <tr><td>Bundle</td><td>1,156,970 B raw / 330,581 B Brotli</td><td class="mono" style="font-size:.76rem">wc -c, curl --compressed</td></tr>
+      <tr><td>Code splitting</td><td>None</td><td class="mono" style="font-size:.76rem">single index-*.js entry</td></tr>
+      <tr><td>Routes</td><td>5</td><td class="mono" style="font-size:.76rem">sitemap.xml, confirmed by crawl</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="info-box">
+    <h3>Why the React version changes the fix</h3>
+    <p>React 19 hoists <code>&lt;title&gt;</code>, <code>&lt;meta&gt;</code> and <code>&lt;link&gt;</code>
+    rendered anywhere in the component tree into <code>&lt;head&gt;</code> natively, removing the need for a
+    head-manager library entirely. <strong>This site is on 18.3.1, so that capability is not
+    available.</strong> There is a real fork in the road at FIX-02 — resolve it explicitly rather than
+    assuming.</p>
+  </div>
+</section>
+
+<!-- PART 2 -->
+<section>
+  <div class="sec-head"><span class="eyebrow">Part 2</span><h2>Mandatory pre-flight</h2></div>
+  <p class="lede">Execute in order. Paste real output for each. If any step fails, stop and report
+  rather than proceeding on assumption. <strong>Do not write code until this is done.</strong></p>
+
+  <details open><summary>P0.1 — Capture the baseline you will be judged against</summary><div class="body">
+    <pre>mkdir -p ./seo-baseline && cd ./seo-baseline
+
+for p in "" demo privacy terms sms-terms; do
+  curl -sSL -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" \
+    "https://www.leepai.io/$p" -o "raw${p:-index}.html"
+done
+
+curl -sSL https://www.leepai.io/robots.txt  -o robots.txt
+curl -sSL https://www.leepai.io/sitemap.xml -o sitemap.xml
+curl -sSI https://www.leepai.io/            -o headers.txt
+
+# status matrix — you must not regress any of these
+for u in "http://leepai.io/" "https://leepai.io/" "http://www.leepai.io/" \
+         "https://www.leepai.io/" "https://www.leepai.io/index.html" \
+         "https://www.leepai.io//" "https://www.leepai.io/?utm_source=test" \
+         "https://www.leepai.io/zzz-does-not-exist"; do
+  printf '%-46s ' "$u"
+  curl -sSIL -o /dev/null -w '%{http_code} hops=%{num_redirects} -> %{url_effective}\n' "$u"
+done | tee status-matrix-before.txt</pre>
+  </div></details>
+
+  <details open><summary>P0.2 — Resolve the audit's biggest blind spot (V1-06)</summary><div class="body">
+    <p style="font-size:.93rem;color:var(--ink-2)">The audit could not reach the apex domain — its proxy
+    blocked it, not the origin. This is unscored, and it changes the priority of everything else.</p>
+    <pre>for u in "http://leepai.io/" "https://leepai.io/" "https://leepai.io/demo"; do
+  printf '%-32s ' "$u"
+  curl -sSIL -o /dev/null -w '%{http_code} hops=%{num_redirects} -> %{url_effective}\n' "$u"
+done</pre>
+    <ul style="font-size:.93rem">
+      <li><strong>Every line 301s to www</strong> → V1-06 clear. Note it and continue.</li>
+      <li><strong>Apex returns 200</strong> → a complete duplicate site at a second hostname with no
+      canonical on either side. Escalate to CRITICAL and fix via Cloudflare Bulk Redirect
+      (<code>leepai.io/*</code> → <code>https://www.leepai.io/$1</code>, 301) before anything else.</li>
+    </ul>
+  </div></details>
+
+  <details><summary>P0.3 — Measure what the audit could not (this is what unlocks Vector 3)</summary><div class="body">
+    <pre>npx -y lighthouse "https://www.leepai.io/" --form-factor=mobile \
+  --throttling-method=simulate --output=json --output-path=./lh-mobile-before.json
+
+# read the numbers that matter — NOT the overall score
+node -e "const a=require('./lh-mobile-before.json').audits;
+ console.log('LCP        ', a['largest-contentful-paint'].displayValue);
+ console.log('TBT        ', a['total-blocking-time'].displayValue, '(INP lab proxy)');
+ console.log('CLS        ', a['cumulative-layout-shift'].displayValue);
+ console.log('LCP element', JSON.stringify(a['largest-contentful-paint-element']?.details?.items?.[0]));
+ console.log('3rd party  ', JSON.stringify(a['third-party-summary']?.details?.items,null,1));"
+
+# field data — the signal Google documents for page experience
+curl -s "https://chromeuxreport.googleapis.com/v1/records:queryRecord?key=$CRUX_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"url":"https://www.leepai.io/","formFactor":"PHONE"}'</pre>
+    <p style="font-size:.92rem;color:var(--ink-2);margin-top:10px">If CrUX returns no URL-level data,
+    fall back to origin level and <strong>label the fallback</strong>. If there is no origin-level data
+    either, the site lacks the traffic to appear in the dataset — record that as a fact, not a pass or
+    a failure. See Part 6.</p>
+  </div></details>
+
+  <details><summary>P0.4 — Retrieve the standards you are about to cite</summary><div class="body">
+    <div class="tw"><table>
+      <thead><tr><th>What you need</th><th>Where</th><th>Justifies</th></tr></thead>
+      <tbody>
+        <tr><td>LCP / INP / CLS definitions + thresholds</td><td>web.dev</td><td class="mono" style="font-size:.76rem">Phase 4 targets</td></tr>
+        <tr><td>Crawl / render / index model</td><td>Search Central, JavaScript SEO basics</td><td class="mono" style="font-size:.76rem">FIX-01</td></tr>
+        <tr><td>Canonical: rendered-HTML handling</td><td>Search Central + I/O 2018 statements</td><td class="mono" style="font-size:.76rem">FIX-01, FIX-03</td></tr>
+        <tr><td>Soft 404 handling</td><td>Search Central</td><td class="mono" style="font-size:.76rem">FIX-04</td></tr>
+        <tr><td>Structured data general guidelines</td><td>Search Central</td><td class="mono" style="font-size:.76rem">FIX-06</td></tr>
+        <tr><td>FAQPage rich result status</td><td>Search Central structured data docs</td><td class="mono" style="font-size:.76rem">FIX-07 — confirm it is dead</td></tr>
+        <tr><td>robots.txt group merging</td><td>RFC 9309</td><td class="mono" style="font-size:.76rem">FIX-10</td></tr>
+        <tr><td><code>og:image</code> absolute URL rule</td><td>ogp.me</td><td class="mono" style="font-size:.76rem">FIX-09</td></tr>
+      </tbody>
+    </table></div>
+  </div></details>
+
+  <details><summary>P0.5 — Verify every package before installing it</summary><div class="body">
+    <pre>for p in react-helmet-async vite-react-ssg vike @vitejs/plugin-react react react-dom; do
+  echo "--- $p"; npm view "$p" version time.modified deprecated 2>&1 | head -4
+done</pre>
+    <p style="font-size:.93rem;color:var(--ink-2);margin-top:10px">If a package named in this prompt does
+    not exist, is deprecated, or has not published in 18+ months, <strong>substitute the current
+    equivalent and document the substitution with your reasoning.</strong></p>
+  </div></details>
+</section>
+
+<!-- PART 3 -->
+<section>
+  <div class="sec-head"><span class="eyebrow">Part 3</span><h2>The remediation sequence</h2></div>
+  <p class="lede">Ordered by <strong>dependency</strong>, not by audit severity. Phase 1 gates
+  everything: several later fixes are pointless or actively wrong if shipped before it.</p>
+
+  <div class="gate"><span class="n">Phase 1</span> The foundation — gates all downstream work</div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-01</span><span class="pill p-stop">Closes V2-01 · Critical</span>
+      <span class="pill p-go">Enables FIX-02, 03, 06</span></div>
+    <h3>Get the content into the raw HTML</h3>
+    <dl>
+      <dt>Defect</dt><dd>Raw HTML contains 9 content words and 5 links; rendered DOM contains 1,209 words
+      and 39 links.</dd>
+      <dt>Why now</dt><dd><strong>Because the canonical must be in the raw server response.</strong> Google
+      stated at I/O 2018 that it does not look for <code>rel="canonical"</code> in rendered HTML.
+      Third-party testing suggests JS-injected canonicals are sometimes eventually honoured, but slowly
+      and unreliably. <strong>Verify this claim yourself before building on it</strong> — it is the
+      load-bearing justification for this whole architecture. If current Google documentation
+      contradicts it, re-plan and say so.</dd>
+      <dt>Options</dt><dd>
+        <div class="tw" style="margin:8px 0"><table>
+          <thead><tr><th>Path</th><th>What it is</th><th>Choose when</th></tr></thead>
+          <tbody>
+            <tr><td><strong>A</strong> — Build-time prerender</td><td>Render all 5 routes to static HTML at build</td><td>Default. 5 static routes, no per-request data. Lowest risk.</td></tr>
+            <tr><td><strong>B</strong> — React Router v7 SSG</td><td>Use the router's built-in prerendering</td><td>Already on React Router v7</td></tr>
+            <tr><td><strong>C</strong> — Framework migration</td><td>Astro / Next.js</td><td style="color:var(--stop)">Out of scope. Do not choose.</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:.9rem">Path A is the recommendation: five routes, all static, no
+        personalisation, existing Vite build, smallest diff against working production. But the
+        maintainer of <code>vite-react-ssg</code> recommends React Router v7's official SSG when the
+        project is already on v7 — <strong>check the installed major version first</strong> and prefer
+        Path B if it is already there.</p>
+        <pre>npm ls react-router react-router-dom 2>/dev/null</pre>
+      </dd>
+      <dt>Verify</dt><dd><pre>curl -sSL -A Googlebot https://www.leepai.io/ | grep -c "Every Text and Call Answered"
+# MUST return 1. Currently returns 0.</pre>
+      <p style="font-size:.9rem;margin-top:8px">Not done until that returns 1 <em>and</em> the canonical,
+      title and JSON-LD are all present in <code>view-source</code>, not just the rendered DOM.</p></dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-02</span><span class="pill p-warn">Closes V5-01, V5-02 · High</span>
+      <span class="pill p-note">V5-04 · Medium</span></div>
+    <h3>Install per-route document metadata</h3>
+    <dl>
+      <dt>Defect</dt><dd>All 5 URLs serve byte-identical HTML (3,760 bytes) with one shared
+      <code>&lt;title&gt;</code> and one shared description. <code>document.title</code> appears 0 times
+      in the bundle.</dd>
+      <dt>The fork</dt><dd><strong>Option 1 — stay on React 18.3.1, add a head manager.</strong> Smaller
+      change, no upgrade risk. Verify the package is current (R2).
+      <br><strong>Option 2 — upgrade to React 19, use native metadata hoisting.</strong> Removes a
+      dependency permanently. Larger blast radius — a major version upgrade against Radix and Lucide.
+      <br>State which you chose and why. If Option 2, <strong>test every Radix component</strong> — a
+      broken accordion silently re-breaks FIX-07.</dd>
+      <dt>Code</dt><dd><pre>// src/seo/routes.js
+export const ORIGIN = 'https://www.leepai.io';
+
+export const SEO = {
+  '/': {
+    title: 'Leep AI — AI Receptionist for Home Service Businesses',
+    description:
+      'Leep AI answers every call and text, books appointments, and follows up on every lead 24/7 for HVAC, plumbing, electrical and home service teams.',
+  },
+  '/demo': {
+    title: 'Book a Leep AI Demo — See the AI Receptionist Live',
+    description:
+      'Watch Leep AI answer a live call, book an appointment, and follow up on a lead. 20-minute walkthrough for home service operators.',
+  },
+  '/privacy': {
+    title: 'Privacy Policy — Leep AI',
+    description: 'How Leepai, Inc. collects, uses, and protects customer and caller data.',
+  },
+  '/terms': {
+    title: 'Terms of Service — Leep AI',
+    description: 'The terms governing use of Leep AI products and services.',
+  },
+  '/sms-terms': {
+    title: 'SMS Terms &amp; Conditions — Leep AI',
+    description: 'Messaging terms, opt-in and opt-out instructions, and carrier disclosures for Leep AI SMS.',
+  },
+};</pre></dd>
+      <dt>Copy rules</dt><dd>Titles unique across all 5 routes. SERP truncation is pixel-driven, not
+      character-driven — ~580px mobile / ~600px desktop is a working heuristic, not a rule; do not pad to
+      a character count. The meta description is <strong>not a ranking factor</strong> — it affects
+      click-through. Google rewrites titles frequently; treat yours as a strong input, not a guarantee.</dd>
+      <dt>Verify</dt><dd><pre>for p in "" demo privacy terms sms-terms; do
+  curl -sSL "https://www.leepai.io/$p" | grep -oE '&lt;title&gt;[^&lt;]*'
+done | sort -u | wc -l    # MUST equal 5</pre></dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-03</span><span class="pill p-stop">Closes V1-01 · Critical</span>
+      <span class="pill p-note">V1-04 · Medium</span><span class="pill p-info">Depends on FIX-01</span></div>
+    <h3>Emit a self-referencing canonical on every route</h3>
+    <dl>
+      <dt>Code</dt><dd><pre>// src/seo/Seo.jsx
+import { SEO, ORIGIN } from './routes';
+
+export default function Seo({ path }) {
+  const { title, description } = SEO[path];
+  const url = ORIGIN + path;
+  const image = `${ORIGIN}/leep-ai-og.jpg`;   // absolute — see FIX-09
+
+  return (
+    &lt;&gt;
+      &lt;title&gt;{title}&lt;/title&gt;
+      &lt;meta name="description" content={description} /&gt;
+      &lt;link rel="canonical" href={url} /&gt;
+      &lt;meta property="og:url" content={url} /&gt;
+      &lt;meta property="og:site_name" content="Leep AI" /&gt;
+      &lt;meta property="og:type" content="website" /&gt;
+      &lt;meta property="og:title" content={title} /&gt;
+      &lt;meta property="og:description" content={description} /&gt;
+      &lt;meta property="og:image" content={image} /&gt;
+      &lt;meta property="og:image:width" content="1200" /&gt;
+      &lt;meta property="og:image:height" content="630" /&gt;
+      &lt;meta property="og:image:alt" content="Leep AI — AI workforce for home service businesses" /&gt;
+      &lt;meta name="twitter:card" content="summary_large_image" /&gt;
+      &lt;meta name="twitter:site" content="@LeepAI" /&gt;
+      &lt;meta name="twitter:title" content={title} /&gt;
+      &lt;meta name="twitter:description" content={description} /&gt;
+      &lt;meta name="twitter:image" content={image} /&gt;
+      &lt;meta name="theme-color" content="#d4a84c" /&gt;
+    &lt;/&gt;
+  );
+}</pre>
+      <p style="font-size:.9rem;margin-top:8px">Shown in React 19 native-metadata form. On React 18,
+      wrap the same tags in your chosen head manager's component. The <code>theme-color</code> line also
+      closes V5-05 (LOW).</p></dd>
+      <dt>Checklist</dt><dd>Absolute URL not relative · exactly one per page · in
+      <code>&lt;head&gt;</code> not <code>&lt;body&gt;</code> (Google ignores canonicals in body) ·
+      self-referencing on all 5 routes · agrees with the sitemap's <code>www</code> form · points at a
+      200-status, non-<code>noindex</code> URL · no parameters in the value.</dd>
+      <dt>Verify</dt><dd><pre>curl -sSL https://www.leepai.io/demo | grep -i canonical</pre></dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-04</span><span class="pill p-stop">Closes V1-02 · Critical</span></div>
+    <h3>Return a real 404 status for unmatched routes</h3>
+    <dl>
+      <dt>Defect</dt><dd><code>/this-page-does-not-exist-xyz</code> returns HTTP 200 with md5
+      <code>c304036f5f130a7450d925cb155247c0</code> — byte-identical to the homepage.</dd>
+      <dt>Code</dt><dd>Keep the client-side 404 view; it is good UX. Only the wire status is wrong.
+        <pre>// functions/_middleware.js  (Cloudflare Pages Functions)
+const KNOWN = new Set(['/', '/demo', '/privacy', '/terms', '/sms-terms']);
+
+export async function onRequest(context) {
+  const { request, next } = context;
+  const url = new URL(request.url);
+
+  // collapse repeated slashes -> 301 (closes V1-04)
+  if (/\/{2,}/.test(url.pathname)) {
+    url.pathname = url.pathname.replace(/\/{2,}/g, '/');
+    return Response.redirect(url.toString(), 301);
+  }
+
+  const path = url.pathname.replace(/\/+$/, '') || '/';
+  const isAsset = /\.[a-z0-9]+$/i.test(path);
+
+  if (isAsset || KNOWN.has(path)) return next();
+
+  const shell = await next(new Request(new URL('/', url), request));
+  return new Response(shell.body, { status: 404, headers: shell.headers });
+}</pre>
+      <p style="font-size:.9rem;margin-top:8px">If the deploy target is not Cloudflare Pages, produce the
+      equivalent for the actual platform and say which you targeted. Do not ship a Pages Function to a
+      non-Pages host and call it done.</p></dd>
+      <dt>Verify</dt><dd><pre>curl -sSI -o /dev/null -w '%{http_code}\n' https://www.leepai.io/zzz-should-404   # 404
+curl -sSI -o /dev/null -w '%{http_code}\n' https://www.leepai.io/demo             # 200</pre>
+      <p style="font-size:.9rem;margin-top:8px"><strong>Regression guard:</strong> re-run the full status
+      matrix from P0.1 and diff it. A 404 fix that accidentally 404s a real route is worse than the
+      original defect.</p></dd>
+    </dl>
+  </div>
+
+  <div class="gate"><span class="n">Phase 2</span> Identity</div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-05</span><span class="pill p-note">Closes V2-03, V7-03</span></div>
+    <h3>Standardise on one URL form everywhere</h3>
+    <dl>
+      <dt>Defect</dt><dd>The <code>&lt;noscript&gt;</code> block links to <code>https://leepai.io</code>
+      (apex) while the sitemap declares <code>https://www.leepai.io/</code>. <code>/demo</code> is linked
+      in two forms from the same page.</dd>
+      <dt>Decision</dt><dd>Canonical host <strong><code>https://www.leepai.io</code></strong> — it is
+      what the sitemap already declares, the lowest-churn choice. Internal links become root-relative
+      (<code>/demo</code>) so the form cannot drift; absolute URLs appear only in canonical, Open Graph,
+      sitemap and schema <code>@id</code>.</dd>
+      <dt>Verify</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -c 'href="https://leepai.io"'        # 0
+curl -sSL https://www.leepai.io/ | grep -c 'href="https://www.leepai.io/demo"' # 0</pre></dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-06</span><span class="pill p-stop">Closes V4-01 · Critical</span></div>
+    <h3>Ship a connected <code>@graph</code> — rung 4, not scattered blocks</h3>
+    <dl>
+      <dt>Defect</dt><dd>0 JSON-LD blocks, 0 Microdata, 0 RDFa on all 5 routes. Connectivity ladder rung
+      0 of 4.</dd>
+      <dt>Code</dt><dd>Every node carries an <code>@id</code>; every relationship is an <code>@id</code>
+      pointer. No orphans, no dangling pointers. <em>(Full block in the raw prompt file — abbreviated
+      here to the node graph and the omissions, which are the parts that matter for review.)</em>
+        <pre>@graph:
+  Organization  @id .../#organization
+    ├─ logo         → ImageObject @id .../#logo
+    ├─ address      → PostalAddress (real NAP, visible on page)
+    ├─ founder      → @id .../#aaron-strazicich
+    └─ sameAs[]     → LinkedIn, Instagram, Facebook
+
+  Person        @id .../#aaron-strazicich
+    └─ worksFor     → @id .../#organization
+
+  WebSite       @id .../#website
+    └─ publisher    → @id .../#organization
+
+  WebPage       @id .../#webpage      (per-route: @id, url, name all change)
+    ├─ isPartOf     → @id .../#website
+    ├─ about        → @id .../#organization
+    └─ primaryImageOfPage → @id .../#logo
+
+  Service       @id .../#service
+    └─ provider     → @id .../#organization</pre></dd>
+      <dt>Omitted</dt><dd>
+        <div class="tw" style="margin:8px 0"><table>
+          <thead><tr><th>Omitted</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td><code>AggregateRating</code>, <code>Review</code></td><td>No star ratings visible anywhere. Manual action risk.</td></tr>
+            <tr><td><code>priceRange</code>, <code>Offer</code></td><td>Pricing says "Let's Build Your Custom Plan" — no visible prices.</td></tr>
+            <tr><td><code>FAQPage</code></td><td>Rich result withdrawn. Verify current status; do not add.</td></tr>
+            <tr><td><code>LocalBusiness</code></td><td>Real address, but sells nationally rather than serving walk-ins. <code>Organization</code> + <code>PostalAddress</code> is the honest model.</td></tr>
+          </tbody>
+        </table></div></dd>
+      <dt>Verify</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -c 'application/ld+json'   # 1
+curl -sSL https://www.leepai.io/ | grep -c 'AggregateRating'       # 0 — must stay 0</pre>
+      <p style="font-size:.9rem;margin-top:8px">Then run <strong>both</strong> — they answer different
+      questions and passing one does not imply the other: <code>validator.schema.org</code> for spec
+      conformance, <code>search.google.com/test/rich-results</code> for Google eligibility.</p></dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-07</span><span class="pill p-warn">Closes V2-02 · High</span></div>
+    <h3>Mount the FAQ answers into the DOM</h3>
+    <dl>
+      <dt>Defect</dt><dd>7 questions render; 0 answers. Probes for "onboarding", "contract", "typically"
+      all return 0 occurrences in rendered text. The answers exist in the bundle (~350 words) but Radix
+      unmounts collapsed content. <code>forceMount</code> is already present (17 refs) — just not applied
+      here.</dd>
+      <dt>Code</dt><dd><pre>&lt;Accordion.Content forceMount className="faq-content"&gt;
+  &lt;p&gt;{a}&lt;/p&gt;
+&lt;/Accordion.Content&gt;</pre>
+        <pre>.faq-content { overflow: hidden; }
+.faq-content[data-state="closed"] { height: 0; visibility: hidden; }
+.faq-content[data-state="open"]   { height: auto; visibility: visible; }</pre></dd>
+      <dt>Do not</dt><dd><strong>Do not add <code>FAQPage</code> markup (R6).</strong> The win is the text
+      being in the DOM. Verify the rich-result status yourself and record what you found.</dd>
+      <dt>Verify</dt><dd><pre>curl -sSL https://www.leepai.io/ | grep -c "dedicated onboarding specialist"   # 1</pre></dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-08</span><span class="pill p-note">Closes V1-03 · Medium</span></div>
+    <h3>Truthful <code>&lt;lastmod&gt;</code> in the sitemap</h3>
+    <dl>
+      <dt>Defect</dt><dd>0 <code>&lt;lastmod&gt;</code> across 5 URLs; <code>changefreq</code> and
+      <code>priority</code> present instead — the two hints Google largely ignores, and none of the one
+      it uses.</dd>
+      <dt>Code</dt><dd>Generate at build from real file mtimes or git history:
+        <pre>const lastmod = statSync(src).mtime.toISOString().slice(0, 10);</pre>
+        <p style="font-size:.9rem;margin-top:8px"><strong>Do not stamp every URL with today's date on
+        every deploy.</strong> That trains Google to ignore the field.</p></dd>
+      <dt>Verify</dt><dd><pre>curl -sSL https://www.leepai.io/sitemap.xml | grep -c lastmod   # 5</pre></dd>
+    </dl>
+  </div>
+
+  <div class="gate"><span class="n">Phase 3</span> Delivery</div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-09</span><span class="pill p-note">Closes V5-03, V8-02, V8-03</span></div>
+    <h3>Image optimisation and the Open Graph image</h3>
+    <dl>
+      <dt>Defect</dt><dd>
+        <div class="tw" style="margin:8px 0"><table>
+          <thead><tr><th>Asset</th><th class="num">Bytes</th><th>Problem</th></tr></thead>
+          <tbody>
+            <tr><td class="mono" style="font-size:.76rem">/leep-ai-og.png</td><td class="num">2,264,100</td><td>2.26 MB, referenced by a <strong>relative</strong> URL</td></tr>
+            <tr><td class="mono" style="font-size:.76rem">/founder-family.jpg</td><td class="num">1,032,306</td><td>1.03 MB</td></tr>
+            <tr><td class="mono" style="font-size:.76rem">/danny-thumbnail.jpg</td><td class="num">903,375</td><td>903 KB, not lazy-loaded, <code>alt=""</code></td></tr>
+            <tr><td class="mono" style="font-size:.76rem">/leep-ai-icon.png</td><td class="num">543,899</td><td>544 KB favicon</td></tr>
+            <tr><td class="mono" style="font-size:.76rem">/assets/leepai-logo-*.png</td><td class="num">285,870</td><td>286 KB for a 40px-tall logo</td></tr>
+            <tr><td><strong>Total</strong></td><td class="num"><strong>~5.03 MB</strong></td><td>none in WebP/AVIF; no format negotiation</td></tr>
+          </tbody>
+        </table></div></dd>
+      <dt>Code</dt><dd><pre>npx -y sharp-cli -i public/founder-family.jpg  -o public/founder-family.webp  -f webp -q 82
+npx -y sharp-cli -i public/danny-thumbnail.jpg -o public/danny-thumbnail.webp -f webp -q 82
+npx -y sharp-cli -i public/leep-ai-og.png      -o public/leep-ai-og.jpg -f jpeg -q 85 --width 1200 --height 630 --fit cover
+npx -y sharp-cli -i src/assets/leepai-logo.png -o src/assets/leepai-logo.webp -f webp -q 90 --width 160
+npx -y sharp-cli -i public/leep-ai-icon.png    -o public/leep-ai-icon.png -f png --width 180</pre>
+        <p style="font-size:.9rem;margin-top:8px">Also enable <strong>Cloudflare Polish</strong> (Speed →
+        Optimization → Polish: Lossy, WebP on) — fixes format negotiation at the edge with no code change.
+        <strong>Every <code>&lt;img&gt;</code> needs explicit <code>width</code> and
+        <code>height</code></strong> — none currently carry them, a direct CLS contributor.</p></dd>
+      <dt>Hold</dt><dd><strong>Do not apply <code>fetchpriority="high"</code> until FIX-13 tells you what
+      the real LCP element is.</strong> Guessing it and preloading the wrong thing makes LCP worse.</dd>
+      <dt>Verify</dt><dd><pre>curl -sSI -H 'Accept: image/webp' https://www.leepai.io/founder-family.jpg | grep -i content-type
+curl -sSL https://www.leepai.io/ | grep -c 'og:image" content="https://'   # 1</pre></dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-10</span><span class="pill p-warn">Closes V8-01 · High</span>
+      <span class="pill p-note">V1-05 · Low</span></div>
+    <h3>Security headers and immutable asset caching</h3>
+    <dl>
+      <dt>Defect</dt><dd>Only <code>x-content-type-options</code> and <code>referrer-policy</code>
+      present. Missing HSTS, CSP, X-Frame-Options, Permissions-Policy. Hashed build assets ship
+      <code>max-age=14400, must-revalidate</code>.</dd>
+      <dt>Code</dt><dd><pre># public/_headers
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://widgets.leadconnectorhq.com https://r2.leadsy.ai; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.leadconnectorhq.com https://api.elevenlabs.io https://r2.leadsy.ai; frame-src https://api.leadconnectorhq.com https://meetings-na2.hubspot.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.leadconnectorhq.com
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable</pre>
+        <p style="font-size:.9rem;margin-top:8px"><strong>Ship the CSP in <code>Report-Only</code> first
+        and watch for a week.</strong> The chat widget, booking widget and ElevenLabs voice agent will
+        surface missing origins before you enforce. Then rename the header.</p></dd>
+      <dt>Framing</dt><dd>These are <strong>not ranking factors</strong> and you may not present them as
+      such. This is a security fix on a site that collects phone numbers and runs an SMS programme.</dd>
+      <dt>Also</dt><dd><code>robots.txt</code> has two <code>User-agent: *</code> groups. Delete the
+      hand-written trailing block — the Cloudflare-managed one already allows everything unnamed. Keep
+      only the <code>Sitemap:</code> line.</dd>
+      <dt>Verify</dt><dd><pre>curl -sSI https://www.leepai.io/ | grep -Ei 'strict-transport|content-security|x-frame|permissions-policy'
+curl -sSL https://www.leepai.io/robots.txt | grep -c '^User-agent: \*'   # 1</pre></dd>
+    </dl>
+  </div>
+
+  <div class="gate" style="background:var(--info)"><span class="n" style="color:var(--info)">Phase 4</span> The inferred findings — measure first (R3)</div>
+
+  <div class="note-box">
+    <strong>Everything in this phase was tagged <code>[INFERRED]</code> by the source audit.</strong> Each
+    carries a falsification test. Run the test. Record the result. <strong>Only fix if the test confirms
+    the defect.</strong> A falsified finding is a successful outcome, not a gap.
+  </div>
+
+  <div class="fix measure">
+    <div class="f-top"><span class="fid">FIX-11</span><span class="pill p-info">Tests V2-04 · Inferred</span></div>
+    <h3>Entrance animations and layout shift</h3>
+    <dl>
+      <dt>Claim</dt><dd>75 elements render at <code>opacity: 0</code> with
+      <code>translateY(20px)</code> entrance transforms, which the audit reasoned may contribute to CLS.</dd>
+      <dt>Test</dt><dd><pre>node -e "const a=require('./lh-mobile-before.json').audits;
+ console.log('CLS:', a['cumulative-layout-shift'].numericValue);
+ console.log(JSON.stringify(a['layout-shift-elements']?.details?.items, null, 1));"</pre></dd>
+      <dt>If falsified</dt><dd>CLS within the current "good" threshold (retrieve it — do not quote from
+      memory) <em>and</em> no shift attributed to these elements → record the falsification and do not
+      change the animations.</dd>
+      <dt>If confirmed</dt><dd><pre>.reveal { opacity: 1; }              /* visible by default */
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { opacity: 0; transform: translateY(20px);
+            transition: opacity .5s ease, transform .5s ease; }
+  .reveal.is-visible { opacity: 1; transform: none; }
+}</pre>
+      <p style="font-size:.9rem;margin-top:8px">Reserve space with <code>min-height</code> on animated
+      containers regardless — cheap and correct either way.</p></dd>
+    </dl>
+  </div>
+
+  <div class="fix measure">
+    <div class="f-top"><span class="fid">FIX-12</span><span class="pill p-info">Tests V3-02 · Inferred</span></div>
+    <h3>Non-passive listeners and INP</h3>
+    <dl>
+      <dt>Claim</dt><dd>4 of 6 <code>scroll</code> listeners, plus <code>touchstart</code>,
+      <code>touchmove</code>, <code>wheel</code> and 3 <code>resize</code>, registered without
+      <code>{ passive: true }</code>; with 14 <code>getBoundingClientRect</code> and 17
+      <code>getComputedStyle</code> calls, the audit inferred layout-thrash risk.
+      <strong>It did not prove these run inside an interaction handler.</strong></dd>
+      <dt>Note</dt><dd><strong>Lighthouse does not report INP.</strong> INP requires real user
+      interaction; TBT is the lab proxy. Any tool claiming a "Lighthouse INP score" is fabricating it.</dd>
+      <dt>Test</dt><dd>DevTools → Performance → record while clicking the FAQ items, pricing tabs and ROI
+      calculator inputs. Read long-task attribution; identify the top 5 tasks &gt;50ms and attribute each
+      to a specific script. Or instrument the field:
+        <pre>import { onINP, onLCP, onCLS } from 'web-vitals';
+function send(m) {
+  navigator.sendBeacon('/api/vitals', JSON.stringify({
+    name: m.name, value: m.value, rating: m.rating, id: m.id, path: location.pathname }));
+}
+onINP(send); onLCP(send); onCLS(send);</pre></dd>
+      <dt>If confirmed</dt><dd>Passive by default, reads batched before writes:
+        <pre>let ticking = false;
+function onScroll() {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    const y = window.scrollY;                     // READ phase
+    const rect = el.getBoundingClientRect();
+    header.classList.toggle('is-stuck', y > 80);  // WRITE phase
+    el.style.setProperty('--offset', `${rect.top}px`);
+    ticking = false;
+  });
+}
+window.addEventListener('scroll',    onScroll,    { passive: true });
+window.addEventListener('touchmove', onTouchMove, { passive: true });
+window.addEventListener('wheel',     onWheel,     { passive: true });</pre>
+      <p style="font-size:.9rem;margin-top:8px"><strong>Many of these registrations may belong to Radix or
+      Lucide, not first-party code. Do not patch a dependency's internals.</strong> If the long tasks trace
+      to a library, upgrade it or report the constraint.</p></dd>
+    </dl>
+  </div>
+
+  <div class="fix measure">
+    <div class="f-top"><span class="fid">FIX-13</span><span class="pill p-info">Tests V3-01, V3-03 · Inferred</span></div>
+    <h3>LCP element and third-party cost</h3>
+    <dl>
+      <dt>Claim</dt><dd>The audit inferred that a 286 KB logo and a 903 KB non-lazy thumbnail compete for
+      bandwidth during load with no <code>fetchpriority</code> hint. <strong>It explicitly did not
+      identify the real LCP element.</strong></dd>
+      <dt>Test</dt><dd><pre>node -e "const a=require('./lh-mobile-before.json').audits;
+ console.log('LCP element:', JSON.stringify(a['largest-contentful-paint-element']?.details?.items,null,1));
+ console.log('3rd party:',   JSON.stringify(a['third-party-summary']?.details?.items,null,1));
+ console.log('render-block:',JSON.stringify(a['render-blocking-resources']?.details?.items,null,1));"</pre></dd>
+      <dt>If falsified</dt><dd>LCP resolves to the H1 text node and is within threshold → the image
+      inference is falsified for LCP. The bandwidth waste is still real (FIX-09 stands as a delivery fix),
+      but <strong>do not claim an LCP benefit you did not measure.</strong></dd>
+      <dt>If confirmed</dt><dd>Apply <code>fetchpriority="high"</code> to <em>that</em> element and preload
+      it. Never lazy-load the LCP image.</dd>
+      <dt>Observed</dt><dd>Separately and not inferred: the LeadConnector chat script carries no
+      <code>async</code> or <code>defer</code>. Defer it to idle on its own merits:
+        <pre>if ('requestIdleCallback' in window) {
+  requestIdleCallback(loadChat, { timeout: 4000 });
+} else {
+  window.addEventListener('load', () => setTimeout(loadChat, 2000));
+}</pre>
+      <p style="font-size:.9rem;margin-top:8px"><strong>Verify the chat widget still works after
+      deferring.</strong> A silently broken lead-capture widget costs more than the milliseconds it
+      saves.</p></dd>
+    </dl>
+  </div>
+
+  <div class="gate"><span class="n">Phase 5</span> Content architecture</div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-14</span><span class="pill p-note">Closes part of V6-01, plus V7-01, V7-02</span></div>
+    <h3>Give the ROI calculator its own URL</h3>
+    <dl>
+      <dt>Rationale</dt><dd>The ROI calculator is genuine information gain — original, interactive,
+      specific to the vertical, hard to copy. It is currently an anchor (<code>#roi-calculator</code>) on
+      the homepage, so it cannot rank on its own.</dd>
+      <dt>Action</dt><dd>Promote to <code>/missed-call-revenue-calculator</code> with its own title,
+      description, canonical and explanatory copy. Keep the homepage section; link the two. Add
+      <code>BreadcrumbList</code> at this point — closes V7-01, correctly deprioritised while the site was
+      flat. Reference it from the <code>WebPage</code> node via <code>"breadcrumb": { "@id": … }</code> so
+      it is not an orphan. Also convert the 2 <code>href="#"</code> anchors to
+      <code>&lt;button&gt;</code>.</dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-15</span><span class="pill p-note">Closes rest of V6-01, plus V6-02, V6-03</span></div>
+    <h3>Build the informational content surface</h3>
+    <dl>
+      <dt>First</dt><dd><strong>Close the audit's own stated gap.</strong> It could not retrieve live
+      SERPs and inferred the query set from the page's title, H1 and nav:
+      <em>AI receptionist for home service businesses · AI answering service for contractors · missed call
+      text back · AI voice agent for HVAC/plumbing · speed to lead automation.</em>
+      The audit explicitly flagged that <strong>if this is wrong, all of Vector 6 is audited against the
+      wrong target.</strong> Confirm or replace it before building anything.</dd>
+      <dt>Then</dt><dd>Classify dominant intent <strong>from the actual SERP</strong> per query
+      (informational / commercial investigation / transactional / navigational / local). For
+      informational queries the homepage cannot win regardless of optimisation — that is a format
+      mismatch, not a tuning problem. Compare against pages currently ranking; report gaps as information
+      gain and intent coverage.</dd>
+      <dt>Rules</dt><dd><strong>Never prescribe a word count</strong> — the homepage's 1,209 words is a
+      measurement, not a target. No spun or mass-produced pages. No near-duplicate city pages with the
+      place-name swapped — that is a doorway pattern. No unedited AI output shipped as-is. Truthful
+      publish and last-updated dates, never auto-stamped on deploy; add <code>&lt;time datetime&gt;</code>
+      to the legal pages, which SMS carrier compliance review typically looks for.</dd>
+    </dl>
+  </div>
+
+  <div class="fix">
+    <div class="f-top"><span class="fid">FIX-16</span><span class="pill p-info">Business decision — do not act unilaterally</span></div>
+    <h3>Decide the AI-crawler policy deliberately</h3>
+    <dl>
+      <dt>Situation</dt><dd>The Cloudflare-managed <code>robots.txt</code> block disallows
+      <code>GPTBot</code>, <code>ClaudeBot</code>, <code>Google-Extended</code>, <code>CCBot</code>,
+      <code>Bytespider</code> and <code>meta-externalagent</code>, and sets
+      <code>Content-Signal: ai-train=no</code>.</dd>
+      <dt>Fact</dt><dd><strong>This does not affect Google Search ranking</strong> —
+      <code>Google-Extended</code> is separate from Googlebot, and Googlebot is explicitly allowed. It
+      does mean opting out of AI assistant surfaces.</dd>
+      <dt>Action</dt><dd>For a company selling AI to contractors, whose buyers increasingly ask an
+      assistant for vendor recommendations, this deserves a deliberate decision rather than an inherited
+      Cloudflare default. <strong>Surface it to the business owner with both consequences stated. Do not
+      change it unilaterally.</strong></dd>
+    </dl>
+  </div>
+</section>
+
+<!-- PART 6 -->
+<section>
+  <div class="sec-head"><span class="eyebrow">Part 6</span><h2>The honest ceiling</h2></div>
+
+  <div class="warn-box">
+    <h3>This prompt cannot guarantee 100/100, and any prompt claiming it can is lying to you</h3>
+    <p>Four reasons, stated plainly.</p>
+    <ol style="margin-top:12px">
+      <li><strong>The rubric is bespoke and partly subjective.</strong> The 100-point scale comes from the
+      companion audit prompt, not from Google. Its LOW-severity findings are auditor's-judgement calls. A
+      different auditor — or the same one on a different day — finds a different set of cosmetic issues.
+      No external body certifies a 100.</li>
+      <li><strong>Vector 3 cannot be scored without field data you may not be able to generate.</strong>
+      CrUX requires enough real traffic at the URL or origin level to meet its reporting threshold, over a
+      28-day window. <strong>A low-traffic site may never have URL-level CrUX data at all.</strong> If
+      that is the case here, Vector 3 stays UNSCORED through no fault of the code, and the maximum honest
+      score is 85 — exactly what the source audit reported. That is a traffic problem, not an engineering
+      problem.</li>
+      <li><strong>Some fixes take time to be reflected, not just to ship.</strong> Canonical
+      consolidation, index-bloat cleanup from the soft-404 fix, and re-indexing of prerendered content all
+      depend on Google's recrawl schedule. The code can be correct on day one and the audit still find
+      symptoms on day two.</li>
+      <li><strong>Vector 6 is scored against a query set that is currently inferred.</strong> Until FIX-15
+      confirms it, the content score is measured against a guess.</li>
+    </ol>
+  </div>
+
+  <h3 style="margin-top:26px">What this prompt <em>can</em> deterministically achieve</h3>
+  <ul class="prose">
+    <li>Every <code>[OBSERVED]</code> finding closed, with command output proving it</li>
+    <li>Every <code>[INFERRED]</code> finding either fixed or falsified on measured evidence</li>
+    <li>The CRITICAL hard cap lifted — no <code>noindex</code>, no <code>Disallow: /</code>, no off-page
+    canonical, no JS-only primary content, HTTPS enforced</li>
+    <li>Vectors 1, 2, 4, 5, 7 and 8 driven to full weight — every finding in them is deterministic and
+    verifiable</li>
+    <li>Vector 3 moved from UNSCORED to measured, <em>if</em> field data exists</li>
+    <li><strong>Confidence Grade raised from C to A</strong>, by establishing Search Console and field
+    data access — the single highest-leverage item on this list, because it removes the blindness rather
+    than the symptoms</li>
+  </ul>
+
+  <p class="prose" style="margin-top:16px"><strong>Report the ceiling honestly in §0 of your output.</strong>
+  If you cannot reach 100, say what the real maximum is and why. A short honest report beats a long
+  confident one.</p>
+</section>
+
+<!-- PART 7 -->
+<section>
+  <div class="sec-head"><span class="eyebrow">Part 7</span><h2>Self-audit before responding</h2></div>
+  <p class="lede">Run silently, fix, then answer.</p>
+  <ol class="prose">
+    <li>Did I install a package without verifying it exists and is maintained? → verify or remove.</li>
+    <li>Did I fix an <code>[INFERRED]</code> finding without running its falsification test? → test it.</li>
+    <li>Did I add any structured-data property not visible on the page? → <strong>delete it.</strong></li>
+    <li>Did I add <code>FAQPage</code> markup? → delete it, and cite the current status.</li>
+    <li>Did I cite Google without a dated, retrieved URL? → retrieve or remove the claim.</li>
+    <li>Did I quote a Core Web Vitals threshold from memory? → retrieve it.</li>
+    <li>Did I claim a fix landed without pasting the command output? → run it.</li>
+    <li>Did I touch anything not traceable to a FINDING ID? → justify with evidence or revert.</li>
+    <li>Did I predict a traffic or ranking outcome? → <strong>delete it.</strong> Mechanisms only.</li>
+    <li>Did I report a partial job as complete? → fix §0.</li>
+    <li>Did I break something that previously passed? → re-run the full status matrix and §4 of the audit.</li>
+  </ol>
+</section>
+
+<footer class="end">
+  <p><strong>Reverse God Mode · 1 · Forensic SEO Remediation Engineer</strong> — written 2026-08-15
+  against the Leep AI Site Inspection of the same date.</p>
+  <p style="margin-top:8px">Codebase facts in Part 1 were established by direct inspection of the
+  production bundle and are tagged <code>[OBSERVED]</code>. Package names and standards claims are
+  <strong>candidates to verify, not verified facts</strong> — the authoring environment had no access to
+  primary documentation or the npm registry, which is why R2 and R4 are mandatory gates.</p>
+  <p style="margin-top:8px">Raw copy-pasteable version: <code>leepai-remediation-prompt.md</code></p>
+</footer>
+
+</div>

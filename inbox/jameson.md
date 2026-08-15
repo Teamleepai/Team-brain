@@ -3,6 +3,18 @@
 Added by Claude session `session_01NYeVaKj98DGejrZgz9KFKL` on 2026-08-07.
 Branch: `claude/prospecting-strategy-framework-nae2oh`
 
+## CONFIGURED AND READY — read `pipeline/RUNBOOK.md` FIRST
+
+Geography is set (Redondo Beach 25mi + Atlanta 30mi), location bands are split per vertical, and
+HQ-only anchoring is implemented and tested. **You run stages 1–3; hand back `out/lines.jsonl` and
+scoring + call sheets get run against it.**
+
+- [ ] **Decide the LA radius before you run.** 25 miles from Redondo reaches **Pasadena (24.9mi)** and
+      **Downtown LA (16.3mi)**. If Aaron wants tight South Bay, change `radius_miles` to **15** — that
+      holds it to Manhattan Beach / Long Beach / Santa Monica. Output is sorted nearest-first either way.
+- [ ] **Expect med spa 3–8 to come back thin.** 81% of med spas are single-location. If it returns
+      fewer than 25 groups **report the count — do not loosen the band to fill a quota.**
+
 ## THE PIPELINE IS BUILT — `pipeline/` — RUN IT MONDAY
 
 Five stages, already written and tested. Read `pipeline/README.md` first.

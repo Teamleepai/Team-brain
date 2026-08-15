@@ -2,13 +2,27 @@
 # Edit GEOGRAPHY first — it is the one input that cannot be guessed.
 
 geography:
-  # Outscraper query format is "<what> near <where>". One entry per metro you sell into.
-  # NOTHING RUNS UNTIL THIS IS FILLED IN with your actual target markets.
-  markets:
-    - "Denver, CO, USA"
-    # - "Colorado Springs, CO, USA"
-    # - "Fort Collins, CO, USA"
-  limit_per_query: 400        # Outscraper places per query
+  # SET 2026-08-07 per Aaron. Anchoring = HQ/PRIMARY LOCATION ONLY: a multi-location
+  # group is kept only if its primary site (highest review count in the cluster) falls
+  # inside the radius. Tighter than "any location", and it is what was chosen.
+  anchors:
+    - name: "South Bay LA"
+      query_area: "Redondo Beach, CA, USA"
+      lat: 33.8492
+      lon: -118.3884
+      radius_miles: 25          # Redondo -> covers South Bay, Torrance, LAX, Long Beach,
+                                # west LA. Raise to 35 to reach downtown/Pasadena.
+    - name: "Atlanta"
+      query_area: "Atlanta, GA, USA"
+      lat: 33.7490
+      lon: -84.3880
+      radius_miles: 30          # covers the perimeter + inner suburbs
+
+  limit_per_query: 400          # Outscraper places per query
+
+output:
+  # 25 per vertical TOTAL across both metros combined (not per metro).
+  top_n_per_vertical: 25
 
 verticals:
 
@@ -32,7 +46,9 @@ verticals:
       - "aamco"
       - "christian brothers"
     min_reviews: 25             # crude volume proxy — a shop with 4 reviews has no call volume
-    target_locations: [1, 3]
+    target_locations: [1, 3]    # OWNER-OPERATOR band. 3-8 independent auto repair groups
+                                # barely exist and the ones that do are MSOs — the exact
+                                # corporate profile we exclude. Confirmed with Aaron 2026-08-07.
 
   collision:
     label: "Independent collision / body repair"
@@ -50,7 +66,7 @@ verticals:
       - maaco
       - "driven brands"
     min_reviews: 20
-    target_locations: [1, 3]
+    target_locations: [1, 3]    # same reasoning as auto_repair — see above
 
   med_spa:
     label: "Med spa"

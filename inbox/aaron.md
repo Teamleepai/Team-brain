@@ -44,12 +44,17 @@ Branch: `claude/prospecting-strategy-framework-nae2oh`
 - [ ] **Confirm the git commit identity question** — see the note at the bottom of
   `sessions/claude/2026-08-07.md`. All commits so far are attributed to Claude, not to you.
 
-## BLOCKING MONDAY — one field in one file
+## GEOGRAPHY IS SET — one call left to make
 
-- [ ] **`pipeline/config.yaml` → `geography.markets` is empty, and stage 1 refuses to run without
-      it.** Fill in the metros you actually sell into. **This is the single input I cannot guess** —
-      a Denver list is worthless if you sell in Phoenix. Everything in the two-week sprint waits on
-      this one line.
+Configured 2026-08-07: **Redondo Beach 25mi** + **Atlanta 30mi**, HQ-only anchoring, split location
+bands (auto repair + collision 1–3; med spa 3–8; plumbing + HVAC 2–8), 25 per vertical across both
+metros. See `pipeline/RUNBOOK.md`.
+
+- [ ] **Confirm the LA radius.** 25 miles straight-line from Redondo reaches **Pasadena (24.9 mi)** and
+      **Downtown LA (16.3 mi)** — further than "as close as possible to Redondo" probably means. **15
+      miles** holds it to Manhattan Beach, Torrance, El Segundo, LAX, Long Beach and Santa Monica.
+      One line in `config.yaml`. Output is sorted nearest-first regardless, so you can also just cut
+      the list wherever you like after seeing it.
 
 I tried to pull the live list you asked for and **could not — all external network egress is blocked
 in this environment** (Google Maps, Yelp, I-CAR and California BAR all refused at the proxy). I did

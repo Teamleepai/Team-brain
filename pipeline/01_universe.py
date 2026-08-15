@@ -41,6 +41,27 @@ def digits(p: str) -> str:
     return re.sub(r"\D", "", p or "")
 
 
+def haversine_mi(lat1, lon1, lat2, lon2) -> float | None:
+    """Great-circle distance in miles. None if any coordinate is missing."""
+    try:
+        from math import radians, sin, cos, asin, sqrt
+        lat1, lon1, lat2, lon2 = map(float, (lat1, lon1, lat2, lon2))
+    except (TypeError, ValueError):
+        return None
+    dlat, dlon = radians(lat2 - lat1), radians(lon2 - lon1)
+    a = sin(dlat / 2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
+    return 3958.7613 * 2 * asin(sqrt(a))
+
+
+def primary_of(members: list[dict]) -> dict:
+    """The cluster's HQ / flagship = the location with the most reviews.
+
+    Aaron chose HQ-only anchoring (2026-08-07): a group is kept only if THIS
+    location falls inside the radius, not merely any of its sites.
+    """
+    return max(members, key=lambda m: (m.get("reviews") or 0))
+
+
 def fetch(query: str, limit: int, key: str) -> list[dict]:
     r = requests.get(
         API,
@@ -67,12 +88,50 @@ def cluster(records: list[dict]) -> list[dict]:
     for gid, (key, members) in enumerate(groups.items()):
         addrs = {(m.get("full_address") or m.get("address") or "").lower() for m in members}
         addrs.discard("")
+        hq = primary_of(members)
         for m in members:
             m["group_id"] = f"g{gid:05d}"
             m["group_key"] = key
             m["location_count"] = max(len(addrs), 1)
+            m["is_primary"] = (m is hq)
+            m["hq_name"] = hq.get("name")
+            m["hq_address"] = hq.get("full_address") or hq.get("address")
             out.append(m)
     return out
+
+
+def anchor_filter(records: list[dict], anchors: list[dict]) -> tuple[list[dict], int]:
+    """HQ-only anchoring: keep a group iff its PRIMARY location is inside a radius.
+
+    Returns (kept_primaries, dropped_count). One row per group — the HQ row —
+    carrying location_count, so downstream stages fetch one site per group
+    rather than one per branch.
+    """
+    by_group: dict[str, list[dict]] = defaultdict(list)
+    for r in records:
+        by_group[r["group_id"]].append(r)
+
+    kept, dropped = [], 0
+    for members in by_group.values():
+        hq = next((m for m in members if m.get("is_primary")), members[0])
+        best_d, best_anchor = None, None
+        for a in anchors:
+            d = haversine_mi(hq.get("latitude"), hq.get("longitude"), a["lat"], a["lon"])
+            if d is not None and (best_d is None or d < best_d):
+                best_d, best_anchor = d, a
+        if best_d is None:
+            dropped += 1                      # no coordinates -> cannot anchor
+            continue
+        if best_d > best_anchor["radius_miles"]:
+            dropped += 1
+            continue
+        hq["anchor"] = best_anchor["name"]
+        hq["distance_mi"] = round(best_d, 1)
+        hq["branch_addresses"] = [
+            m.get("full_address") or m.get("address") for m in members if not m.get("is_primary")
+        ]
+        kept.append(hq)
+    return kept, dropped
 
 
 def main() -> int:
@@ -87,10 +146,9 @@ def main() -> int:
         print("ERROR: set OUTSCRAPER_API_KEY", file=sys.stderr); return 2
 
     cfg = yaml.safe_load(Path(a.config).read_text())
-    markets = cfg["geography"]["markets"]
-    if not markets:
-        print("ERROR: config.yaml geography.markets is empty. This is the one input\n"
-              "       that cannot be guessed — fill in your actual target metros.", file=sys.stderr)
+    anchors = cfg["geography"]["anchors"]
+    if not anchors:
+        print("ERROR: config.yaml geography.anchors is empty.", file=sys.stderr)
         return 2
 
     v = cfg["verticals"][a.vertical]
@@ -99,9 +157,9 @@ def main() -> int:
     lo, hi = v.get("target_locations", [1, 99])
 
     raw: list[dict] = []
-    for market in markets:
+    for anchor in anchors:
         for q in v["queries"]:
-            query = f"{q} near {market}"
+            query = f"{q} near {anchor['query_area']}"
             print(f"  fetching: {query}")
             try:
                 got = fetch(query, limit, key)
@@ -121,8 +179,13 @@ def main() -> int:
 
     clustered = cluster(deduped)
 
+    # HQ-only anchoring — one row per group, the primary location
+    anchored, out_of_radius = anchor_filter(clustered, anchors)
+    print(f"{len(clustered)} locations -> {len(anchored)} groups with HQ in radius "
+          f"({out_of_radius} groups dropped: outside radius or no coordinates)")
+
     kept, dropped = [], defaultdict(int)
-    for r in clustered:
+    for r in anchored:
         name = (r.get("name") or "").lower()
         if any(e in name for e in excl):
             dropped["excluded_brand"] += 1; continue
@@ -137,14 +200,21 @@ def main() -> int:
         r["lead_product"] = v["lead_product"]
         kept.append(r)
 
+    kept.sort(key=lambda r: r.get("distance_mi", 9e9))   # closest to anchor first
+
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     with Path(a.out).open("w") as fh:
         for r in kept:
             fh.write(json.dumps(r) + "\n")
 
-    print(f"\nkept {len(kept)} -> {a.out}")
+    print(f"\nkept {len(kept)} groups -> {a.out}")
     for reason, n in sorted(dropped.items(), key=lambda x: -x[1]):
         print(f"  dropped {n:5}  {reason}")
+    by_anchor: dict[str, int] = defaultdict(int)
+    for r in kept:
+        by_anchor[r.get("anchor", "?")] += 1
+    for k, n in by_anchor.items():
+        print(f"  {n:5} in {k}")
     return 0
 
 
